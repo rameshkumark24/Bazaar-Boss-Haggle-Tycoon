@@ -388,3 +388,123 @@ Each one needs your login, your phone, or a site my tools can't reach.
 | C24 | [itch.io forum post on Pawn Stars: The Game removal](https://itch.io/post/9898668) (via a search summary; not opened) | REPORTED — **UNVERIFIED** |
 | C25 | [TechCrunch — India app downloads 25.5B in 2025 (Sensor Tower)](https://techcrunch.com/2026/01/21/indias-app-downloads-rebounded-to-25-5-billion-in-2025-fueled-by-ai-assistants-and-microdrama-boom/) | REPORTED |
 | C27 | [reddit.com/robots.txt](https://www.reddit.com/robots.txt) returns a block notice to scripts (2026-11-23); the browser tool refused reddit.com (2026-11-24) | SEEN |
+
+---
+
+## USP
+
+> Judgement, written 2026-11-24 and built on §1–§8 above and [IDEA.md](IDEA.md). Facts keep their labels and `[C#]` sources; everything unlabelled is my reasoning. Reviews are paraphrased, as above.
+
+### 1. What to take
+
+Borrow the patterns only — never names, art, text, items or jokes.
+
+| What they got right | Who has it, and evidence players value it | Keep, or do better — how |
+|---|---|---|
+| **The reveal after a rival auction** | Bid Wars 1 and 2: 10M+ downloads each, 4.2–4.3★ [C1 C2 SEEN]. Players call it fun and addictive, and say it lets them live the TV-bidder fantasy [C1 SEEN — Tina McGuire, 18 Jan 2026; Benjamin M, 8 Jun 2021] | **Do better:** peek clues make a lot partly predictable, so it's skill rather than luck. After each auction, show what every rival thought the lot was worth. Reveal items one by one from a gunny bag — never slot-machine visuals |
+| **Customers with distinct personalities** | Dealer's Life 2's listing is built on customers negotiating by their own psychological traits [C5 SEEN], and it's the top-rated game here at 4.6★ [C5 SEEN] | **Do better:** show *why* the mood moved each round; give each personality a different bad habit to punish (IDEA §3); write far more lines per character — "same characters, same lines" is a Dealer's Life 2 complaint [C5 SEEN — Sachin Gorade, 12 Oct 2022] |
+| **Fakes you can catch** | Pawn Shop Master and Dealer's Life both sell "spot the fake" [C4 C5 SEEN listings] | **Keep, and sharpen:** every fake carries clues you can learn (weight, marks, wear), so catching one is skill, not a coin flip |
+| **No ads, no hidden fees, no push to spend** | A Dealer's Life 2 player calls this the best part (Siren Kitty, 5 Mar 2025; 77 found it helpful) [C5 SEEN] | **Do it differently:** the same respect, but **free**. Dealer's Life charges ₹249–₹499 up front [C5 C6 SEEN] |
+| **Plays offline** | Every competitor lists it [C1 C3 C4 SEEN] | **Keep** — IDEA is fully offline |
+| **Humour** | Dealer's Life 2 advertises jokes and quotes [C5 SEEN], and players praise its pop-culture nods [C5 SEEN — Siren Kitty] | **Our way:** original bazaar humour in Tanglish/Hinglish — haggling banter, uncle-isms, call-backs. No real films, celebrities or brands (IDEA content rules) |
+| **Developers who answer reviews** | Bid Wars 2 and Bid Master reply to nearly every review, but with templates [C1 C3 SEEN]. Dealer's Life 2 replies with actual fixes, such as a balance patch [C5 SEEN] | **Do better:** a personal reply to every review |
+| **Play event cards; Play Pass** | Bid Wars 2 and Bid Master use the "Events and offers" cards on their listings [C1 C3 SEEN]. Dealer's Life 2 is in Play Pass [C5 SEEN] | **Borrow later:** announce in-game seasons (Diwali rush, Pongal clearance) as free Play event cards. Consider Play Pass once there's a version worth offering |
+
+### 2. The one unique selling point
+
+> **"It's a free haggling game that never makes you watch an ad to keep playing — you win by bargaining, not by paying or waiting."**
+
+**Built from:**
+- The top unfixed complaint: ads, raised by **36 of 99** 3-star reviewers (§3). It stays unfixed because it's **DELIBERATE** (§4).
+- Its two siblings, which are also deliberate: pay-or-watch walls (15 people) and odds that feel rigged (13 people).
+
+**Class: DIFFERENT, with an AIMED layer.**
+- **DIFFERENT:** today you get either free *with* forced ads, or no forced ads *for* ₹249–₹499. Ours is free, and every ad is one the player chose to tap. That changes what a session is: playing, not watching.
+- **AIMED:** it's the only haggling game here set in an Indian bazaar and speaking Tanglish/Hinglish. None of the studios found serves Indian players directly (§1, §5) [SEEN listings].
+- **Not NEW.** I didn't search for an equivalent outside the games covered here, so I'm not claiming nobody offers it.
+
+**How much better, in numbers:**
+
+| | Competitors (what players report) | Us |
+|---|---|---|
+| Forced ads in 30 minutes | Up to 62 in Pawn Shop Master (one player's count) [C4 SEEN]; one every 2–3 minutes in Bid Wars 2 [C1 SEEN — Sabrina R] | **0** — rewarded ads only, and only on tap |
+| Length of each ad | 1–3 minutes in Bid Master [C3 SEEN — Chris W, David James] | Only ones you choose |
+| What you lose if you skip an ad | The robber's toll (Pawn Shop Master), the after-auction loss menu (Bid Wars 2), 40% odds unless you pay gold for 100% (Bid Master) [C1 C3 C4 SEEN] | **Nothing** — no gates |
+| Price of no forced ads | ₹249–₹499 (Dealer's Life) [C5 C6 SEEN] | **Free** |
+| Time to the first deal | A locked tutorial of 15+ minutes in Bid Master [C3 SEEN — Jeffrey Dwyer] | **Under 30 seconds** — IDEA's target, tested at G1 |
+
+**Would players notice?** Yes — they say so in their own words:
+- Ads top every free game's 3-star sample (§3).
+- One player would give 5 stars if skipping an ad didn't cost them money (Beccagirly93, 2 Nov 2026) [C1 SEEN].
+- Others say they're close to uninstalling because of ads — Sabrina R [C1]; Ahmed Wardany, Rob Kozub [C3] — all SEEN.
+- Ad-free Dealer's Life 2 is the best-rated game in the set [C5 SEEN].
+
+**Would they switch?** **UNVERIFIED.** Threatening to uninstall isn't switching. To test it:
+- At G2, ask testers who also play Bid Wars or Bid Master which game they open on day 7.
+- At G3, compare our store rating with theirs.
+
+**Could a competitor copy it next month?**
+- **Technically, yes.** Removing forced ads is a settings change.
+- **The free giants won't.** Ads make up an estimated 48–73% of Bid Wars' and Pawn Shop Master's revenue [C11 C12 C14 ESTIMATED]. Bid Master's 81% purchase revenue is driven by its gold walls [C13 ESTIMATED].
+- **The real risk is Abyte.** They could release a free Dealer's Life with optional ads. Only their paid model holds them back.
+
+**What it costs us:** less money per player than a game with full-screen ads and paywalls. The bet is that better ratings, longer play and word of mouth make up the difference. Unproven until G3.
+
+### 3. What protects it — and what switching costs
+
+| Protection | Against whom | Strength |
+|---|---|---|
+| **Their revenue model** — forced ads and gold walls *are* their income (§4) | Bid Wars 1 and 2, Bid Master, Pawn Shop Master | **Strong** |
+| **Our cost structure** — offline, no server, no live-ops team, solo: almost zero cost per player [IDEA] | Everyone | **Real** — we can live on less money per player |
+| **Their market** — global and English-only, with no Indian setting or voices [C1–C6 SEEN listings] | Everyone | **Medium** — Hindi text is a month's work, but a bazaar that rings true in Tanglish/Hinglish needs native writers |
+| **Focus** — one game, India first, versus portfolio publishers (Aliens, Hydodo, Lion Studios) [C1 C3 C4 SEEN "More by"] | Portfolio publishers | Medium |
+| **Community** | — | **None yet** |
+| **Abyte (Dealer's Life)** | — | **Weak** — they already own the deep, fair, ad-free corner and could go free |
+
+**Honest answer: it's a USP against the free giants and only a head start against Dealer's Life.** The head start lasts until Abyte ships a free version. So far all three of their titles are paid [C5 C6 SEEN].
+
+**What a player gives up to move to us, and how we make it cheap:**
+- **Progress in their current game** (months of collections, gold they paid for) → don't ask them to quit; be the second game they keep. Small download, runs on a 2–3 GB phone, works offline.
+- **Habit** → same genre, nothing new to learn: auction, reveal, sell. First haggle in under 30 seconds, and the first goal starts 20% filled (IDEA §3.2).
+- **Data or an account** → nothing to bring over: no account, no login, no sign-up.
+
+### 4. Where the user sees it — the first 60 seconds
+
+| When | What the player sees | What it proves |
+|---|---|---|
+| **The store listing**, before install | The short description opens with the promise: "Free. No forced ads. Win by bargaining." Screenshot 1 shows a haggle with a visible mood reason; screenshot 2 shows the after-deal verdict. Once rewarded ads exist, Play will label the game "Contains ads" (my knowledge, not checked — confirm in Play Console), so the promise must say **"no forced ads"**, never "no ads" | The promise, honestly stated |
+| **0–5 s** | Voice picker: English / Tanglish / Hinglish, each with a sample line. No sign-in, no permission prompt, no ad | It respects your time |
+| **5–30 s** | A customer is already at the stall with something to sell. You make an offer; the mood moves, with a reason | Haggling *is* the game, from the first tap |
+| **30–45 s** | Deal done. The verdict line shows what they would actually have taken. **No ad follows** — Pawn Shop Master players report one after nearly every action [C4 SEEN] | Fairness you can see, and no ad toll |
+| **45–60 s** | The next customer walks in. Later on day 1, an optional extra peek appears as a plain choice: watch an ad, or skip at no cost | Ads are your choice |
+| **End of day 1** | The kanakku ledger leads with your best deal and tomorrow's teaser. No full-screen ad | The session ends on a high, not an ad |
+
+Settings → Ads & privacy says it in one line: ads only play when you tap "watch".
+
+### 5. What we deliberately do not do
+
+| Refused | Who has it | What it avoids | Why refusing sharpens us |
+|---|---|---|---|
+| **Full-screen ads you didn't ask for (interstitials)** — *changes IDEA's Milestone 4* | Pawn Shop Master, Bid Wars, Bid Master | The ads complaint, 36 people | The USP is only true without them |
+| **A "Remove ads" purchase** — *changes IDEA* | Pawn Shop Master, Bid Wars 2 | Paying and still seeing ads [C1 SEEN — Boo Boo] | There's nothing to remove; sell cosmetics instead |
+| **Pay-or-watch-or-lose gates** | Pawn Shop Master's robber, Bid Wars 2's after-auction menu | The walls complaint, 15 people | Progress comes from skill only |
+| **A second, premium currency (gold)** | Bid Wars, Bid Master | "Pay gold or grind" [C1 C3 SEEN] | One currency, only earned — and the law means it can never be sold (RESEARCH L-1) |
+| **Repairs and appraisals that succeed by chance and can destroy items** | Bid Master | The rigged-odds complaint, 13 people | Restoration costs time and money, never a dice roll |
+| **Energy limits** | Bid Wars 2 (players lose energy on failed hauls [C1 SEEN]) | Waiting walls | Play as long as you like |
+| **Guilds, multiplayer, leaderboards** | Bid Master | — | No server, no cheats, no toxicity; offline stays true |
+| **Side businesses (hotels, fishing, factories)** | Bid Wars 2, Bid Master | "Pointless activities" [C3 SEEN] | Every minute stays on haggling |
+| **Countdown events and limited-time offers** | Bid Wars 2, Bid Master | — | No fake urgency (India's dark-pattern rules, RESEARCH L-9); seasons come from the in-game calendar |
+| **Locked, unskippable tutorials** | Bid Master | The onboarding complaint, 5 people | One-line hints; Settings always reachable |
+| **Loan or real-money-game ads** | Bid Master shows a loan-app ad for its gold reward [C3 SEEN — dean cawdor] | — | Those ad categories blocked (RESEARCH L-6); real-money-game ads are already illegal in India |
+
+### 6. The positioning line
+
+> **For Indian phone gamers who love a good bargain but are tired of auction games that stop every few minutes for an ad, Bazaar Boss is the bazaar haggling game that never makes you watch an ad to keep playing, unlike Bid Wars and Bid Master.**
+
+### What this asks of IDEA.md — needs your yes
+
+1. Drop the full-screen ad (interstitial) from Milestone 4 — the USP is false while it exists.
+2. Drop the "Remove ads ₹99" purchase; keep cosmetic themes and the Dealer Pack.
+3. When restoration ships, make it deterministic: time and cost, no chance of failure.
+4. Add basic sound effects and an early mute button to v1 (§7 parity list).
+5. Store listing wording: "no forced ads", never "no ads".
