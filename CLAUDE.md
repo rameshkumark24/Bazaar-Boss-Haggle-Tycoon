@@ -42,8 +42,8 @@ ADB="$SDK/platform-tools/adb.exe"
 | Wait until it has booted | The script below — run it in the background | `BOOTED after ~57s` |
 | Install the debug build | `./gradlew :android:installDebug` | `Installed on 1 device.` |
 | Launch the app | `"$ADB" shell am start -W -n io.github.rameshkumark24.bazaarboss/.android.AndroidLauncher` | `Status: ok` |
-| **Screenshot — how every phase proves a screen** | `mkdir -p shots && "$ADB" exec-out screencap -p > shots/<name>.png` | A 1080 × 2400 PNG in `shots/` (not in git). Look at it before claiming a screen works |
-| Dismiss Android's one-time "Viewing full screen" notice on the first launch (TRD Findings, 6) | `"$ADB" shell input tap 925 499` | Coordinates are for Medium_Phone_API_36.1 |
+| **Screenshot — how every phase proves a screen** | `mkdir -p shots && "$ADB" exec-out screencap -p > shots/<name>.png` | A 1080 × 2400 PNG in `shots/` (not in git). Look at it before claiming a screen works. The status bar and navigation bar show — the game draws behind them, so keep the UI inside the safe insets (TRD TD-25) |
+| Simulate a first-ever open: remove the app, then install it again | `"$ADB" uninstall io.github.rameshkumark24.bazaarboss` | `Success` |
 | List the permissions in the built app | `"$SDK/build-tools/35.0.0/aapt2.exe" dump permissions android/build/outputs/apk/debug/android-debug.apk` | Only AndroidX's app-private `…DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION` (TRD TD-24) — no internet |
 | Stop the emulator | `"$ADB" emu kill` | `OK: killing emulator, bye bye` |
 

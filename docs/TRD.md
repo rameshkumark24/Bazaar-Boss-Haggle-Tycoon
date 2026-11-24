@@ -733,7 +733,7 @@ There's no API of ours for an old build to break. Its whole world is offline. Bu
 | **Deep links** | **None in v1.** The manifest's only intent filter is MAIN/LAUNCHER: no app links, no custom schemes, no exported components. Nothing can open the app into a particular screen |
 | A cold start | Always the voice picker (first launch), or exactly where the save says: the stall, a haggle in progress, or a paused auction (F15) |
 | Cold start into a "protected" screen | There are none. Ads, the consent screen and Start over can't be reached by any external link — only by taps inside the game |
-| *Later:* notification taps (DR39) | An explicit, immutable PendingIntent to the launcher with `open=workshop&itemId={id}`. On a cold start: load the save, then go to the workshop if the item still exists. If it doesn't, go to the stall with a one-line note (IDEA §4 "This no longer exists") |
+| *Later:* notification taps (DR39) | An explicit, immutable PendingIntent to the launcher with `open=workshop&itemId={id}`.<br>• **Cold start:** load the save, then go to the workshop if the item still exists. If it doesn't, go to the stall with a one-line note (IDEA §4 "This no longer exists").<br>• **Already running** (`onNewIntent`): stay where the player is, and show a banner. Never leave a haggle or an auction.<br>• **The game in the foreground:** no notification is posted at all (APP-FLOW.md §1.6) |
 | *Later:* returning from the billing sheet | It returns to the same activity; the purchase arrives through the listener (§3.3) |
 
 ---
@@ -862,10 +862,9 @@ Writing this file turned up four things for the PRD. **All four were applied on 
 **Found by the empty project (2026-11-24):**
 
 5. **AndroidX adds an app-private permission.** **Applied** as a precision fix: PRD F20 AC2 and CR13 now name it (TD-24). The product promise is unchanged: no device permission besides vibration, and no internet.
-6. **Android shows "Viewing full screen" at first launch** — **open; the owner decides at M0.**
-   - It appears because the empty project's theme hides the status bar. It's a one-time system notice, but it covers the first screen within the first 5 seconds — against PRD F1's "nothing in the way" (AC1, AC4).
-   - **Recommended:** keep the status bar visible. Draw edge-to-edge behind it with safe insets (TD-20), so no notice ever appears.
-   - Until M0 decides, the commands in CLAUDE.md dismiss it before a screenshot.
+6. **Android showed "Viewing full screen" at first launch.** It covered the first screen within the first 5 seconds, against PRD F1's "nothing in the way" (AC1, AC4). **Applied 2026-11-24, as recommended:** the status bar stays visible (TD-25).
+   - The cause wasn't only the theme. libGDX's `useImmersiveMode` defaults to true, and its `initialize()` always sets `FLAG_FULLSCREEN` [T34].
+   - **Verified** on a fresh install, with Android's record of dismissed notices cleared: the status bar and navigation bar both show, and no notice appears.
 
 ---
 
@@ -899,6 +898,7 @@ Append new entries; never overwrite. Each entry's "rules out" is what the decisi
 | TD-22 | 2026-11-24 | **Toolchain as verified:** JDK 17 (the PC's `java`) runs the build; the Gradle 8.14.8 wrapper with a pinned SHA-256; JUnit 5.14.4; Groovy build scripts using `prop = value` assignments; javac `-Xlint:all -Werror` on the pure-Java modules; Android Lint with `abortOnError`, and its 4 intentional warnings suppressed in the manifest, with reasons. *Corrects TD-08's "JDK 21"* | JDK 21 (also on the PC); Gradle 9.x; JUnit 6 | JDK 17 is AGP's minimum and is already the default `java` [T8]. Gradle 8.14.x is the line AGP 8.13 is built for [T8][T30]. JUnit 6 needs Java 17. The old Groovy assignment syntax is removed in Gradle 10. Warnings fail the build from day one | Gradle 9 and AGP 9 features until the planned move (TD-08) |
 | TD-23 | 2026-11-24 | **Test devices on this PC: Medium_Phone_API_36.1 (verified); LowEnd_A9 (API 28) for low-memory checks. API 24 is not testable yet** | Download an API 24 image now; skip API 24 | The PRD's floor is Android 7.0 (F20 AC6), but this PC has no API 24 image. Download one with the owner's yes before the closed test. The real 2–3 GB phone is still Q13 | — |
 | TD-24 | 2026-11-24 | **The permission allowlist includes AndroidX's app-private `DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION`.** *Corrects §4.11's "VIBRATE only"* | Exclude AndroidX (impossible: libGDX's Android backend depends on it); strip the entry from the manifest | Found in the first build (`aapt2 dump permissions`). It's signature-level, defined by the app for its own receivers, and grants nothing. Stripping it could break AndroidX receivers on Android 13+. PRD F20 AC2 and CR13 now say so | — |
+| TD-25 | 2026-11-24 | **The system bars stay visible: no immersive mode, no full screen.**<br>• `AndroidLauncher`: `useImmersiveMode = false`, and clear `FLAG_FULLSCREEN` after `initialize()`<br>• theme `Theme.Material.NoActionBar`<br>• also `useAccelerometer = false` and `useCompass = false`<br><br>At API 36 the game draws edge-to-edge behind the bars, so the UI keeps to the safe insets (TD-20) | Immersive full screen, accepting Android's notice; full screen without immersive mode | Android shows "Viewing full screen" over the first screen of an app that hides the bars — the first haggle (PRD F1). libGDX hides them by default [T34]. Turning off the unused motion sensors saves battery (F20) | Full-bleed, bar-free screens. The status bar's height is permanent UI overhead (≈ 80 px at 1080 × 2400) |
 
 ---
 
@@ -941,6 +941,7 @@ All opened on 2026-11-24.
 | T31 | [Maven Central — JUnit BOM](https://repo1.maven.org/maven2/org/junit/junit-bom/maven-metadata.xml) | The newest 5.x is 5.14.4 (6.2.0-M1 is the newest overall) |
 | T32 | [Google Maven — AGP versions](https://dl.google.com/android/maven2/com/android/tools/build/gradle/maven-metadata.xml) | 8.13.2 is the newest 8.13 patch |
 | T33 | [gdx-liftoff README](https://github.com/libgdx/gdx-liftoff/blob/master/README.md) | Setup is click-through only: Project Options → Next → Generate. No command-line mode |
+| T34 | [libGDX 1.14.2 — AndroidApplication](https://github.com/libgdx/libgdx/blob/1.14.2/backends/gdx-backend-android/src/com/badlogic/gdx/backends/android/AndroidApplication.java) and [AndroidApplicationConfiguration](https://github.com/libgdx/libgdx/blob/1.14.2/backends/gdx-backend-android/src/com/badlogic/gdx/backends/android/AndroidApplicationConfiguration.java) | `initialize()` always sets `FLAG_FULLSCREEN`. `useImmersiveMode` defaults to **true**; `useAccelerometer` and `useCompass` default to true |
 
 **Not opened today, and used as standard Android behaviour:**
 - [FileProvider](https://developer.android.com/reference/androidx/core/content/FileProvider)
