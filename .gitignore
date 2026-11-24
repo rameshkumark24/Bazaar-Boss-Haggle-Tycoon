@@ -5,10 +5,15 @@ build/
 # This machine's Android SDK path (each machine writes its own)
 local.properties
 
-# IDE files
+# IDE files. VS Code's Java tooling compiles into each module's bin/ folder.
 .idea/
 *.iml
 .kotlin/
+bin/
+.project
+.classpath
+.settings/
+.factorypath
 
 # Signing keys never go in git (PRD CR11, TRD §11)
 *.jks
