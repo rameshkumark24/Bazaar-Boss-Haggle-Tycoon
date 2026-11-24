@@ -6,6 +6,8 @@ An offline, single-player Android haggling game, built with libGDX in Java.
 
 - **[docs/PRD.md](docs/PRD.md)** — the product, and the source of truth. Change the product there first.
 - **[docs/TRD.md](docs/TRD.md)** — how it's built: the stack, the data model, the decision log.
+- **[docs/APP-FLOW.md](docs/APP-FLOW.md)** — how the screens connect: navigation, back, launch routing, and one row per screen.
+- **[docs/DESIGN.md](docs/DESIGN.md)** — how it looks, moves and speaks: the scales, the colour roles, the components, the copy rules, and the §10 visual checklist.
 - `docs/IDEA.md`, `docs/RESEARCH.md` and `docs/COMPETITORS.md` are the background they were built from.
 
 ## Rules that are easy to break
@@ -17,6 +19,8 @@ An offline, single-player Android haggling game, built with libGDX in Java.
 - **Build scripts are Groovy and use `prop = value` assignments.** The space syntax is removed in Gradle 10.
 - **Shipped Java compiles against the Java 8 API** (`--release 8`), with `-Xlint:all -Werror`. A warning fails the build.
 - **Never modify the original engine or Bus Mudhalali repos.** Copy code in.
+- **Every screen is proven by screenshot.** Screenshot it, including its empty and error states and XL text, and answer DESIGN.md §10's checklist. Any "no" is a bug.
+- **Colours come only from `docs/design/palette.py`** (`python -I docs/design/palette.py` exits non-zero if any contrast pair fails). Spacing, type sizes and radii come only from DESIGN.md's scales.
 
 ## Commands
 

@@ -24,7 +24,7 @@
 
 ## 1. What this is
 
-Bazaar Boss: Haggle Tycoon is a free, single-player, offline Android game set in an Indian bazaar. You buy stock at kabadi auctions and from walk-in sellers, spot the fakes, and sell by haggling one-on-one with customers who hide their walk-away price but show their mood, growing a footpath stall into a shop. It's for Indian phone gamers aged 18 and over who love a good bargain, with characters who talk the way bazaars talk — in English, Tanglish or Hinglish — on Google Play in India first. **"It's a free haggling game that never makes you watch an ad to keep playing — you win by bargaining, not by paying or waiting."**
+Bazaar Boss: Haggle Tycoon is a free, single-player, offline Android game set in an Indian bazaar. You buy stock at kabadi auctions and from walk-in sellers, spot the fakes, and sell by haggling one-on-one with customers who hide their walk-away price but show their mood, growing a footpath stall into a shop. It's for Indian phone gamers aged 18 and over who love a good bargain, with characters who talk the way bazaars talk — in English, Tanglish or Hinglish — on Google Play in India first. **"It's a free haggling game that never makes you watch an ad to keep playing. You win by bargaining, not by paying or waiting."**
 
 > **Positioning:** for Indian phone gamers who love a good bargain but are tired of auction games that stop every few minutes for an ad, Bazaar Boss is the bazaar haggling game that never makes you watch an ad to keep playing, unlike Bid Wars and Bid Master.
 
@@ -167,7 +167,7 @@ Each feature lists four things:
 - After a deal, a verdict line gives the exact price they'd have gone to.
 
 **Acceptance**
-1. Given a haggle, when I make an offer, then the customer counters, accepts or walks away, and one line explains their mood ("Annoyed — you barely moved").
+1. Given a haggle, when I make an offer, then the customer counters, accepts or walks away, and one line explains their mood ("Annoyed. You barely moved.").
 2. Given any round, then I see:
    - the face, the mood word and patience
    - the item and the price on the table
@@ -307,7 +307,7 @@ What inspecting costs, and how sure a clue is, are still open (Q4).
 3. Given more than one customer is waiting, then I choose whom to serve. Anyone not served by the end of the day leaves quietly, with no reputation change [A].
 4. Given a calendar day, then the stall has one Today's special — a special lot or visitor — whether or not I played yesterday. It can't be claimed twice that day.
 5. Given I close the game mid-day and come back days later, then nothing has changed: no timers, no decay, no lost stock and no guilt message.
-6. Given I come back after a gap [A — the gap's length is a tuning number, Q9], then a "Welcome back — here's a cheap starter lot" offer appears, once.
+6. Given I come back after a gap [A — the gap's length is a tuning number, Q9], then a "Welcome back. Here's a cheap starter lot." offer appears, once.
 7. Given the day's last customer has gone, then the day ends with the kanakku (F10).
 8. Given new stock arrives (bought, kept from a lot, or brought by a seller) and a display slot is empty, then it goes on display automatically. I can rearrange or take anything off [A]. *Why:* an empty display means no buyers, which reads as "broken" (APP-FLOW.md §4).
 
@@ -343,7 +343,7 @@ Still open: what happens in v1 when the showroom bar fills (Q7).
 - Reputation changes how future customers treat you — how patient they start, and how far from their walk-away price they open [A — tuned in the haggle lab].
 
 **Acceptance**
-1. Given a deal that changes reputation, then the result says by how much and why, in one line ("−3 reputation — lowballed a collector").
+1. Given a deal that changes reputation, then the result says by how much and why, in one line ("−3 reputation: lowballed a collector").
 2. Given I lowball a collector on an item they love, then reputation drops.
 3. Given I sell an item my inspection showed to be fake, at a genuine price, then reputation drops.
 4. Given my reputation is at its lowest, then customers still come, and fair deals raise it again.
@@ -434,14 +434,14 @@ Still open: selling a fake you didn't know was fake (Q5).
   - bought ₹200 → sold ₹1,800
   - the coin icon
   - the game's name
-  - "Game money — no real money"
+  - "Game money. No real money."
 - Android's share sheet sends it wherever the player chooses.
 - **This is the first feature to cut if v1 runs late.**
 
 **Acceptance**
 1. Given a deal result, when I tap Share, then Android's share chooser opens with the card.
 2. Given I cancel the chooser, then nothing is sent.
-3. Given the card, then it shows "Game money — no real money" and the coin icon. It carries no personal data, no IDs, no tracking link and no banknote image.
+3. Given the card, then it shows "Game money. No real money." and the coin icon. It carries no personal data, no IDs, no tracking link and no banknote image.
 
 **When it fails:** if sharing fails, the game says "Couldn't share" and nothing else changes [A].
 
@@ -499,7 +499,7 @@ Still open: selling a fake you didn't know was fake (Q5).
 2. Given a deal, bid, payment, scrap, loan or upgrade was happening when the game died, when I reopen, then it is either done (and counted once) or not done — never both, never twice.
 3. Given a damaged save, then the newest good backup loads and the game says "Couldn't read your save; restored your backup from <time>."
 4. Given a full phone, when the game saves, then:
-   - it says "Couldn't save — phone storage full"
+   - it says "Couldn't save. Phone storage is full."
    - the last good save stays intact
    - it tries again at the next save
 5. Given a new phone on the same Google account with Android backup on, when I install the game, then my progress and settings come back.
@@ -729,7 +729,7 @@ The next launch is a first launch.
 | # | Screen | Purpose | What it shows with no data |
 |---|---|---|---|
 | 1 | Voice picker | First launch: choose English, Tanglish or Hinglish, with a sample line in each; mute. One tap goes **straight into the first haggle** | It *is* the no-data screen |
-| 2 | Stall (home) | Cash, reputation, day, display slots, next-goal bar, Today's special, mute; the route to everything.<br>Three states:<br>• **morning** — the auction card<br>• **trading** — customers waiting<br>• **evening** — "Day N done — Start Day N+1"<br><br>While broke: **"Periyappa can help"** | First visit, right after the first deal:<br>• the cash left after that deal<br>• the goal bar at 20% — Periyappa's gift<br>• the first item already on display (F6 AC8); other slots marked "Empty"<br>• the first buyer on the way |
+| 2 | Stall (home) | Cash, reputation, day, display slots, next-goal bar, Today's special, mute; the route to everything.<br>Three states:<br>• **morning** — the auction card<br>• **trading** — customers waiting<br>• **evening** — "Day N done", with the button "Start Day N+1"<br><br>While broke: **"Periyappa can help"** | First visit, right after the first deal:<br>• the cash left after that deal<br>• the goal bar at 20% — Periyappa's gift<br>• the first item already on display (F6 AC8); other slots marked "Empty"<br>• the first buyer on the way |
 | 3 | Haggle | Face, mood word, patience, item, slider, quick buttons, offers with reasons | Never opens without a customer and an item |
 | 4 | Inspect | Clues, condition, whether the clues point to a fake. The game's one "item, close up" screen — Item detail merges into it later | Never opens without an item. Clues not yet found read "Look closer" [A] |
 | 5 | Auction | Peek → live bidding → result with every rival's estimate | Today's auction done: "Next auction: tomorrow morning". Too little cash: the peek plays and the bid button says "Not enough cash" |
@@ -751,10 +751,10 @@ The next launch is a first launch.
 | Report a problem | Reason, the whole message, the crash-note option (only when a note exists), then the email app |
 | Credits & licences | Inside Settings |
 | Save recovered | "Couldn't read your save; restored your backup from <time>." |
-| Storage full | "Couldn't save — phone storage full." |
-| Newer save (blocks play) | "This save is from a newer version — update the game", with **Update on Play** and **Write to us** [A] |
-| Couldn't read any save | "Couldn't read your save — starting fresh. Sorry." Report a problem opens prefilled with "lost progress" |
-| Restored from backup | "Welcome back — your progress from <last played date> is here." Shown once, the first time a save arrives through Android's backup [A] |
+| Storage full | "Couldn't save. Phone storage is full." |
+| Newer save (blocks play) | "This save is from a newer version. Update the game to keep playing.", with **Update on Play** and **Write to us** [A] |
+| Couldn't read any save | "Couldn't read your save or its backups, so a new game has started." Report a problem opens prefilled with "lost progress" |
+| Restored from backup | "Welcome back. Your progress from <last played date> is here." Shown once, the first time a save arrives through Android's backup [A] |
 | Leave the game? / Leave the auction? | Back-button confirmations |
 
 Development builds also carry two dev screens (a text-and-content test and the haggle lab). Release builds don't.
@@ -858,7 +858,7 @@ This section holds the business logic that isn't obvious. Each rule says why whe
   - If the date goes back by 1–2 days, nothing new appears until it passes the last date seen.
   - A jump back of **more than 2 days** counts as a clock correction: the special resets to today. *Why:* a phone whose date was wrong by a year mustn't lose specials for a year. Gaming this only changes the cheater's own game (H5-1). *(Decided 2026-11-24.)*
 - **DR27 · A teaser is a promise.** What tomorrow's teaser names happens the next in-game day [A].
-- **DR28 · Returning is welcomed, never punished.** After a gap, one "Welcome back — here's a cheap starter lot" [A — the gap's length is a tuning number]. Never a guilt message.
+- **DR28 · Returning is welcomed, never punished.** After a gap, one "Welcome back. Here's a cheap starter lot." [A — the gap's length is a tuning number]. Never a guilt message.
 - **DR29 · The day ends on a high.** The kanakku leads with the best deal and ends on tomorrow's teaser. A loss is a "Lesson: …", never the last word.
 
 ### 7.6 The maximums
@@ -914,7 +914,7 @@ This section holds the business logic that isn't obvious. Each rule says why whe
 | Reputation changes mid-day | It applies from the next customer |
 | A damaged save | The newest good backup loads, and the player is told |
 | Storage is full | The last good save is kept, the player is told, and the game retries at the next save |
-| A save from a newer version | Left untouched, with "update the game" [A] |
+| A save from a newer version | Left untouched, with "Update the game to keep playing." [A] |
 | The phone's date moves back 1–2 days | No new Today's special until the date passes the last one seen |
 | The phone's date moves back more than 2 days | A clock correction: Today's special resets to today (DR26) |
 | The voice changes mid-game | The next line is in the new voice; nothing else changes |
@@ -1038,7 +1038,7 @@ These are product requirements. The legal reasoning and sources are in RESEARCH.
 - **CR4 · Content and IP.** The content rules in DR24. Every line gets a human read, and the Hinglish lines get a native read before the closed test. *(L-12)*
 - **CR5 · No dark patterns** (India's Dark Patterns Guidelines 2023). None of the 13: false urgency, basket sneaking, confirm shaming, forced action, subscription trap, interface interference, bait and switch, drip pricing, disguised advertisement, nagging, trick question, SaaS billing, rogue malware. *(L-9)*
 - **CR6 · Assets and licences.**
-  - Assets are CC0, CC BY with credit, OFL, or made by the owner.
+  - Assets are CC0, CC BY with credit, OFL, Apache-2.0 (the Material Symbols icons), or made by the owner. Every asset and its licence is listed in DESIGN.md §8.
   - Music is CC0 only.
   - No GPL or AGPL code in the shipped game.
   - Credits & licences lists every notice the licences require.
@@ -1276,7 +1276,7 @@ Pick one word and never drift.
 | **next goal** | The bar on the stall | quest, mission, objective |
 | **reputation** | The one trust meter | karma, rating, honour, stars |
 | **cash** (₹ with the coin icon) | The one in-game currency | coins, gold, gems, points, bucks, money or rupees on their own |
-| **Game money — no real money** | The exact line on the deal card | — |
+| **Game money. No real money.** | The exact line on the deal card | — |
 | **Periyappa** | The uncle behind the starting gift, the loan and, later, the tip. Same name in every voice [A] | uncle, bank, lender |
 | **loan** | Periyappa's interest-free help | credit, debt, EMI |
 | **Periyappa can help** | The stall's button while the player is broke | Get cash, Borrow |
@@ -1295,7 +1295,7 @@ Pick one word and never drift.
 - **Real names:** any real brand, shop, film, celebrity, real person or deity.
 
 **Never in menus, buttons, offers, notices, the store listing or marketing.** Dialogue is excused here: a rushed buyer may say they're in a hurry.
-- **Money games:** earn money, earn cash, win cash, cash out, withdraw, redeem, prize, payout, reward money, and "real money" anywhere except "Game money — no real money".
+- **Money games:** earn money, earn cash, win cash, cash out, withdraw, redeem, prize, payout, reward money, and "real money" anywhere except "Game money. No real money.".
 - **Claims:** approved, registered, certified, government-approved, licensed, official.
 - **About ads:** "no ads" and "ad-free" — the promise is "no forced ads".
 - **Pressure:** hurry, only today, last chance, limited time, don't miss out, streak, "you'll lose…".
@@ -1437,4 +1437,5 @@ How each part is measured:
 | 2026-11-24 | Applied the TRD's findings, as recommended:<br>• DR26, F6 and §7.7: a jump back of more than 2 days resets Today's special (a clock correction)<br>• §5: a Known limits entry — screen readers can't read the game<br>• Q6 decided: the goal bar counts profit earned since the last tier, and the upgrade costs no cash (F7, §6) |
 | 2026-11-24 | Precision fix from the first build: F20 AC2 and CR13 name the app-private permission AndroidX adds (TRD TD-24). No product change |
 | 2026-11-24 | From [APP-FLOW.md](APP-FLOW.md) — screens and flow:<br>• the first launch goes straight into the first haggle, with a patient first seller (F1, §6)<br>• quick buttons offer in one tap (F2)<br>• "Lot reveal & sort" is now two screens, Reveal and Sort (F5, §6)<br>• "Periyappa can help" on the stall while broke (F11, §6)<br>• the stall's three states; launch cards for a newer save (+ "Write to us"), an unreadable save, and a restore from backup (§6)<br>• Item detail merged into Inspect, and Collections into the Dealer's Guide (§6)<br>• back on every screen (§7.7)<br>• notifications never interrupt and are never posted while the game is open (DR39)<br>• Q7's recommendation adds a standing goal after all 40 items are found<br><br>The status bar now stays visible from the first frame (TRD TD-25) — no PRD text changed |
+| 2026-11-24 | [DESIGN.md](DESIGN.md) written: direction A ("Dusk stall"), one fixed palette. On-screen text swept to its copy rules: no em dashes, e.g. "Annoyed. You barely moved.", and the one-sentence pitch, which store copy will reuse The deal card's exact line is now **"Game money. No real money."** (F12, §9). CR6 adds Apache-2.0 for the icons |
 | 2026-11-24 | APP-FLOW.md's three open recommendations, applied:<br>• new stock fills empty display slots automatically (F6 AC8, §6)<br>• the first hint says "All ₹ here is game money." (F1)<br>• the age screen opens with "Ads need an age check first.", wording to be checked by ADV-1 (CR19, §6) |

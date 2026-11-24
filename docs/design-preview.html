@@ -1,0 +1,377 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bazaar Boss: two directions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Khand:wght@600&family=Roboto:wght@400;500&family=Rozha+One&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..24,400,0,0" rel="stylesheet">
+<style>
+  /* The preview page itself: neutral, so the two directions are judged on their own. */
+  :root { --page: #e9eaec; --page-ink: #1d2128; --page-muted: #5a606b; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--page); color: var(--page-ink); font: 400 15px/1.5 Roboto, system-ui, sans-serif; padding: 32px 24px 48px; }
+  .page-head { max-width: 920px; margin: 0 auto 32px; }
+  .page-head h1 { font: 500 24px/1.25 Roboto, sans-serif; letter-spacing: -0.01em; margin-bottom: 8px; }
+  .page-head p { color: var(--page-muted); max-width: 70ch; }
+  .page-head ul { margin: 12px 0 0 20px; color: var(--page-muted); }
+  .page-head li { margin: 2px 0; }
+  .page-head b { color: var(--page-ink); font-weight: 500; }
+  .cols { display: grid; grid-template-columns: repeat(2, 440px); gap: 40px; justify-content: center; }
+  .dir h2 { font: 500 20px/1.3 Roboto, sans-serif; margin-bottom: 4px; }
+  .dir .idea { color: var(--page-muted); margin-bottom: 16px; min-height: 66px; }
+  .notes { margin-top: 24px; }
+  .notes h3, .swatches h3, .scale h3 { font: 500 15px/1.4 Roboto, sans-serif; margin: 24px 0 8px; }
+  .notes ul { margin-left: 18px; color: var(--page-muted); }
+  .notes li { margin: 3px 0; }
+  .swatch-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 16px; }
+  .sw { display: flex; gap: 10px; align-items: center; }
+  .sw i { width: 36px; height: 36px; border-radius: 6px; flex: none; border: 1px solid rgba(0,0,0,.12); }
+  .sw span { font-size: 13px; line-height: 1.35; color: var(--page-muted); }
+  .sw span b { display: block; color: var(--page-ink); font-weight: 500; }
+  .ramp { display: flex; margin-top: 10px; }
+  .ramp i { flex: 1; height: 18px; }
+  .ramp-label { font-size: 12px; color: var(--page-muted); margin-top: 4px; }
+  .scale .row { display: flex; align-items: baseline; gap: 12px; border-top: 1px solid #cfd2d6; padding: 8px 0; }
+  .scale .spec { width: 128px; flex: none; font-size: 12px; color: var(--page-muted); line-height: 1.35; }
+  .foot { max-width: 920px; margin: 40px auto 0; color: var(--page-muted); }
+
+  /* A phone screen: 360 x 800 dp, the most common Android width. Not a drawn phone, just the screen edge. */
+  .screen { width: 360px; height: 800px; overflow: hidden; position: relative; border-radius: 20px; box-shadow: 0 2px 10px rgba(0,0,0,.18); }
+  .sysbar { height: 24px; display: flex; justify-content: space-between; align-items: center; padding: 0 16px; font: 500 13px Roboto, sans-serif; }
+  .sysbar .ms { font-size: 16px; margin-left: 4px; }
+  .navbar { position: absolute; left: 0; right: 0; bottom: 0; height: 24px; display: flex; justify-content: center; align-items: center; }
+  .navbar i { width: 108px; height: 4px; border-radius: 2px; }
+  .ms { font-family: 'Material Symbols Outlined'; font-weight: 400; font-style: normal; line-height: 1; letter-spacing: normal; text-transform: none; white-space: nowrap; direction: ltr; -webkit-font-smoothing: antialiased; font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+  .num { font-variant-numeric: tabular-nums; }
+  .iconbtn { width: 48px; height: 48px; display: inline-flex; align-items: center; justify-content: center; border: 0; background: none; font-size: 24px; color: inherit; }
+
+  /* ---------- Direction A: Dusk stall ---------- */
+  .a {
+    --surface: oklch(0.220 0.035 258); --surface-raised: oklch(0.280 0.035 258); --divider: oklch(0.380 0.030 258);
+    --text: oklch(0.960 0.010 85); --text-muted: oklch(0.800 0.020 258);
+    --accent: oklch(0.800 0.160 72); --on-accent: oklch(0.220 0.035 258);
+    --profit: oklch(0.800 0.140 150); --loss: oklch(0.720 0.160 28);
+    --scene-counter: oklch(0.440 0.070 55); --scene-tag: oklch(0.930 0.030 85); --tag-ink: oklch(0.250 0.030 258);
+    --scene-awning: oklch(0.660 0.150 40);
+    background: var(--surface); color: var(--text);
+  }
+  .a .sysbar { color: var(--text-muted); position: absolute; top: 0; left: 0; right: 0; z-index: 2; }
+  .a .top { position: absolute; top: 24px; left: 0; right: 0; height: 48px; display: flex; align-items: center; padding-left: 16px; z-index: 2; }
+  .a .top .cash { font: 500 20px/1 Roboto, sans-serif; }
+  .a .top .day { font: 400 14px/1 Roboto, sans-serif; color: var(--text-muted); margin-right: 12px; }
+  .a .top .spacer { flex: 1; }
+  .a .scene { position: absolute; top: 72px; left: 0; right: 0; height: 236px; }
+  .a .awning { position: absolute; top: 0; left: 0; width: 360px; height: 34px; }
+  .a .face { position: absolute; left: 28px; top: 52px; width: 138px; height: 152px; }
+  .a .lamp { position: absolute; left: 214px; top: 112px; width: 64px; height: 92px; }
+  .a .tag { position: absolute; left: 248px; top: 66px; width: 92px; padding: 10px 10px 10px 18px; background: var(--scene-tag); color: var(--tag-ink);
+            clip-path: polygon(14px 0, 100% 0, 100% 100%, 14px 100%, 0 50%); box-shadow: 0 8px 24px oklch(0 0 0 / .35); transform: rotate(4deg); }
+  .a .tag::before { content: ""; position: absolute; left: 9px; top: calc(50% - 3px); width: 6px; height: 6px; border-radius: 3px; background: var(--surface); }
+  .a .tag small { display: block; font: 400 12px/16px Roboto, sans-serif; }
+  .a .tag strong { font: 500 24px/28px Roboto, sans-serif; font-variant-numeric: tabular-nums; }
+  .a .string { position: absolute; left: 240px; top: 92px; width: 2px; height: 30px; background: var(--scene-tag); transform: rotate(-38deg); transform-origin: top; opacity: .8; }
+  .a .counter { position: absolute; left: 0; right: 0; bottom: 0; height: 32px; background: var(--scene-counter); border-top: 3px solid oklch(0.52 0.07 55); }
+  .a .talk { position: absolute; top: 320px; left: 16px; right: 16px; }
+  .a .line { font: 400 26px/1.1 'Rozha One', serif; letter-spacing: -0.01em; }
+  .a .mood { margin-top: 8px; font: 400 15px/22px Roboto, sans-serif; color: var(--text-muted); }
+  .a .mood b { color: var(--text); font-weight: 500; }
+  .a .meta { position: absolute; top: 410px; left: 16px; right: 16px; display: flex; justify-content: space-between; align-items: center; font: 400 13px/20px Roboto, sans-serif; color: var(--text-muted); }
+  .a .pat { display: flex; align-items: center; gap: 4px; }
+  .a .pat i { width: 10px; height: 10px; border-radius: 2px; border: 1.5px solid var(--text-muted); }
+  .a .pat i.on { background: var(--text); border-color: var(--text); }
+  .a .panel { position: absolute; left: 0; right: 0; bottom: 24px; background: var(--surface-raised); border-radius: 16px 16px 0 0; padding: 16px; box-shadow: 0 -8px 24px oklch(0 0 0 / .25); }
+  .a .offer-row { display: flex; justify-content: space-between; align-items: baseline; }
+  .a .offer-row span { font: 400 14px/20px Roboto, sans-serif; color: var(--text-muted); }
+  .a .offer-row strong { font: 500 36px/40px Roboto, sans-serif; font-variant-numeric: tabular-nums; }
+  .a .slider { position: relative; height: 32px; margin: 8px 0 12px; }
+  .a .slider .track { position: absolute; left: 0; right: 0; top: 14px; height: 4px; border-radius: 2px; background: var(--divider); }
+  .a .slider .fill { position: absolute; left: 0; width: 46%; top: 14px; height: 4px; border-radius: 2px; background: var(--text-muted); }
+  .a .slider .thumb { position: absolute; left: calc(46% - 12px); top: 4px; width: 24px; height: 24px; border-radius: 12px; background: var(--text); }
+  .a .quick { display: grid; grid-template-columns: 1fr 1fr 1.4fr; gap: 8px; }
+  .a .btn { height: 48px; border-radius: 8px; font: 500 15px Roboto, sans-serif; display: flex; align-items: center; justify-content: center; }
+  .a .btn.outline { border: 1px solid var(--text-muted); color: var(--text); background: transparent; }
+  .a .btn.primary { margin-top: 12px; height: 52px; background: var(--accent); color: var(--on-accent); font-size: 17px; }
+  .a .second { display: grid; grid-template-columns: 1fr auto; gap: 8px; margin-top: 8px; }
+  .a .btn.text { color: var(--text-muted); padding: 0 16px; }
+  .a .navbar i { background: var(--text-muted); }
+
+  /* ---------- Direction B: Noon enamel ---------- */
+  .b {
+    --surface: oklch(0.985 0.003 250); --field: oklch(0.870 0.150 92); --board: oklch(0.230 0.020 260); --on-board: oklch(0.980 0.010 92);
+    --text: oklch(0.230 0.020 260); --text-muted: oklch(0.460 0.020 260); --divider: oklch(0.880 0.006 260);
+    --accent: oklch(0.450 0.113 245); --on-accent: oklch(0.990 0.003 250);
+    --profit: oklch(0.500 0.130 150); --loss: oklch(0.530 0.190 27);
+    background: var(--surface); color: var(--text);
+  }
+  .b .sysbar { color: var(--text); }
+  .b .top { height: 48px; display: flex; align-items: center; padding-left: 16px; }
+  .b .top .cash { font: 500 20px/1 Roboto, sans-serif; }
+  .b .top .day { font: 400 14px/1 Roboto, sans-serif; color: var(--text-muted); margin-right: 12px; }
+  .b .top .spacer { flex: 1; }
+  .b .field { background: var(--field); padding: 16px; }
+  .b .who { display: grid; grid-template-columns: 116px 1fr; gap: 16px; align-items: end; }
+  .b .face { width: 116px; height: 128px; display: block; }
+  .b .name { font: 600 40px/1 Khand, sans-serif; letter-spacing: -0.01em; }
+  .b .role { font: 400 14px/20px Roboto, sans-serif; color: var(--text-muted); margin-bottom: 8px; }
+  .b .moodword { font: 600 26px/1 Khand, sans-serif; }
+  .b .reason { font: 400 15px/22px Roboto, sans-serif; }
+  .b .line { margin-top: 12px; font: 400 16px/24px Roboto, sans-serif; }
+  .b .pat { display: flex; align-items: center; gap: 4px; margin-top: 8px; font: 400 13px/20px Roboto, sans-serif; color: var(--text-muted); }
+  .b .pat i { width: 12px; height: 12px; border: 2px solid var(--text); }
+  .b .pat i.on { background: var(--text); }
+  .b .pat span { margin-left: 6px; }
+  .b .board { background: var(--board); color: var(--on-board); padding: 14px 16px 16px; }
+  .b .board small { display: block; font: 400 14px/20px Roboto, sans-serif; opacity: .85; }
+  .b .board strong { display: block; font: 500 64px/64px Roboto, sans-serif; font-variant-numeric: tabular-nums; letter-spacing: -0.02em; margin: 4px 0 6px; }
+  .b .board .hist { font: 400 13px/20px Roboto, sans-serif; opacity: .85; font-variant-numeric: tabular-nums; }
+  .b .ctl { padding: 16px; }
+  .b .stepper { display: grid; grid-template-columns: 48px 1fr 48px; align-items: center; border: 2px solid var(--text); height: 52px; }
+  .b .stepper .ms { font-size: 24px; display: flex; justify-content: center; }
+  .b .stepper div { text-align: left; padding-left: 12px; border-left: 2px solid var(--text); border-right: 2px solid var(--text); height: 100%; display: flex; align-items: center; justify-content: space-between; padding-right: 12px; }
+  .b .stepper div span { font: 400 14px Roboto, sans-serif; color: var(--text-muted); }
+  .b .stepper div strong { font: 500 24px Roboto, sans-serif; font-variant-numeric: tabular-nums; }
+  .b .quick { display: grid; grid-template-columns: 1fr 1fr 1.4fr; gap: 8px; margin-top: 12px; }
+  .b .btn { height: 48px; font: 500 15px Roboto, sans-serif; display: flex; align-items: center; justify-content: center; }
+  .b .btn.outline { border: 2px solid var(--text); }
+  .b .btn.primary { margin-top: 12px; height: 52px; background: var(--accent); color: var(--on-accent); font-size: 17px; }
+  .b .second { display: grid; grid-template-columns: 1fr auto; gap: 8px; margin-top: 8px; }
+  .b .btn.text { color: var(--text-muted); padding: 0 16px; }
+  .b .navbar i { background: var(--text); }
+</style>
+</head>
+<body>
+
+<header class="page-head">
+  <h1>Bazaar Boss: two directions for the haggle screen</h1>
+  <p>Both screens show the same moment in the core loop: Selvam, a tough bargainer, has dropped to his last price for a brass oil lamp, and it is your turn. They share the three adjectives below and the platform rules (Roboto, Material Symbols, one filled button). They differ in everything else. Pick one, or say what to change.</p>
+  <ul>
+    <li><b>Talkative.</b> The bazaar talks (PRD §1), so the customer's face and line get the most room.</li>
+    <li><b>Fair.</b> "Fair, readable and never a gamble" (PRD §1, DR6 to DR10), so prices are the biggest numbers on screen, every number is labelled, and mood is a face plus a word.</li>
+    <li><b>Unhurried.</b> No clock in a haggle (DR12) and no fake urgency (CR5), so nothing flashes, counts down or pulses.</li>
+  </ul>
+</header>
+
+<div class="cols">
+
+  <!-- ===================== A ===================== -->
+  <section class="dir">
+    <h2>A. Dusk stall</h2>
+    <p class="idea">Your stall after sunset: the customer's face across a teak counter, under a striped awning, with the price hand-lettered on a paper tag tied to the item.</p>
+
+    <div class="screen a" role="img" aria-label="Direction A haggle screen">
+      <div class="sysbar"><span class="num">6:42</span><span><span class="ms">signal_cellular_alt</span><span class="ms">wifi</span><span class="ms">battery_full</span></span></div>
+      <div class="top"><span class="day">Day 3</span><span class="cash num">₹12,480</span><span class="spacer"></span><button class="iconbtn ms" aria-label="Mute">volume_up</button><button class="iconbtn ms" aria-label="Settings">settings</button></div>
+
+      <div class="scene">
+        <svg class="awning" viewBox="0 0 360 34" aria-hidden="true">
+          <g>
+            <rect x="0" y="0" width="360" height="22" fill="oklch(0.930 0.030 85)"/>
+            <rect x="0" y="0" width="30" height="22" fill="oklch(0.660 0.150 40)"/><rect x="60" y="0" width="30" height="22" fill="oklch(0.660 0.150 40)"/>
+            <rect x="120" y="0" width="30" height="22" fill="oklch(0.660 0.150 40)"/><rect x="180" y="0" width="30" height="22" fill="oklch(0.660 0.150 40)"/>
+            <rect x="240" y="0" width="30" height="22" fill="oklch(0.660 0.150 40)"/><rect x="300" y="0" width="30" height="22" fill="oklch(0.660 0.150 40)"/>
+          </g>
+          <g fill="oklch(0.660 0.150 40)">
+            <path d="M0 22 a15 12 0 0 0 30 0z"/><path d="M60 22 a15 12 0 0 0 30 0z"/><path d="M120 22 a15 12 0 0 0 30 0z"/>
+            <path d="M180 22 a15 12 0 0 0 30 0z"/><path d="M240 22 a15 12 0 0 0 30 0z"/><path d="M300 22 a15 12 0 0 0 30 0z"/>
+          </g>
+          <g fill="oklch(0.930 0.030 85)">
+            <path d="M30 22 a15 12 0 0 0 30 0z"/><path d="M90 22 a15 12 0 0 0 30 0z"/><path d="M150 22 a15 12 0 0 0 30 0z"/>
+            <path d="M210 22 a15 12 0 0 0 30 0z"/><path d="M270 22 a15 12 0 0 0 30 0z"/><path d="M330 22 a15 12 0 0 0 30 0z"/>
+          </g>
+        </svg>
+
+        <!-- Selvam: built from the face kit (IDEA D2). Annoyed: inner brows down, mouth flat. -->
+        <svg class="face" viewBox="0 0 138 152" aria-label="Selvam, annoyed">
+          <rect x="22" y="118" width="94" height="40" rx="18" fill="oklch(0.900 0.020 250)"/>
+          <rect x="70" y="118" width="22" height="40" fill="oklch(0.600 0.140 30)"/>
+          <ellipse cx="69" cy="44" rx="40" ry="30" fill="oklch(0.250 0.020 60)"/>
+          <ellipse cx="29" cy="72" rx="7" ry="11" fill="oklch(0.600 0.090 55)"/>
+          <ellipse cx="109" cy="72" rx="7" ry="11" fill="oklch(0.600 0.090 55)"/>
+          <ellipse cx="69" cy="72" rx="38" ry="46" fill="oklch(0.640 0.090 55)"/>
+          <path d="M33 48 q36 -22 72 0 v-8 q-36 -24 -72 0z" fill="oklch(0.250 0.020 60)"/>
+          <rect x="40" y="56" width="22" height="6" rx="3" fill="oklch(0.250 0.020 60)" transform="rotate(14 51 59)"/>
+          <rect x="76" y="56" width="22" height="6" rx="3" fill="oklch(0.250 0.020 60)" transform="rotate(-14 87 59)"/>
+          <ellipse cx="52" cy="70" rx="4" ry="4.5" fill="oklch(0.220 0.020 60)"/>
+          <ellipse cx="86" cy="70" rx="4" ry="4.5" fill="oklch(0.220 0.020 60)"/>
+          <path d="M66 74 q3 12 -4 16 h10" fill="none" stroke="oklch(0.500 0.080 50)" stroke-width="3" stroke-linecap="round"/>
+          <path d="M44 96 q25 -12 50 0 q-25 6 -50 0z" fill="oklch(0.250 0.020 60)"/>
+          <rect x="54" y="103" width="30" height="4" rx="2" fill="oklch(0.380 0.060 40)"/>
+        </svg>
+
+        <div class="string"></div>
+        <div class="tag"><small>Asking</small><strong>₹400</strong></div>
+
+        <svg class="lamp" viewBox="0 0 64 92" aria-label="Brass oil lamp">
+          <ellipse cx="32" cy="86" rx="24" ry="6" fill="oklch(0.660 0.110 85)"/>
+          <rect x="27" y="34" width="10" height="52" fill="oklch(0.740 0.120 85)"/>
+          <path d="M10 30 q22 16 44 0 l-4 -6 h-36z" fill="oklch(0.780 0.120 85)"/>
+          <rect x="29" y="8" width="6" height="18" rx="3" fill="oklch(0.740 0.120 85)"/>
+          <circle cx="32" cy="7" r="5" fill="oklch(0.780 0.120 85)"/>
+        </svg>
+        <div class="counter"></div>
+      </div>
+
+      <div class="talk">
+        <p class="line">“₹400 dhaan last price, saar.”</p>
+        <p class="mood"><b>Annoyed.</b> You barely moved.</p>
+      </div>
+
+      <div class="meta">
+        <span class="pat" aria-label="Patience, 3 of 5 left">Patience <i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i> 3 left</span>
+        <span class="num">You ₹320 · Selvam ₹400</span>
+      </div>
+
+      <div class="panel">
+        <div class="offer-row"><span>Your offer</span><strong>₹340</strong></div>
+        <div class="slider" aria-hidden="true"><div class="track"></div><div class="fill"></div><div class="thumb"></div></div>
+        <div class="quick"><div class="btn outline">−10%</div><div class="btn outline">−25%</div><div class="btn outline">Last price?</div></div>
+        <div class="btn primary">Offer ₹340</div>
+        <div class="second"><div class="btn outline">Accept ₹400</div><div class="btn text">Walk away</div></div>
+      </div>
+      <div class="navbar"><i></i></div>
+    </div>
+
+    <div class="swatches">
+      <h3>Palette by role (OKLCH, built and contrast-checked with a script)</h3>
+      <div class="swatch-grid">
+        <div class="sw"><i style="background:oklch(0.220 0.035 258)"></i><span><b>surface</b>oklch(0.22 0.035 258) #101b2b</span></div>
+        <div class="sw"><i style="background:oklch(0.280 0.035 258)"></i><span><b>surface-raised</b>oklch(0.28 0.035 258) #1e293a</span></div>
+        <div class="sw"><i style="background:oklch(0.960 0.010 85)"></i><span><b>text</b>15.4:1 on surface</span></div>
+        <div class="sw"><i style="background:oklch(0.800 0.020 258)"></i><span><b>text-muted</b>9.3:1 on surface</span></div>
+        <div class="sw"><i style="background:oklch(0.800 0.160 72)"></i><span><b>accent</b>primary action only. Marigold</span></div>
+        <div class="sw"><i style="background:oklch(0.220 0.035 258)"></i><span><b>on-accent</b>9.0:1 on accent</span></div>
+        <div class="sw"><i style="background:oklch(0.800 0.140 150)"></i><span><b>profit</b>8.2:1, always with a word</span></div>
+        <div class="sw"><i style="background:oklch(0.720 0.160 28)"></i><span><b>loss</b>5.5:1, always with a word</span></div>
+        <div class="sw"><i style="background:oklch(0.440 0.070 55)"></i><span><b>scene: counter</b>teak, decoration only</span></div>
+        <div class="sw"><i style="background:oklch(0.930 0.030 85)"></i><span><b>scene: tag paper</b>13.0:1 with tag ink</span></div>
+      </div>
+      <div class="ramp"><i style="background:#f5f9ff"></i><i style="background:#d7e6fc"></i><i style="background:#bdcce2"></i><i style="background:#97a6bb"></i><i style="background:#738196"></i><i style="background:#515e72"></i><i style="background:#374355"></i><i style="background:#1e293a"></i><i style="background:#0c1626"></i></div>
+      <p class="ramp-label">Neutral ramp, hue 258, 9 steps</p>
+      <div class="ramp"><i style="background:#ffebd3"></i><i style="background:#ffce91"></i><i style="background:#fcaa2b"></i><i style="background:#d78c00"></i><i style="background:#af7100"></i><i style="background:#885700"></i><i style="background:#6b4300"></i><i style="background:#4f3100"></i><i style="background:#341f00"></i></div>
+      <p class="ramp-label">Accent ramp, marigold, hue 72, 9 steps</p>
+    </div>
+
+    <div class="scale">
+      <h3>Type scale (Rozha One for what characters say; Roboto for everything else)</h3>
+      <div class="row"><span class="spec">Display 26/29<br>Rozha One, −1%</span><span style="font:400 26px/1.1 'Rozha One',serif;letter-spacing:-.01em">“₹400 dhaan last price”</span></div>
+      <div class="row"><span class="spec">Price 36/40<br>Roboto 500, tabular</span><span class="num" style="font:500 36px/40px Roboto">₹1,25,000</span></div>
+      <div class="row"><span class="spec">Title 20/26<br>Roboto 500</span><span style="font:500 20px/26px Roboto">Your offer</span></div>
+      <div class="row"><span class="spec">Body 15/22<br>Roboto 400</span><span style="font:400 15px/22px Roboto">Annoyed. You barely moved.</span></div>
+      <div class="row"><span class="spec">Label 15<br>Roboto 500</span><span style="font:500 15px Roboto">Accept ₹400</span></div>
+      <div class="row"><span class="spec">Caption 13/20<br>Roboto 400</span><span style="font:400 13px/20px Roboto">Patience: 3 left</span></div>
+    </div>
+
+    <div class="notes">
+      <h3>What it changes</h3>
+      <ul>
+        <li><b>Density:</b> airy. The top half is a scene with nothing to tap except the item. Controls live in one raised panel at the bottom.</li>
+        <li><b>Colour:</b> a dark ink-blue night, warm paper and teak. Marigold appears only on the Offer button.</li>
+        <li><b>Type:</b> the customer speaks in a poster face with Indian roots (Rozha One also covers Devanagari). The UI is plain Roboto.</li>
+        <li><b>Surfaces:</b> depth from one soft shadow (the tag and the panel). Radii 8 and 16, so the panel's corners stay concentric with its buttons.</li>
+        <li><b>Motion moment:</b> the face reacts to each offer. Brows and mouth move in about 250 ms.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ===================== B ===================== -->
+  <section class="dir">
+    <h2>B. Noon enamel</h2>
+    <p class="idea">An enamel shop sign at noon: flat turmeric and ink blocks with hard edges, and the price painted huge on a black board.</p>
+
+    <div class="screen b" role="img" aria-label="Direction B haggle screen">
+      <div class="sysbar"><span class="num">12:42</span><span><span class="ms">signal_cellular_alt</span><span class="ms">wifi</span><span class="ms">battery_full</span></span></div>
+      <div class="top"><span class="day">Day 3</span><span class="cash num">₹12,480</span><span class="spacer"></span><button class="iconbtn ms" aria-label="Mute">volume_up</button><button class="iconbtn ms" aria-label="Settings">settings</button></div>
+
+      <div class="field">
+        <div class="who">
+          <svg class="face" viewBox="0 0 116 128" aria-label="Selvam, annoyed">
+            <g stroke="oklch(0.230 0.020 260)" stroke-width="3" stroke-linejoin="round">
+              <rect x="14" y="98" width="88" height="40" fill="oklch(0.450 0.113 245)"/>
+              <rect x="62" y="98" width="20" height="40" fill="oklch(0.985 0.003 250)"/>
+              <ellipse cx="58" cy="58" rx="34" ry="40" fill="oklch(0.640 0.090 55)"/>
+              <path d="M24 46 q34 -32 68 0 v-10 q-34 -30 -68 0z" fill="oklch(0.230 0.020 260)"/>
+            </g>
+            <rect x="33" y="46" width="20" height="6" fill="oklch(0.230 0.020 260)" transform="rotate(14 43 49)"/>
+            <rect x="64" y="46" width="20" height="6" fill="oklch(0.230 0.020 260)" transform="rotate(-14 74 49)"/>
+            <rect x="40" y="57" width="7" height="7" fill="oklch(0.230 0.020 260)"/>
+            <rect x="70" y="57" width="7" height="7" fill="oklch(0.230 0.020 260)"/>
+            <path d="M36 80 h44 l-6 6 h-32z" fill="oklch(0.230 0.020 260)"/>
+            <rect x="46" y="88" width="24" height="4" fill="oklch(0.230 0.020 260)"/>
+          </svg>
+          <div>
+            <p class="name">Selvam</p>
+            <p class="role">Tough bargainer</p>
+            <p class="moodword">Annoyed</p>
+            <p class="reason">You barely moved.</p>
+          </div>
+        </div>
+        <p class="line">“₹400 dhaan last price, saar.”</p>
+        <p class="pat" aria-label="Patience, 3 of 5 left">Patience <i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><span>3 left</span></p>
+      </div>
+
+      <div class="board">
+        <small>His last price for a brass oil lamp, good condition</small>
+        <strong>₹400</strong>
+        <p class="hist">Offers so far: you ₹300, him ₹420, you ₹320, him ₹400</p>
+      </div>
+
+      <div class="ctl">
+        <div class="stepper"><span class="ms">remove</span><div><span>Your offer</span><strong>₹340</strong></div><span class="ms">add</span></div>
+        <div class="quick"><div class="btn outline">−10%</div><div class="btn outline">−25%</div><div class="btn outline">Last price?</div></div>
+        <div class="btn primary">Offer ₹340</div>
+        <div class="second"><div class="btn outline">Accept ₹400</div><div class="btn text">Walk away</div></div>
+      </div>
+      <div class="navbar"><i></i></div>
+    </div>
+
+    <div class="swatches">
+      <h3>Palette by role (OKLCH, built and contrast-checked with a script)</h3>
+      <div class="swatch-grid">
+        <div class="sw"><i style="background:oklch(0.985 0.003 250)"></i><span><b>surface</b>oklch(0.985 0.003 250) #f9fafc</span></div>
+        <div class="sw"><i style="background:oklch(0.870 0.150 92)"></i><span><b>field</b>turmeric. 11.4:1 with text</span></div>
+        <div class="sw"><i style="background:oklch(0.230 0.020 260)"></i><span><b>text / board</b>16.2:1 on surface</span></div>
+        <div class="sw"><i style="background:oklch(0.460 0.020 260)"></i><span><b>text-muted</b>6.8:1 surface, 4.8:1 field</span></div>
+        <div class="sw"><i style="background:oklch(0.450 0.113 245)"></i><span><b>accent</b>primary action only. Enamel blue</span></div>
+        <div class="sw"><i style="background:oklch(0.990 0.003 250)"></i><span><b>on-accent</b>7.2:1 on accent</span></div>
+        <div class="sw"><i style="background:oklch(0.500 0.130 150)"></i><span><b>profit</b>5.4:1, always with a word</span></div>
+        <div class="sw"><i style="background:oklch(0.530 0.190 27)"></i><span><b>loss</b>5.6:1, always with a word</span></div>
+        <div class="sw"><i style="background:oklch(0.880 0.006 260)"></i><span><b>divider</b>lists and inputs only</span></div>
+        <div class="sw"><i style="background:oklch(0.980 0.010 92)"></i><span><b>on-board</b>15.9:1 on the board</span></div>
+      </div>
+      <div class="ramp"><i style="background:#f5f9ff"></i><i style="background:#dde5f2"></i><i style="background:#c3cbd8"></i><i style="background:#9da5b1"></i><i style="background:#79818d"></i><i style="background:#575e69"></i><i style="background:#3c434d"></i><i style="background:#232933"></i><i style="background:#11161f"></i></div>
+      <p class="ramp-label">Neutral ramp, hue 260, 9 steps</p>
+      <div class="ramp"><i style="background:#e1f1ff"></i><i style="background:#b5ddff"></i><i style="background:#80c5ff"></i><i style="background:#4fa6e9"></i><i style="background:#2d86c8"></i><i style="background:#0068a5"></i><i style="background:#005182"></i><i style="background:#003b61"></i><i style="background:#002641"></i></div>
+      <p class="ramp-label">Accent ramp, enamel blue, hue 245, 9 steps</p>
+    </div>
+
+    <div class="scale">
+      <h3>Type scale (Khand for names and moods; Roboto for everything else)</h3>
+      <div class="row"><span class="spec">Display 40/40<br>Khand 600, −1%</span><span style="font:600 40px/1 Khand;letter-spacing:-.01em">Selvam</span></div>
+      <div class="row"><span class="spec">Price 64/64<br>Roboto 500, tabular</span><span class="num" style="font:500 64px/64px Roboto;letter-spacing:-.02em">₹400</span></div>
+      <div class="row"><span class="spec">Mood 26/26<br>Khand 600</span><span style="font:600 26px/1 Khand">Annoyed</span></div>
+      <div class="row"><span class="spec">Body 15/22<br>Roboto 400</span><span style="font:400 15px/22px Roboto">You barely moved.</span></div>
+      <div class="row"><span class="spec">Label 15<br>Roboto 500</span><span style="font:500 15px Roboto">Accept ₹400</span></div>
+      <div class="row"><span class="spec">Caption 13/20<br>Roboto 400</span><span style="font:400 13px/20px Roboto">Patience: 3 left</span></div>
+    </div>
+
+    <div class="notes">
+      <h3>What it changes</h3>
+      <ul>
+        <li><b>Density:</b> tighter. Three full-width blocks (who, the price, your move) fill the screen edge to edge.</li>
+        <li><b>Colour:</b> bright and flat. Turmeric and ink are fields, not decoration. Enamel blue appears only on the Offer button.</li>
+        <li><b>Type:</b> names and moods in a condensed face from the same Indian foundry (Khand also covers Devanagari). The price is the largest text on screen.</li>
+        <li><b>Surfaces:</b> no shadows and no radius. Edges come from 2 dp ink borders on controls.</li>
+        <li><b>Motion moment:</b> the board's number flips once when the customer counters. A single 200 ms change, not a count-up.</li>
+      </ul>
+    </div>
+  </section>
+
+</div>
+
+<p class="foot">This is a sketch of a direction, not the app. Everything here is drawn in HTML. The real check is a screenshot of the first real screen in the build, compared against the checklist DESIGN.md will hold. Fonts: Roboto (Apache-2.0), Rozha One and Khand (SIL OFL 1.1), Material Symbols (Apache-2.0), all from Google Fonts.</p>
+
+</body>
+</html>

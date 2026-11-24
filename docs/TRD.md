@@ -149,7 +149,7 @@ Every row costs **₹0 at 1,000 players**: nothing here charges per player.
 | SDK levels | **compileSdk 36 · targetSdk 36 · minSdk 24** | target: Play's requirement [T10], CR9. min: PRD F20 (Android 7.0); also exactly what the ads SDK needs from 25.5.0 [T17]; liftoff's default is 21 [T3] | — |
 | UI | scene2d.ui (part of libGDX), with **styles built in code** — no Skin JSON | Skin JSON is loaded by reflection, which release-build code shrinking can break. Building in code also matches D2 | — |
 | Art | ShapeRenderer and polygon sprites drawing from the face and item "kits"; each customer is drawn once into a texture | IDEA D2; F20 (smooth on 2–3 GB phones) | — |
-| Fonts | **Noto Sans** (OFL), baked into bitmap fonts at build time: 3 text sizes × regular/bold, Latin letters plus ₹ | L-11 (no FreeType at runtime), F13 AC3, CR6 | — |
+| Fonts and icons | **Roboto** 400/500 (Android's own face) for the UI, and **Rozha One** for what characters say. Both are SIL OFL, from Google Fonts. They're baked into bitmap fonts at build time for DESIGN.md's type scale, at each text-size step (S, M, L, XL).<br>**The character set:** Latin, ₹, curly quotes, …, the en dash and the minus sign.<br>**Material Symbols** (Apache-2.0): only the glyphs we use, baked into an atlas.<br>**Replaces Noto Sans** (TD-26) | DESIGN.md §2.2, §2.5; L-11 (no FreeType at runtime); F13 AC3; CR6 | — |
 | Sound | Sound effects made with jsfxr (the owner's own) or CC0, as OGG, played by libGDX `Sound` | F14, CR6 | — |
 | Content | CSV and JSON in git → a build-time validator → JSON assets (§4.4) | IDEA D3; F13 AC1; DR24 | — |
 | Android library | **AndroidX Core 1.17.0** — libGDX's Android backend already brings it in (verified 2026-11-24). We'll also use its FileProvider. It adds one app-private permission (TD-24) | F12, F18 — sharing without any storage permission | Apache-2.0 |
@@ -323,11 +323,11 @@ sequenceDiagram
   W->>F: write game.json.tmp, fsync, rename over game.json
   F-->>W: ok
   W-->>UI: committed (posted back to the render thread)
-  UI-->>P: counter ₹420, "Annoyed - you barely moved", patience 3 of 5
+  UI-->>P: counter ₹420, "Annoyed. You barely moved.", patience 3 of 5
   Note over UI,F: The reply is revealed only after the commit.<br/>If the app dies first, the next launch shows the round before the offer: done once, or not at all.
   opt the commit fails because storage is full
     W-->>UI: failed
-    UI-->>P: "Couldn't save - phone storage full". Play goes on, and the next commit retries
+    UI-->>P: "Couldn't save. Phone storage is full." Play goes on, and the next commit retries
   end
 ```
 
@@ -580,7 +580,7 @@ The simulator must predict the phone (Check 3, DR11), so the logic gives the sam
 1. Try `game.json`: check the header, the CRC and the length, then parse, migrate (§6) and check the invariants (cash ≥ 0, unique IDs, references resolve).
 2. If anything fails, try `bak1`, then `bak2` — "Couldn't read your save; restored your backup from <time>" (F15 AC3).
 3. If all three fail, move them to `broken/` and start a new game, saying so plainly. Report a problem opens prefilled with "lost progress". Never a silent blank game.
-4. **A newer format** (`formatVersion` > the current one) is never touched. The game shows "This save is from a newer version — update the game", with a button to the Play listing, and blocks play until then — so the save can't be overwritten (F15 AC7).
+4. **A newer format** (`formatVersion` > the current one) is never touched. The game shows "This save is from a newer version. Update the game to keep playing.", with a button to the Play listing, and blocks play until then — so the save can't be overwritten (F15 AC7).
 
 **Performance rules** (F20 AC3):
 - No allocation per frame in the hot screens.
@@ -650,9 +650,9 @@ All of them are started from the Android main thread through `PlatformServices`.
 
 | Action | Intent | Exact contents | If nothing can handle it |
 |---|---|---|---|
-| **Share the deal card** (F12) | `ACTION_SEND`, type `image/png`, inside a chooser | `EXTRA_STREAM` = `content://io.github.rameshkumark24.bazaarboss.share/share/deal-card.png` with `FLAG_GRANT_READ_URI_PERMISSION`<br>`EXTRA_TEXT` = "{item}: bought ₹{paid} → sold ₹{price}. Game money — no real money. Bazaar Boss" [A — wording] | "Couldn't share" |
+| **Share the deal card** (F12) | `ACTION_SEND`, type `image/png`, inside a chooser | `EXTRA_STREAM` = `content://io.github.rameshkumark24.bazaarboss.share/share/deal-card.png` with `FLAG_GRANT_READ_URI_PERMISSION`<br>`EXTRA_TEXT` = "{item}: bought ₹{paid} → sold ₹{price}. Game money. No real money. Bazaar Boss" [A — wording] | "Couldn't share" |
 | **Share my stats** (F18) | `ACTION_SEND`, `text/plain`, inside a chooser | Exactly these lines, in this order:<br>• `Bazaar Boss stats`<br>• `First played: {date}` · `Last played: {date}`<br>• `Days played: {n}` · `Game days started / finished: {a} / {b}`<br>• `Haggles: {n} ({per day} per day played)`<br>• `Deals: {n}` · `Best deal: {item} ₹{paid} → ₹{price}`<br>• `Tier: {tier}` · `Play time to shop: {mm} min`<br>• `App {versionName} ({versionCode}) · save v{formatVersion}`<br><br>Nothing else | "Couldn't share" |
-| **Report a problem** (F19) | `ACTION_SENDTO`, `mailto:{game email}` | `EXTRA_SUBJECT` = "Bazaar Boss — {reason}"<br>`EXTRA_TEXT` = the reason · a free line for the player · app {versionName} ({versionCode}) · save v{n} · Android {release} (API {n}) · and the crash note, only if ticked<br><br>No IDs, no device model, no save contents | The game shows the email address to write to (F19 AC5) |
+| **Report a problem** (F19) | `ACTION_SENDTO`, `mailto:{game email}` | `EXTRA_SUBJECT` = "Bazaar Boss: {reason}"<br>`EXTRA_TEXT` = the reason · a free line for the player · app {versionName} ({versionCode}) · save v{n} · Android {release} (API {n}) · and the crash note, only if ticked<br><br>No IDs, no device model, no save contents | The game shows the email address to write to (F19 AC5) |
 | **Report this line** (F19 AC4) | As above | Reason = "a line that offends"; the body adds `Line: {lineId} "{text}"` | As above |
 | **Privacy policy** (F16) | `ACTION_VIEW`, https | The policy URL (§5.4) | The game shows the URL (F16) |
 | **Update the game** (F15 AC7) | `ACTION_VIEW`, `market://details?id=io.github.rameshkumark24.bazaarboss`, falling back to the https Play URL | — | The game shows the Play link |
@@ -794,7 +794,7 @@ There's no API of ours for an old build to break. Its whole world is offline. Bu
 
 **What alerts the owner** — there's no paging; a weekly review of about 15 minutes fits the 5 hours a week:
 - Play Console email notifications, including Android vitals — **ME: switch them on in Play Console.**
-- A Gmail filter on "Bazaar Boss —" subjects: label and star.
+- A Gmail filter on "Bazaar Boss:" subjects: label and star.
 - *M4:* AdMob policy emails, and the ad review center checked weekly (H2-6).
 
 **Development-time measurements:**
@@ -899,6 +899,7 @@ Append new entries; never overwrite. Each entry's "rules out" is what the decisi
 | TD-23 | 2026-11-24 | **Test devices on this PC: Medium_Phone_API_36.1 (verified); LowEnd_A9 (API 28) for low-memory checks. API 24 is not testable yet** | Download an API 24 image now; skip API 24 | The PRD's floor is Android 7.0 (F20 AC6), but this PC has no API 24 image. Download one with the owner's yes before the closed test. The real 2–3 GB phone is still Q13 | — |
 | TD-24 | 2026-11-24 | **The permission allowlist includes AndroidX's app-private `DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION`.** *Corrects §4.11's "VIBRATE only"* | Exclude AndroidX (impossible: libGDX's Android backend depends on it); strip the entry from the manifest | Found in the first build (`aapt2 dump permissions`). It's signature-level, defined by the app for its own receivers, and grants nothing. Stripping it could break AndroidX receivers on Android 13+. PRD F20 AC2 and CR13 now say so | — |
 | TD-25 | 2026-11-24 | **The system bars stay visible: no immersive mode, no full screen.**<br>• `AndroidLauncher`: `useImmersiveMode = false`, and clear `FLAG_FULLSCREEN` after `initialize()`<br>• theme `Theme.Material.NoActionBar`<br>• also `useAccelerometer = false` and `useCompass = false`<br><br>At API 36 the game draws edge-to-edge behind the bars, so the UI keeps to the safe insets (TD-20) | Immersive full screen, accepting Android's notice; full screen without immersive mode | Android shows "Viewing full screen" over the first screen of an app that hides the bars — the first haggle (PRD F1). libGDX hides them by default [T34]. Turning off the unused motion sensors saves battery (F20) | Full-bleed, bar-free screens. The status bar's height is permanent UI overhead (≈ 80 px at 1080 × 2400) |
+| TD-26 | 2026-11-24 | **Fonts: Roboto (UI) and Rozha One (what characters say), baked per text-size step; icons from Material Symbols.** *Supersedes TD-12's Noto Sans* | Noto Sans; Yatra One for the display face; Lucide or game-icons.net icons | DESIGN.md: the platform's own face for the UI, plus one display face picked for the subject. Rozha One stays crisp at 26 dp, where Yatra One blurs. Material Symbols are what Android players already read. All three licences allow bundling (DESIGN.md §8). If baked bitmaps look soft on high-density screens, M0 switches to distance-field fonts | Font-engine features at runtime (still none, L-11) |
 
 ---
 

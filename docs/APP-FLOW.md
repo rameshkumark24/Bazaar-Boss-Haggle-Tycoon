@@ -78,9 +78,9 @@ Anywhere: long-press a line of dialogue ─► Report this line (modal) ─► e
 | Missing (first launch, or after Start over) | **Voice picker** | F1 |
 | Fine | **Exactly where they left off:** stall, a haggle in progress (same round), a paused auction, the reveal, the Sort list, or the kanakku | F15 AC1, DR12 |
 | Damaged, but a backup is good | A **"Restored your backup from <time>"** card, then where that backup was | F15 AC3 |
-| Unreadable, with every backup too | A **"Couldn't read your save — starting fresh. Sorry."** card. The broken files are kept for a report, and Report a problem is prefilled with "lost progress" | TRD §4.10 |
-| From a **newer** version of the game | A **block** card: "This save is from a newer version — update the game", with **Update on Play** and **Write to us**. No play is possible, so the save can't be overwritten | F15 AC7 |
-| Restored onto a new phone by Android's backup | **"Welcome back — your progress from <last played date> is here"**, once [A], then where it was. *Why:* a backup can be up to a day old; without this card, a missing day looks like a bug | F15 AC5; H5-2 |
+| Unreadable, with every backup too | A **"Couldn't read your save or its backups, so a new game has started."** card. The broken files are kept for a report, and Report a problem is prefilled with "lost progress" | TRD §4.10 |
+| From a **newer** version of the game | A **block** card: "This save is from a newer version. Update the game to keep playing.", with **Update on Play** and **Write to us**. No play is possible, so the save can't be overwritten | F15 AC7 |
+| Restored onto a new phone by Android's backup | **"Welcome back. Your progress from <last played date> is here."**, once [A], then where it was. *Why:* a backup can be up to a day old; without this card, a missing day looks like a bug | F15 AC5; H5-2 |
 | Fine, but the phone's date went back 1–2 days | Normal; Today's special shows "back tomorrow" | DR26 |
 
 ### 1.4 Auth — and the gates that stand in for it
@@ -113,7 +113,7 @@ v1 has none, and there's never a push service (DR39). When local notifications a
 | The game is… | The tap lands… | Why |
 |---|---|---|
 | Closed | Cold start → the save loads → **the Workshop** if the item still exists. If it doesn't: **the stall**, with "That item's gone" (IDEA §4) | No dead link |
-| In the background, on another screen | **Where the player was.** A banner offers "Restoration done — see the Workshop" | A tap **never interrupts a haggle or an auction**. A customer mid-deal must not vanish because of a notification |
+| In the background, on another screen | **Where the player was.** A banner offers "Restoration done. See the workshop" | A tap **never interrupts a haggle or an auction**. A customer mid-deal must not vanish because of a notification |
 | **Open** | **No notification is posted at all.** The game shows the same banner in place | A system notification about the app you're looking at is noise |
 
 ### 1.7 What back does, on every screen
@@ -149,7 +149,7 @@ The rule: **back never does anything irreversible, and never quits by accident.*
 | # | Screen | Auth / gate | Reached by | States | If its item is gone | Phase |
 |---|---|---|---|---|---|---|
 | 1 | Voice picker | none — the first-launch gate itself | Launch routing (first launch, after Start over) | L: no (content loads behind the splash) · E: — · Er: a voice line missing → English (F1) · O: n/a | — | 12 |
-| 2 | Stall (hub) — morning, trading, evening; "broke" | none | Launch routing; back from places; after the first deal | L: no · **E:** first visit has no stock and empty display slots marked "Empty" · Er: "Couldn't save — storage full" card (F15 AC4) · O: n/a | A display slot whose item was sold shows "Empty" | 10 (hub, goal bar), 11 (Today's special, teaser) |
+| 2 | Stall (hub) — morning, trading, evening; "broke" | none | Launch routing; back from places; after the first deal | L: no · **E:** first visit has no stock and empty display slots marked "Empty" · Er: "Couldn't save. Phone storage is full." card (F15 AC4) · O: n/a | A display slot whose item was sold shows "Empty" | 10 (hub, goal bar), 11 (Today's special, teaser) |
 | 3 | Haggle | none | Push: a waiting customer; the first launch; a special visitor | L: no · E: never opens without a customer and an item · Er: save failure card; play goes on · O: n/a | The item is reserved while the haggle lasts (TRD §4.8), so it can't go. If the customer left, it returns to the stall | 6 (screen), 4–5 (engine, personalities) |
 | 4 | Inspect (one item, close up) | none | Push: from the haggle or the godown | L: no · E: clues not yet found read "Look closer" [A] · Er: — · O: n/a | "That item's gone", then back | 7 |
 | 5 | Auction (peek → bidding → result) | none | Push: the stall's morning card; a special lot | L: no · E: today's auction done → "Next auction: tomorrow morning" · Er: too little cash → peek plays, bid says "Not enough cash", **Skip** stays (F5) · O: n/a | — (a lot is fixed before the peek) | 8 |
@@ -206,7 +206,7 @@ The three journeys that matter most, in order:
 | 0 | The app icon → Android's launch splash, then the voice picker (cold start ≤ 4 s [A]) | — | A slow first start on a cheap phone. The splash shows a default icon until the art arrives | — |
 | 1 | **Voice picker:** English, Tanglish, Hinglish, each with a sample line; "Change it any time in Settings"; mute | Which voice | "What's Tanglish?" — the sample line answers it | They pick a voice they read badly → Settings → Voice changes it at once (F1 AC5). Back here quits, losing nothing |
 | 2 | **Tap 1 → the first haggle, at once.** A walk-in seller at your stall with a brass lamp, asking ₹400. Her face and mood word ("Hopeful"), patience dots, and one hint: "Sellers start high. Try −25%." | What to offer | **Is ₹ real money?** The first hint says "All ₹ here is game money." (§4, 3). What the patience dots mean — a one-line hint the first time | Nothing yet |
-| 3 | **Tap 2: −25%** — the offer is made in one tap. She counters "₹350 — last, I swear!", her mood moves, and one line says why | Accept, or push further | The verdict hasn't appeared yet, so they can't tell whether ₹350 is good | **They lowball hard:** the first seller is patient and won't leave before round 3 [A]. **They walk away:** she calls back once ("Okay okay, vaanga!"). **She does leave:** a second walk-in seller arrives (the floor, F11) — never a dead end |
+| 3 | **Tap 2: −25%** — the offer is made in one tap. She counters "₹350. Last, I swear!", her mood moves, and one line says why | Accept, or push further | The verdict hasn't appeared yet, so they can't tell whether ₹350 is good | **They lowball hard:** the first seller is patient and won't leave before round 3 [A]. **They walk away:** she calls back once ("Okay okay, vaanga!"). **She does leave:** a second walk-in seller arrives (the floor, F11) — never a dead end |
 | 4 | **Tap 3: Accept** → the Deal result: "Bought: brass lamp, ₹350. She'd have taken ₹300." | Continue, or Share | The verdict can read as "I lost ₹50". It's worded as a tip: "Next time, try lower" [A] | — |
 | 5 | Continue → **the stall, for the first time:** the goal bar at 20% ("Periyappa's gift"), the lamp on display, the first buyer arriving | — | What the bar is for: a one-line hint | — |
 
@@ -246,7 +246,7 @@ The old flow took **5**:
 | 7 | **Haggles** (×5–8): tap a customer → offers → accept or walk | Each price | Inspecting mid-haggle costs patience, if Q4's recommendation is accepted | **Sells a fake knowingly:** −reputation, with the reason. **Storage full:** the card shows, and play goes on (F15 AC4) |
 | 8 | **Broke** at some point | Loan, scrap, or a cheap-seller day | The loan terms are shown before accepting (F11 AC2) | **Closes the card while still broke:** "Periyappa can help" stays on the stall (§4, 4) |
 | 9 | **Kanakku** — automatic after the last customer: best deal first … tomorrow's teaser | Upgrade (when the bar is full) | — | **Leaves the app here:** it returns to the kanakku |
-| 10 | **Stall, evening:** "Day 4 done — Start Day 5" | Play on, or stop | — | It's a natural place to stop. The day ends on a high (DR29) |
+| 10 | **Stall, evening:** "Day 4 done", with the button "Start Day 5" | Play on, or stop | — | It's a natural place to stop. The day ends on a high (DR29) |
 
 **Taps from app-open to the core action done (one sale), resuming mid-day with a buyer waiting: 3** — tap the buyer, −10%, Accept.
 
@@ -268,9 +268,9 @@ The old flow took **5**:
 
 | Step | They see | They must decide | What could confuse them | Where they could fail → what happens |
 |---|---|---|---|---|
-| 1 | Open the app → **exactly where they left:** usually the evening stall, "Day 4 done — Start Day 5" | — | — | **Save damaged:** "Restored your backup from <time>" — at most since the last day end is lost. **Newer save:** the block card, Update on Play or Write to us |
+| 1 | Open the app → **exactly where they left:** usually the evening stall, "Day 4 done", with the button "Start Day 5" | — | — | **Save damaged:** "Restored your backup from <time>" — at most since the last day end is lost. **Newer save:** the block card, Update on Play or Write to us |
 | 2 | **Tap 1: Start Day 5** → morning: **Today's special** and **the teased customer** ("The collector is here for a brass lamp!") | Serve the teased customer first? | — | **The date went back 1–2 days:** the special reads "back tomorrow". **More than 2 days back:** it's treated as a clock correction (DR26) |
-| 3 | After a gap of ≥ 3 days [A]: "Welcome back — here's a cheap starter lot" (once) | Take it? | — | — |
+| 3 | After a gap of ≥ 3 days [A]: "Welcome back. Here's a cheap starter lot." (once) | Take it? | — | — |
 | 4 | **Tap 2:** serve the collector → **tap 3:** offer → **tap 4:** Accept | — | — | **A new phone:** "Your progress from <date> is here" explains a backup that's a day old |
 
 **Taps from app-open to the core action done: 4** — Start Day, serve, offer, Accept. **That's one more than the target, kept on purpose.** "Start Day" is the session's opening ritual: the shutter goes up, and yesterday's teaser pays off (the open loop, IDEA §3.2 #4). Skipping it would blur one day into the next, and the peak-end design needs days to have edges. If testers stall here, starting the day automatically on a new calendar day is the cut — **watch it at G2**.
@@ -346,7 +346,7 @@ All applied on 2026-11-24 and logged in the PRD's change log. Anything here can 
 | 3 | **"Lot reveal & sort" split** into **Reveal** and **Sort**. Back in the Reveal reveals everything; Sort keeps everything by default | F5, §6 |
 | 4 | **"Periyappa can help"** stays on the stall while broke | F11, §6 |
 | 5 | Launch cards: **Newer save** gets "Write to us"; new **"Couldn't read your save"** and **"Your progress from <date> is here"** [A] cards | §6 |
-| 6 | The **stall's evening state** ("Day N done — Start Day N+1") is named | §6 |
+| 6 | The **stall's evening state** ("Day N done", with the button "Start Day N+1") is named | §6 |
 | 7 | **Item detail merged into Inspect**; **Collections merged into the Dealer's Guide** (later screens) | §6 |
 | 8 | **Back**, on the voice picker, Reveal, Sort and kanakku | §7.7 |
 | 9 | *Later:* notifications are never posted while the game is open, and a tap never interrupts a haggle or an auction | DR39 |

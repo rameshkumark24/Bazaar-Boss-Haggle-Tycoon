@@ -15,15 +15,15 @@ Try it now: open `bazaar-boss/index.html` in your browser. Add `?voice=ta` or `?
 **1. Check the lines.** Read the Tanglish lines in the haggle (tap through in Tanglish). The Hinglish lines need a native reader (open question 4) before you post them in Hindi-speaking groups.
 
 **2. Make the Google Form** (your Google login; a separate free Gmail for the game is better — it keeps your personal address off public pages):
-- Title: `Bazaar Boss — launch waitlist`
-- Description: `One email when Bazaar Boss launches on Google Play — or one saying it won't. Then we delete this list. For players 18 and over.`
+- Title: `Bazaar Boss: launch waitlist`
+- Description: `One email when Bazaar Boss launches on Google Play, or one saying it won't. Then we delete this list. For players 18 and over.`
 - Settings → Responses:
   - **Collect email addresses: Responder input.** Not "Verified", which forces a Google sign-in.
   - Send responders a copy: off. Allow response editing: off. **Limit to 1 response: off** (it also forces a sign-in).
 - Questions, and nothing else (no name, phone or city):
   1. *Which voice would you play in?* Multiple choice: English / Tanglish / Hinglish. **Not required.**
   2. *I'm 18 or older.* One checkbox. **Required.**
-- Settings → Presentation → confirmation message: `Thanks! You'll hear from us once — at launch.`
+- Settings → Presentation → confirmation message: `Thanks. You'll hear from us once, at launch.`
 - Send → link icon → tick "Shorten URL" → copy the `forms.gle/…` link.
 
 **3. Put two values into the page.** Near the bottom of `index.html`:
