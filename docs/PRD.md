@@ -304,28 +304,30 @@ What inspecting costs, and how sure a clue is, are still open (Q4).
 6. Given I come back after a gap [A — the gap's length is a tuning number, Q9], then a "Welcome back — here's a cheap starter lot" offer appears, once.
 7. Given the day's last customer has gone, then the day ends with the kanakku (F10).
 
-**When it fails:** if the phone's date has gone backwards, no new Today's special appears until the date passes the last one seen.
+**When it fails:** if the phone's date has gone back by 1–2 days, no new Today's special appears until the date passes the last one seen. A jump back of more than 2 days is treated as a clock correction, and the special resets to today (DR26).
 
 **Does not:** streaks, daily-login rewards, penalties for missed days, energy, real-time timers, or notifications in v1.
 
 ### F7 · Growth: the next goal, stall → shop, and the tier-up
 **Does:**
 - One next goal is always visible, with a bar ("Shop: ₹18,400 / ₹25,000").
-- The first bar starts at 20%, from Periyappa's gift.
+- **The bar counts profit earned since the last tier,** so it only ever rises. Buying stock never moves it backwards. *(Q6, decided 2026-11-24.)*
+- The first bar starts at 20%: Periyappa's gift is a head start on the bar, on top of the starting cash.
 - The v1 arc is stall → shop in 30–45 minutes of play [A], with the showroom shown as the next goal.
-- The upgrade is bought at day end and celebrated once.
+- When the bar is full, the upgrade is offered at day end. It **costs no cash** — it's earned, not bought — and it's celebrated once.
 
 **Acceptance**
 1. Given a new game, then the stall shows the bar for the shop, already 20% full and labelled as Periyappa's gift.
-2. Given I can afford the shop at day end, when I tap Upgrade, then the price is paid once, the stall becomes a shop, and the tier-up moment plays once.
-3. Given I have the shop, then the next goal shows the showroom.
-4. Given the closed test, then the median play time to the shop is 30–45 minutes, within ±25% of the simulator's prediction (Check 3, §12.2).
+2. Given I spend cash on stock, then the bar doesn't move. It rises only when a sale makes a profit.
+3. Given the bar is full at day end, when I tap Upgrade, then the stall becomes a shop — no cash is taken — and the tier-up moment plays once.
+4. Given I have the shop, then the next goal shows the showroom.
+5. Given the closed test, then the median play time to the shop is 30–45 minutes, within ±25% of the simulator's prediction (Check 3, §12.2).
 
-**When it fails:** if the game dies during an upgrade, the upgrade is either done (paid, shop shown) or not done (cash kept) — never paid twice.
+**When it fails:** if the game dies during an upgrade, the upgrade is either done (shop shown) or not done — never applied twice.
 
-**Does not:** sell progress; move the player down a tier; put a deadline on a goal.
+**Does not:** sell progress; move the player down a tier; put a deadline on a goal; let spending lower the bar.
 
-Still open: what the bar counts (Q6), and what happens in v1 when the showroom bar fills (Q7).
+Still open: what happens in v1 when the showroom bar fills (Q7).
 
 ### F8 · Reputation
 **Does:**
@@ -604,7 +606,7 @@ The next launch is a first launch.
 
 **Acceptance**
 1. Given airplane mode from install onward, then every v1 feature works exactly the same.
-2. Given the release build in Play Console's App bundle explorer, then the only permission listed is vibration.
+2. Given the release build in Play Console's App bundle explorer, then the only device permission listed is vibration. The only other entry allowed is the app's own `…DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION`, which AndroidX adds for its internal receivers and which grants no access to anything (TRD TD-24).
 3. Given a 2–3 GB RAM phone, then the haggle, the auction and the reveal run without visible stutter [A — needs a test phone, Q13].
 4. Given the Play listing, then the download size is about 50 MB or less.
 5. Given I turn the phone sideways, then the game stays in portrait.
@@ -670,6 +672,12 @@ The next launch is a first launch.
 | Ad mediation (other ad networks) | Each network is one more company receiving player data |
 | Analytics, crash-reporting and attribution SDKs | Play Console, Share my stats, Android vitals and AdMob's own reports cover every gate |
 
+**Known limits — decided; changing one means changing the engine**
+
+| Limit | Why | What would change it |
+|---|---|---|
+| Screen readers (Android's TalkBack) can't read the game | The engine draws its own screens, and Android's accessibility services can't see inside them (TRD §11, decision 1). What the game offers instead: adjustable text size (F13), and mood shown as a face plus a word, never colour alone (F2) | Making screen-reader support a requirement, which means revisiting the engine (TRD TD-01) |
+
 **Never, in any version**
 - **A money game:**
   - no stakes, entry fees or prizes
@@ -712,7 +720,7 @@ The next launch is a first launch.
 | # | Screen | Purpose | What it shows with no data |
 |---|---|---|---|
 | 1 | Voice picker | First launch: choose English, Tanglish or Hinglish, with a sample line in each; mute | It *is* the no-data screen |
-| 2 | Stall (home) | Cash, reputation, day, display slots, next-goal bar, Today's special, mute; the route to everything | At first launch:<br>• Periyappa's gift (Q6)<br>• the goal bar at 20%<br>• empty display slots marked "Empty"<br>• a walk-in seller already waiting |
+| 2 | Stall (home) | Cash, reputation, day, display slots, next-goal bar, Today's special, mute; the route to everything | At first launch:<br>• the starting cash<br>• the goal bar at 20% — Periyappa's gift<br>• empty display slots marked "Empty"<br>• a walk-in seller already waiting |
 | 3 | Haggle | Face, mood word, patience, item, slider, quick buttons, offers with reasons | Never opens without a customer and an item |
 | 4 | Inspect | Clues, condition, whether the clues point to a fake | Never opens without an item. Clues not yet found read "Look closer" [A] |
 | 5 | Auction | Peek → live bidding → result with every rival's estimate | Today's auction done: "Next auction: tomorrow morning". Too little cash: the peek plays and the bid button says "Not enough cash" |
@@ -833,7 +841,8 @@ This section holds the business logic that isn't obvious. Each rule says why whe
 - **DR26 · Today's special follows the phone's calendar date.**
   - One per calendar day.
   - Missing a day costs nothing.
-  - If the date goes backwards, nothing new appears until it passes the last date seen.
+  - If the date goes back by 1–2 days, nothing new appears until it passes the last date seen.
+  - A jump back of **more than 2 days** counts as a clock correction: the special resets to today. *Why:* a phone whose date was wrong by a year mustn't lose specials for a year. Gaming this only changes the cheater's own game (H5-1). *(Decided 2026-11-24.)*
 - **DR27 · A teaser is a promise.** What tomorrow's teaser names happens the next in-game day [A].
 - **DR28 · Returning is welcomed, never punished.** After a gap, one "Welcome back — here's a cheap starter lot" [A — the gap's length is a tuning number]. Never a guilt message.
 - **DR29 · The day ends on a high.** The kanakku leads with the best deal and ends on tomorrow's teaser. A loss is a "Lesson: …", never the last word.
@@ -886,7 +895,8 @@ This section holds the business logic that isn't obvious. Each rule says why whe
 | A damaged save | The newest good backup loads, and the player is told |
 | Storage is full | The last good save is kept, the player is told, and the game retries at the next save |
 | A save from a newer version | Left untouched, with "update the game" [A] |
-| The phone's date moves backwards | No new Today's special until the date passes the last one seen |
+| The phone's date moves back 1–2 days | No new Today's special until the date passes the last one seen |
+| The phone's date moves back more than 2 days | A clock correction: Today's special resets to today (DR26) |
 | The voice changes mid-game | The next line is in the new voice; nothing else changes |
 | Start over vs the Drive backup | The phone is wiped at once; Android replaces the Drive copy at its next backup |
 | The game is restored on a new phone | Saves and settings return. Once ads exist, age and consent are asked again |
@@ -1052,7 +1062,7 @@ These are product requirements. The legal reasoning and sources are in RESEARCH.
 ### 8.2 v1 — before the first tester
 - **CR13 · v1 sends nothing.**
   - No internet permission.
-  - The only permission is vibration.
+  - The only device permission is vibration. AndroidX also adds an app-private permission for its own receivers; it grants no access to anything (TRD TD-24).
   - No SDK that sends data.
   - A build that asks for any permission off the allowlist must not ship.
 
@@ -1286,7 +1296,7 @@ None of these is settled anywhere. Each carries a **recommendation** — my sugg
 | Q3 | **Closed-test reminders vs Check 1.** Play's production-access review favours an engaged closed test, and RESEARCH suggests a daily nudge. But Check 1 counts testers who play on day 7 "with nobody reminding them". Decide what reminders may say (for example, "stay opted in" only), or measure Check 1 only on testers who got none | Before the closed test | Send testers three messages only:<br>• day 0: welcome, and how to report<br>• day 8: "please send Share my stats"<br>• day 14: thanks<br><br>Never ask them to play. If a tester goes quiet, check only that they're still opted in. Check 1 then counts every tester honestly |
 | Q4 | **What inspecting costs, and how sure a clue is.** If inspecting is free and a fake clue is certain, the con artist never wins and fakes stop mattering. If it costs a round of patience, or a clue only suggests, skipping inspection becomes a real temptation | M2 (items and inspection), in the haggle lab | Each Inspect tap reveals one clue.<br>• Mid-haggle, each tap costs the customer one point of patience. In your own godown it's free.<br>• Clues are certain: a "wrong" clue proves a fake.<br>• A fake has at least one wrong clue among its 2–3, but not always the first.<br><br>So full inspection is possible but costs patience, and the rushed seller and the con artist pull you opposite ways. Confirm it in the haggle lab |
 | Q5 | **Selling a fake you didn't know was fake** — does reputation drop when the buyer finds out? | With Q4 | Yes, a small drop — a third of the penalty for a knowing sale — shown at day end as a Lesson ("A buyer found out the lamp was fake"). It keeps inspection worth doing after you buy, without treating an honest mistake like fraud |
-| Q6 | **What the next-goal bar counts:** cash on hand (it dips when you buy stock) or profit earned toward the tier (it only rises)? This also decides what Periyappa's gift is | M3 | **Profit earned since the last tier**, so the bar only rises.<br>• The upgrade costs no cash once the bar is full.<br>• Periyappa's gift is a 20% head start on the bar, on top of the starting cash.<br><br>A bar that drops when you buy stock would punish the move the game wants. If accepted, F7's criterion 2 changes from "the price is paid once" to "the upgrade is free once earned" |
+| Q6 | ~~What the next-goal bar counts~~ | **Decided 2026-11-24** | Profit earned since the last tier; the upgrade costs no cash once the bar is full; Periyappa's gift is a 20% head start. Now in F7 |
 | Q7 | **What a v1 player meets after the shop.** The showroom shows as the next goal. When that bar fills, can they buy it (which needs showroom content), or does it say "Coming in an update"? | M3, before the closed test | From the moment the shop opens, show the showroom as "Coming in an update" — never as a bar that fills to nothing. Make the next goal "Find all 40 items" (the found counter), which v1 can deliver. Don't build showroom content for v1 |
 | Q8 | **Throw-ins and bohni in v1?** IDEA counts them among the Indian-bargaining differentiators, but its v1 list doesn't name them | M1, in the haggle lab | Bohni in v1: one engine rule (a seller's first sale of the day comes a little cheaper, "for luck") and a few lines. Throw-ins after G1, because they need two-item deals on the haggle screen |
 | Q9 | **The economy numbers** are set in tuning against the 30–45-minute pacing target, using the simulator. None is decided yet, so don't treat a placeholder as a decision:<br>• starting cash<br>• item, scrap and tier prices<br>• patience per personality<br>• what counts as broke<br>• loan size and repayment share<br>• display slots and any godown limit<br>• the welcome-back gap | M1–M3 tuning | Keep the numbers out of this file. Tune them with the simulator in M1–M3 and record each in the TRD's tuning table. Fix two early, because they shape the code: a godown limit (start at 60 items) and the welcome-back gap (start at 3 calendar days) |
@@ -1399,3 +1409,5 @@ How each part is measured:
 |---|---|
 | 2026-11-24 | Written from IDEA.md (including the USP changes, the Business verdict and the Hardening decisions), RESEARCH.md and COMPETITORS.md. This file becomes the source of truth, and the live data table moves here (§8.5). New in writing it:<br>• §7 writes down rules that IDEA implied but never stated; the ones that are real design choices are marked [A]<br>• Share my stats' contents, defined so the success checks can be measured (F18)<br>• open questions Q3–Q9, found while writing the rules |
 | 2026-11-24 | Every open question in §10 now carries a recommendation. All of them stay open until the owner decides |
+| 2026-11-24 | Applied the TRD's findings, as recommended:<br>• DR26, F6 and §7.7: a jump back of more than 2 days resets Today's special (a clock correction)<br>• §5: a Known limits entry — screen readers can't read the game<br>• Q6 decided: the goal bar counts profit earned since the last tier, and the upgrade costs no cash (F7, §6) |
+| 2026-11-24 | Precision fix from the first build: F20 AC2 and CR13 name the app-private permission AndroidX adds (TRD TD-24). No product change |
