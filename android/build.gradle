@@ -1,0 +1,88 @@
+// android: the app that ships on Google Play (TRD §2.3).
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace = 'io.github.rameshkumark24.bazaarboss'
+    compileSdk = 36
+
+    defaultConfig {
+        // Permanent: a Play app ID can never change (TRD §11, decision 4).
+        applicationId = 'io.github.rameshkumark24.bazaarboss'
+        minSdk = 24       // Android 7.0 (PRD F20)
+        targetSdk = 36    // Play's requirement since 31 Aug 2026 (TRD [T10])
+        versionCode = 1
+        versionName = '0.0.1'
+    }
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+    }
+
+    sourceSets {
+        main {
+            jniLibs.srcDirs = [layout.buildDirectory.dir('gdx-natives').get().asFile]
+        }
+    }
+
+    lint {
+        abortOnError = true
+        checkReleaseBuilds = true
+    }
+}
+
+configurations {
+    natives
+}
+
+dependencies {
+    implementation project(':core')
+    implementation "com.badlogicgames.gdx:gdx-backend-android:$gdxVersion"
+    natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-armeabi-v7a"
+    natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-arm64-v8a"
+    natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-x86"
+    natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-x86_64"
+}
+
+// libGDX ships its native library inside jars, one per CPU type (ABI).
+// This task unpacks each into the folder the Android build packages.
+abstract class CopyGdxNatives extends DefaultTask {
+    @InputFiles
+    abstract ConfigurableFileCollection getNativeJars()
+
+    @OutputDirectory
+    abstract DirectoryProperty getOutputDir()
+
+    @javax.inject.Inject
+    abstract FileSystemOperations getFs()
+
+    @javax.inject.Inject
+    abstract ArchiveOperations getArchives()
+
+    @TaskAction
+    void copyNatives() {
+        ['armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64'].each { abi ->
+            File jar = nativeJars.files.find { it.name.endsWith("natives-${abi}.jar") }
+            if (jar == null) {
+                throw new GradleException("Missing the libGDX natives for ${abi}")
+            }
+            File target = outputDir.dir(abi).get().asFile
+            fs.sync {
+                from archives.zipTree(jar)
+                into target
+                include '*.so'
+            }
+        }
+    }
+}
+
+def copyGdxNatives = tasks.register('copyGdxNatives', CopyGdxNatives) {
+    nativeJars.from(configurations.natives)
+    outputDir = layout.buildDirectory.dir('gdx-natives')
+}
+
+tasks.matching { it.name ==~ /merge\w*JniLibFolders/ }.configureEach {
+    dependsOn copyGdxNatives
+}

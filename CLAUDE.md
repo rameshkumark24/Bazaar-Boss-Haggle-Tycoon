@@ -1,0 +1,63 @@
+# Bazaar Boss: Haggle Tycoon
+
+An offline, single-player Android haggling game, built with libGDX in Java.
+
+## Read first
+
+- **[docs/PRD.md](docs/PRD.md)** — the product, and the source of truth. Change the product there first.
+- **[docs/TRD.md](docs/TRD.md)** — how it's built: the stack, the data model, the decision log.
+- `docs/IDEA.md`, `docs/RESEARCH.md` and `docs/COMPETITORS.md` are the background they were built from.
+
+## Rules that are easy to break
+
+- **Work milestone by milestone.** After each one, stop: say what to test on the phone, list the known issues, and wait for "go".
+- **Ask before installing or downloading anything.** Accounts, logins and signing keys are the owner's to create.
+- **Free tools and free tiers only.** Anything paid needs the owner's explicit yes, with its price and the free option beside it.
+- **No permission off the allowlist, and no SDK that sends data** (PRD §8.5, CR13). Change the data table in the PRD first.
+- **Build scripts are Groovy and use `prop = value` assignments.** The space syntax is removed in Gradle 10.
+- **Shipped Java compiles against the Java 8 API** (`--release 8`), with `-Xlint:all -Werror`. A warning fails the build.
+- **Never modify the original engine or Bus Mudhalali repos.** Copy code in.
+
+## Commands
+
+Every command below was run successfully on the owner's Windows 11 PC on 2026-11-24, in Git Bash. In PowerShell or cmd, use `.\gradlew.bat` instead of `./gradlew`.
+
+**Setup, once per machine:**
+- JDK 17 or newer as `java` on PATH (here: Oracle JDK 17.0.11).
+- The Android SDK path in `local.properties` (not in git), e.g. `sdk.dir=C\:\\Users\\Asus\\AppData\\Local\\Android\\Sdk`.
+
+```bash
+SDK="$LOCALAPPDATA/Android/Sdk"          # the Android SDK on this PC
+ADB="$SDK/platform-tools/adb.exe"
+```
+
+| What | Command | Proof it works |
+|---|---|---|
+| **Every check:** compile with `-Xlint:all -Werror`, Android Lint, unit tests | `./gradlew check` | `BUILD SUCCESSFUL` |
+| Typecheck only | `./gradlew :logic:compileJava :logic:compileTestJava :core:compileJava :lwjgl3:compileJava :android:compileDebugJavaWithJavac` | `BUILD SUCCESSFUL` |
+| Lint only | `./gradlew :android:lintDebug` | `BUILD SUCCESSFUL`; report at `android/build/reports/lint-results-debug.html`. One warning is expected: `MissingApplicationIcon` (the icon arrives with the art) |
+| Tests only | `./gradlew :logic:test` | `SmokeTest > theTestRunnerRuns() PASSED` |
+| List the virtual devices | `"$SDK/emulator/emulator.exe" -list-avds` | `LowEnd_A9`, `Medium_Phone_API_36.1` |
+| Start the emulator — run it in the background | `"$SDK/emulator/emulator.exe" -avd Medium_Phone_API_36.1 -no-snapshot-save -no-boot-anim` | A window opens; `"$ADB" devices` shows `emulator-5554 device` |
+| Wait until it has booted | The script below — run it in the background | `BOOTED after ~57s` |
+| Install the debug build | `./gradlew :android:installDebug` | `Installed on 1 device.` |
+| Launch the app | `"$ADB" shell am start -W -n io.github.rameshkumark24.bazaarboss/.android.AndroidLauncher` | `Status: ok` |
+| **Screenshot — how every phase proves a screen** | `mkdir -p shots && "$ADB" exec-out screencap -p > shots/<name>.png` | A 1080 × 2400 PNG in `shots/` (not in git). Look at it before claiming a screen works |
+| Dismiss Android's one-time "Viewing full screen" notice on the first launch (TRD Findings, 6) | `"$ADB" shell input tap 925 499` | Coordinates are for Medium_Phone_API_36.1 |
+| List the permissions in the built app | `"$SDK/build-tools/35.0.0/aapt2.exe" dump permissions android/build/outputs/apk/debug/android-debug.apk` | Only AndroidX's app-private `…DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION` (TRD TD-24) — no internet |
+| Stop the emulator | `"$ADB" emu kill` | `OK: killing emulator, bye bye` |
+
+The boot wait, exactly as it ran:
+
+```bash
+for i in $(seq 1 120); do s=$("$ADB" shell getprop sys.boot_completed 2>/dev/null | tr -d '\r'); if [ "$s" = "1" ]; then echo "BOOTED after ~$((i*3))s"; "$ADB" devices; exit 0; fi; sleep 3; done; echo "TIMEOUT: not booted after 360s"; "$ADB" devices; exit 1
+```
+
+**Not verified yet** — run one successfully before adding it to the table:
+- `./gradlew :lwjgl3:run` (the desktop window)
+- installing on a real phone
+- the API 24 emulator (no system image on this PC yet; TRD TD-23)
+- `./gradlew :android:bundleRelease` (needs the upload key — TRD §1.3, Ship)
+- Maestro (deferred until there are screens to tap through)
+
+**Known harmless warning:** "SDK processing. This version only understands SDK XML versions up to 3…". Android Studio's newer SDK manager wrote files that AGP 8.13 only partly reads. The build is unaffected.

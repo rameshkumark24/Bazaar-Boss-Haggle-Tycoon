@@ -1,0 +1,23 @@
+// Bazaar Boss: Haggle Tycoon. Module layout: docs/TRD.md §2.3.
+pluginManagement {
+    repositories {
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+
+dependencyResolutionManagement {
+    repositoriesMode = RepositoriesMode.FAIL_ON_PROJECT_REPOS
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
+rootProject.name = 'bazaar-boss'
+
+// logic: pure Java rules. core: the libGDX game. android: the shipped app.
+// lwjgl3: the desktop window for development only (never shipped).
+// sim and tools arrive with their first code (TRD §2.3).
+include 'logic', 'core', 'android', 'lwjgl3'

@@ -1,0 +1,18 @@
+# Gradle and build output
+.gradle/
+build/
+
+# This machine's Android SDK path (each machine writes its own)
+local.properties
+
+# IDE files
+.idea/
+*.iml
+.kotlin/
+
+# Signing keys never go in git (PRD CR11, TRD §11)
+*.jks
+*.keystore
+
+# Screenshots taken while checking a build
+/shots/

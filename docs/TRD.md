@@ -7,9 +7,10 @@
 > - **[T#]** marks a source opened on 2026-11-24 (§Sources). "From memory" marks a number nobody checked today. **[A]** marks an assumption or estimate — a guess, said out loud.
 >
 > **Status (2026-11-24):**
-> - Nothing is built yet; the one-week waitlist test decides whether it will be (PRD §12.1).
+> - **The empty project exists and runs** on the emulator, built and checked from the command line. The commands are in `CLAUDE.md`.
+> - No game feature is built. The one-week waitlist test decides whether one will be (PRD §12.1).
 > - Nothing in this file costs money.
-> - Installing tools is the owner's call: §1.3 lists what M0 needs.
+> - Installing tools is the owner's call. §1.3 lists what's on the PC and what's still missing.
 
 ---
 
@@ -140,9 +141,10 @@ Every row costs **₹0 at 1,000 players**: nothing here charges per player.
 | Layer | Choice and version (2026-11-24) | Why — traces to | Free-tier limit, and what happens past it |
 |---|---|---|---|
 | Engine | **libGDX 1.14.2**, the latest release (2026-06-05) [T1][T2]. Since 1.13.0 it supports Android's predictive back [T4] and since 1.13.5 its minimum Android is 21 [T4]; its Android libraries are aligned for 16 KB memory pages (RESEARCH S27) | IDEA §6 [F]; CR9; F15 AC6; F20 | Apache-2.0 — no limits |
-| Project generator | **gdx-liftoff v1.14.2.4** (released 2026-11-24) [T3] | The official setup tool | Free |
+| Project layout | **Written by hand from gdx-liftoff's template** (v1.14.2.4 [T3]). Same shape: `core`, `android`, `lwjgl3`, plus libGDX's native-library unpacking step | Liftoff only runs as a click-through window app; it has no command-line mode [T33]. The hand-written build runs entirely from the command line and is checked into git (TD-21) | Free |
+| Gradle | **8.14.8**, through the Gradle wrapper, with the download's SHA-256 pinned in `gradle-wrapper.properties` | The newest 8.x release (2026-11-19) [T30]; AGP 8.13 needs Gradle 8.13 or newer [T8]. With the wrapper, nobody installs Gradle by hand; the checksum blocks a tampered download | Free |
 | Language | **Java**, compiled for Java 8 (`--release 8`) in every module that ships | One language for the game, the logic, the simulator and the tests; the owner's engine is Java (Q11). `--release 8` stops code from calling Java 9+ APIs that Android 7 doesn't have — crash-safety on the oldest supported phones (F20 AC6). Cheap to raise later | — |
-| Build JDK | **JDK 21** (17 or newer is required) [T5][T8] | Gradle 8.10+ and the Android plugin need JDK 17 or newer; liftoff recommends 21 [T5] | Free (OpenJDK) |
+| Build JDK | **JDK 17 or newer** [T5][T8]. Verified on the owner's PC with Oracle JDK 17.0.11, the `java` on PATH. Android Studio's bundled JDK 21.0.9 is also there (TD-22) | Gradle 8.10+ and the Android plugin need JDK 17 or newer [T5][T8]. Liftoff's "21 recommended" is a preference, not a requirement | Free |
 | Android Gradle plugin (AGP) | **8.13.2** — maximum API level 36.1; needs Gradle 8.13 and JDK 17 [T8] | **Liftoff's default is 8.9.3 [T6], and AGP 8.9 supports API 35 at most [T7].** Play has required API 36 since 31 Aug 2026 [T10]. AGP 9.5 (Oct 2026, up to API 37 [T9]) is a major version that libGDX's templates haven't adopted — TD-08 | Free |
 | SDK levels | **compileSdk 36 · targetSdk 36 · minSdk 24** | target: Play's requirement [T10], CR9. min: PRD F20 (Android 7.0); also exactly what the ads SDK needs from 25.5.0 [T17]; liftoff's default is 21 [T3] | — |
 | UI | scene2d.ui (part of libGDX), with **styles built in code** — no Skin JSON | Skin JSON is loaded by reflection, which release-build code shrinking can break. Building in code also matches D2 | — |
@@ -150,8 +152,8 @@ Every row costs **₹0 at 1,000 players**: nothing here charges per player.
 | Fonts | **Noto Sans** (OFL), baked into bitmap fonts at build time: 3 text sizes × regular/bold, Latin letters plus ₹ | L-11 (no FreeType at runtime), F13 AC3, CR6 | — |
 | Sound | Sound effects made with jsfxr (the owner's own) or CC0, as OGG, played by libGDX `Sound` | F14, CR6 | — |
 | Content | CSV and JSON in git → a build-time validator → JSON assets (§4.4) | IDEA D3; F13 AC1; DR24 | — |
-| Android library | AndroidX Core, for FileProvider only | F12, F18 — sharing without any storage permission | Apache-2.0 |
-| Tests | JUnit 5 — used only in tests, never shipped | Unit tests, migration tests, guards | EPL-2.0, test-only (L-11) |
+| Android library | **AndroidX Core 1.17.0** — libGDX's Android backend already brings it in (verified 2026-11-24). We'll also use its FileProvider. It adds one app-private permission (TD-24) | F12, F18 — sharing without any storage permission | Apache-2.0 |
+| Tests | **JUnit 5.14.4**, the newest 5.x [T31] — used only in tests, never shipped. JUnit 6 exists but needs Java 17 | Unit tests, migration tests, guards | EPL-2.0, test-only (L-11) |
 | Simulator | A plain Java program in the `sim` module, running the real `logic` | DR11, F11 AC4, Check 3 | — |
 | Desktop dev window | libGDX's LWJGL3 desktop backend — for development only, never shipped | Fast iteration on Windows; the haggle lab | — |
 | Source control | The existing private GitHub repo | — | Free |
@@ -170,13 +172,14 @@ Every row costs **₹0 at 1,000 players**: nothing here charges per player.
 
 | Step | How |
 |---|---|
-| **Install** (ME — your call, all free) | • **Android Studio** (current stable), which includes the SDK manager and, from memory, a bundled JDK 21. Or install BellSoft Liberica or Azul Zulu JDK 21, as liftoff recommends [T5]<br>• From the SDK manager: **Android SDK Platform 36** and Build-Tools 35+ [T8]<br>• **gdx-liftoff**, to generate the project once |
-| **Generate** | Liftoff with the Android, desktop (LWJGL3) and core modules. Then set AGP 8.13.2, minSdk 24 and Java 8 (§1.2). Add the `logic`, `sim` and `tools` modules by hand (§2.3) |
-| **Run while building** | `gradlew lwjgl3:run` — the whole game in a desktop window; the fastest loop |
-| **Run on a phone** | USB debugging on, then `gradlew android:installDebug` or Run in Android Studio |
-| **Run on emulators** | Android Studio's emulators: API 24 (the oldest supported) and API 36 (gesture and 3-button navigation). They need the PC's hardware virtualization switched on (from memory) |
-| **Test** | • `gradlew check`: unit tests, migration fixtures, the content validator, the manifest and backup-rule guards<br>• `gradlew sim:run`: the simulator report<br>• the PRD's acceptance criteria, by hand, on the phone at each milestone |
-| **Ship** | `gradlew android:bundleRelease` → an Android App Bundle (AAB) signed with the upload key → Play Console: internal testing → closed testing (14 days) → production, as a staged rollout |
+| **Already on the owner's PC** (checked 2026-11-24) | • Android Studio 2025.3, with its bundled JDK 21.0.9<br>• Oracle JDK 17.0.11, on PATH<br>• Android SDK: platforms 35, 36, 36.1; Build-Tools 34–36.1; platform-tools (adb); emulator 36.4.10, using Windows' hypervisor (WHPX), which reports "installed and usable"<br>• Two virtual devices: **Medium_Phone_API_36.1** (Google Play image) and **LowEnd_A9** (API 28) |
+| **Downloaded for the empty project**, with the owner's yes | Gradle 8.14.8, and the build's dependencies: AGP 8.13.2, libGDX 1.14.2, JUnit 5.14.4. Nothing was installed system-wide |
+| **Create** | Written by hand (TD-21). Every command that works is in `CLAUDE.md` → Commands |
+| **Run while building** | `gradlew lwjgl3:run` — the whole game in a desktop window; the fastest loop. *Not run yet* |
+| **Run on a phone** | USB debugging on, then `gradlew android:installDebug` or Run in Android Studio. *Not verified yet* — it needs the owner's phone (Q13) |
+| **Run on emulators** | **Verified:** Medium_Phone_API_36.1, started from the command line (CLAUDE.md). Present but not yet used: LowEnd_A9 (API 28).<br>**Not verified: API 24**, the oldest Android we support — this PC has no API 24 system image. Downloading one needs the owner's yes; do it before the closed test (TD-23) |
+| **Test** | • `gradlew check`: compiler lint, Android Lint, unit tests — and, as they arrive, migration fixtures, the content validator and the manifest and backup-rule guards<br>• `gradlew sim:run`: the simulator report (the module arrives with its first code)<br>• A screenshot to prove any screen: `adb exec-out screencap -p > shots/<name>.png` (CLAUDE.md)<br>• Maestro, to tap through screens: later, with the owner's yes, once there are screens (decided 2026-11-24)<br>• The PRD's acceptance criteria, by hand, on the phone at each milestone |
+| **Ship** | `gradlew android:bundleRelease` → an Android App Bundle (AAB) signed with the upload key → Play Console: internal testing → closed testing (14 days) → production, as a staged rollout.<br>**Not run yet.** Still missing:<br>• the upload key — the owner creates it with the JDK's `keytool`, and it stays outside git (CR11)<br>• a signing config that reads the key from a file outside git<br>• code-shrinking (R8) rules<br>• the Play Console app entry and its forms: privacy policy URL (CR15), Data safety, target audience, content rating<br>• the store listing's images<br><br>No Mac and no paid plan are needed |
 | **iOS** | **Not possible from this machine.** libGDX's iOS route needs a Mac with Xcode (from memory). Apple's $99 a year is pre-approved only if iOS ships, and it isn't planned |
 
 ---
@@ -222,6 +225,11 @@ Hardening's rule of thumb (H4) applies. If getting around a rule only changes th
 | `tools` | The content validator and builder, and the font baker (FreeType runs here, at build time only) | libGDX, gdx-freetype (desktop) | No |
 
 **Package:** `io.github.rameshkumark24.bazaarboss.*` — the same as the permanent app ID (§11).
+
+**As built (2026-11-24):**
+- The empty project has `logic`, `core`, `android` and `lwjgl3`.
+- `sim` and `tools` are created with their first code.
+- `core` draws a single "empty project" label, which M0 replaces.
 
 ---
 
@@ -480,7 +488,7 @@ The simulator must predict the phone (Check 3, DR11), so the logic gives the sam
 | Entity | Fields — type — empty? | Notes |
 |---|---|---|
 | **GameState** (root) | `formatVersion` int, from 1 · `writtenBy` int — the app versionCode · `contentVersion` int · `createdAtUtcMs` long · `nextId` long, from 1 · `rng` long[2] · `player` PlayerState · `godown` list of OwnedItem (may be empty) · `day` DayState · `records` Records · `stats` Stats · `hintsSeen` sorted list of String (may be empty) | The only root. **No owner field — see §4.7** |
-| **PlayerState** | `cash` long ≥ 0 (DR2) · `reputation` int 0–100 [A] · `tierId` String · `dayNumber` int ≥ 1 · `goalProgress` long ₹ — **pending Q6**: kept if the bar counts profit, dropped (derived from cash) if it counts cash · `loan` Loan or **null** · `periyappaGiftGiven` bool | |
+| **PlayerState** | `cash` long ≥ 0 (DR2) · `reputation` int 0–100 [A] · `tierId` String · `dayNumber` int ≥ 1 · `goalProgress` long ₹ — profit earned since the last tier. It only rises, and starts at 20% of the target (Periyappa's gift). Q6, decided 2026-11-24 (PRD F7) · `loan` Loan or **null** · `periyappaGiftGiven` bool | |
 | **Loan** | `principal` long > 0 · `repaid` long, from 0 to principal · `repayShareBp` int 1–10,000 · `takenOnDay` int | One at a time (DR3). It's set to null when fully repaid |
 | **OwnedItem** | `id` long · `itemDefId` · `condition` int · `fake` bool · `cluesSeen` sorted list of clue IDs (may be empty) · `paid` long ≥ 0 (0 for a gift) · `acquiredDay` int · `displaySlot` int or **null** (null = in the godown) · `reservedByVisit` long or **null** | Reserved while a buyer is haggling for it, so it can't be sold twice (§7.10 of the PRD) |
 | **DayState** | `phase` enum morning/trading/evening · `auction` Auction or **null** · `reveal` Reveal or **null** · `visits` list of Visit (may be empty) · `haggle` Haggle or **null** · `deals` list of DealRecord — today's only (may be empty) · `bohniDone` bool (if Q8 is accepted) · `specialId` String or **null** · `pendingAd` {nonce long, offer enum} or **null** (Milestone 4) | Cleared at the day end, after the kanakku is committed |
@@ -551,7 +559,7 @@ The simulator must predict the phone (Check 3, DR11), so the logic gives the sam
 | Best deal of the day / ever | The kanakku, and every sale | One comparison per sale | Highest profit, then lowest `seq` |
 | Found counter | The stall and the godown | `discovered.size()` | Sorted by ID |
 | A regular's memory | When a regular arrives | TreeMap lookup | — |
-| Is Today's special available? | The stall | `today > lastSpecialEpochDay`, with the clock-back guard | — |
+| Is Today's special available? | The stall | `today > lastSpecialEpochDay`. If `today < lastSpecialEpochDay − 2`, it's a clock correction: reset to today and offer it (DR26) | — |
 | Content by ID | Everywhere | HashMaps built once at load, for lookups only | Iterate in the pack's list order |
 | Share my stats | On tap | Read straight from `Stats` | Fixed field order (§5.3) |
 
@@ -584,7 +592,7 @@ The simulator must predict the phone (Check 3, DR11), so the logic gives the sam
 | Guard | Runs | Fails the build when… | Traces to |
 |---|---|---|---|
 | `tools:validateContent` | Part of `check`, and before every release bundle | IDs are malformed or duplicated; a reference doesn't resolve; an item lacks 2–3 clues; a number is out of range; a voice is missing a line; placeholders differ between voices; a line is too long; a banned word appears; a character isn't in the baked font; **an ID listed in `content/ids-ever-shipped.txt` has been removed** | F13 AC1, DR24, CR2, §6 |
-| `android:checkMergedManifest` (each variant) | After the manifest merge | It asks for any permission off the allowlist (v1: `VIBRATE` only)<br>• `allowBackup`, `dataExtractionRules`, `fullBackupContent`, `enableOnBackInvokedCallback="true"` or `appCategory="game"` is missing<br>• anything besides the launcher is exported<br>• the FileProvider is exported<br>• a release build is debuggable | CR13, H2-8, H4-1, F15 AC6 |
+| `android:checkMergedManifest` (each variant) | After the manifest merge | It asks for any permission off the allowlist. v1's allowlist: `VIBRATE`, plus `<applicationId>.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION` — a signature-level permission AndroidX Core declares for the app's own receivers, which grants no access to anything (TD-24)<br>• `allowBackup`, `dataExtractionRules`, `fullBackupContent`, `enableOnBackInvokedCallback="true"` or `appCategory="game"` is missing<br>• anything besides the launcher is exported<br>• the FileProvider is exported<br>• a release build is debuggable | CR13, H2-8, H4-1, F15 AC6 |
 | The backup-rules unit test | `check` | Either XML includes anything beyond `save/game.json`, the two backups and `bb-settings`, or fails to exclude the compliance record | H4-13, H1-10 |
 | The logic-imports test | `check` | `logic` imports libGDX beyond its JSON utilities | §2.3, DR11 |
 | The FileProvider-paths test | `check` | Any path other than `cache/share/` is exposed | §4.7, flag 1 |
@@ -844,12 +852,20 @@ These are the economy numbers that Q9 leaves to tuning. Fill this table as the s
 
 ## Findings for the PRD
 
-Writing this file turned up four things the PRD may want to change. None is changed yet — that's the owner's call.
+Writing this file turned up four things for the PRD. **All four were applied on 2026-11-24, as recommended** — see the PRD's change log.
 
-1. **DR26's clock guard can punish an honest player.** If a phone's date jumps a year ahead by mistake and is then corrected, "nothing new until it passes the last date seen" means no Today's special for a year. **Recommended:** treat a backward jump of more than 2 days as a clock correction, and reset to today. Gaming it only changes the cheater's own game (H5-1).
-2. **Screen readers can't read the game** (§11, decision 1). The PRD promises text size and "mood never by colour alone", but not screen-reader support. **Recommended:** record it as a known limit in PRD §5 — or revisit the engine choice now, while it's cheap.
-3. **Q6 changes one save field** (`goalProgress`). Either answer works; deciding before M3 avoids a migration.
+1. **DR26's clock guard could punish an honest player.** If a phone's date jumps a year ahead by mistake and is then corrected, the old rule meant no Today's special for a year. **Applied:** a backward jump of more than 2 days counts as a clock correction and resets to today (PRD DR26, F6, §7.7).
+2. **Screen readers can't read the game** (§11, decision 1). **Applied:** recorded in PRD §5 as a known limit.
+3. **Q6 changes one save field** (`goalProgress`). **Applied:** Q6 is decided — the bar counts profit earned since the last tier, and the upgrade costs no cash (PRD F7). The field stays (§4.5).
 4. **Large screens are handled.** Android 16 ignores the portrait lock on screens ≥ 600 dp unless the app is a game, and `android:appCategory="game"` covers that [T11]. No PRD change — noted so nobody removes the attribute.
+
+**Found by the empty project (2026-11-24):**
+
+5. **AndroidX adds an app-private permission.** **Applied** as a precision fix: PRD F20 AC2 and CR13 now name it (TD-24). The product promise is unchanged: no device permission besides vibration, and no internet.
+6. **Android shows "Viewing full screen" at first launch** — **open; the owner decides at M0.**
+   - It appears because the empty project's theme hides the status bar. It's a one-time system notice, but it covers the first screen within the first 5 seconds — against PRD F1's "nothing in the way" (AC1, AC4).
+   - **Recommended:** keep the status bar visible. Draw edge-to-edge behind it with safe insets (TD-20), so no notice ever appears.
+   - Until M0 decides, the commands in CLAUDE.md dismiss it before a screenshot.
 
 ---
 
@@ -879,6 +895,10 @@ Append new entries; never overwrite. Each entry's "rules out" is what the decisi
 | TD-18 | 2026-11-24 | **Hosting: GitHub Pages, with versioned policy URLs** | Netlify and similar | Already owned; free; versioned in git; within its limits [T19] | E-commerce on that host [T19] |
 | TD-19 | 2026-11-24 | **UI: scene2d.ui with styles built in code** | Skin JSON; a custom UI | Release-build shrinking breaks reflection; D2 | — |
 | TD-20 | 2026-11-24 | **Edge-to-edge with safe insets; `appCategory="game"`; predictive back via `enableOnBackInvokedCallback` + `setCatchKey(BACK)`** | Opting out (no longer possible at API 36 [T11]) | API 36's rules [T11]; libGDX support [T4]; F15 AC6 | — |
+| TD-21 | 2026-11-24 | **The project is written by hand from liftoff's template, not generated with liftoff.** *Corrects §1.2 and §1.3* | Running the liftoff app; hand-writing | Liftoff has no command-line mode [T33], and this step had to be reproducible from the command line. The hand-written build has the same shape and lives in git | Liftoff's one-click extras (none are needed) |
+| TD-22 | 2026-11-24 | **Toolchain as verified:** JDK 17 (the PC's `java`) runs the build; the Gradle 8.14.8 wrapper with a pinned SHA-256; JUnit 5.14.4; Groovy build scripts using `prop = value` assignments; javac `-Xlint:all -Werror` on the pure-Java modules; Android Lint with `abortOnError`, and its 4 intentional warnings suppressed in the manifest, with reasons. *Corrects TD-08's "JDK 21"* | JDK 21 (also on the PC); Gradle 9.x; JUnit 6 | JDK 17 is AGP's minimum and is already the default `java` [T8]. Gradle 8.14.x is the line AGP 8.13 is built for [T8][T30]. JUnit 6 needs Java 17. The old Groovy assignment syntax is removed in Gradle 10. Warnings fail the build from day one | Gradle 9 and AGP 9 features until the planned move (TD-08) |
+| TD-23 | 2026-11-24 | **Test devices on this PC: Medium_Phone_API_36.1 (verified); LowEnd_A9 (API 28) for low-memory checks. API 24 is not testable yet** | Download an API 24 image now; skip API 24 | The PRD's floor is Android 7.0 (F20 AC6), but this PC has no API 24 image. Download one with the owner's yes before the closed test. The real 2–3 GB phone is still Q13 | — |
+| TD-24 | 2026-11-24 | **The permission allowlist includes AndroidX's app-private `DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION`.** *Corrects §4.11's "VIBRATE only"* | Exclude AndroidX (impossible: libGDX's Android backend depends on it); strip the entry from the manifest | Found in the first build (`aapt2 dump permissions`). It's signature-level, defined by the app for its own receivers, and grants nothing. Stripping it could break AndroidX receivers on Android 13+. PRD F20 AC2 and CR13 now say so | — |
 
 ---
 
@@ -917,6 +937,10 @@ All opened on 2026-11-24.
 | T27 | [libGDX wiki — preferences](https://libgdx.com/wiki/preferences) | On Android, Preferences are SharedPreferences |
 | T28 | [libGDX JsonReader source](https://github.com/libgdx/libgdx/blob/master/gdx/src/com/badlogic/gdx/utils/JsonReader.java) | Integers are parsed with `Long.parseLong`; only numbers with a decimal point or exponent become doubles |
 | T29 | [Maven Central — gdx-platform 1.14.2 natives](https://repo1.maven.org/maven2/com/badlogicgames/gdx/gdx-platform/1.14.2/) | Native library jars of 70–85 KB per CPU type |
+| T30 | [Gradle — all versions](https://services.gradle.org/versions/all) and [the 8.14.8 checksum](https://services.gradle.org/distributions/gradle-8.14.8-bin.zip.sha256) | 8.14.8 is the newest 8.x (built 2026-11-19); the newest overall is 9.9.2. SHA-256 `94da8969…7af651` |
+| T31 | [Maven Central — JUnit BOM](https://repo1.maven.org/maven2/org/junit/junit-bom/maven-metadata.xml) | The newest 5.x is 5.14.4 (6.2.0-M1 is the newest overall) |
+| T32 | [Google Maven — AGP versions](https://dl.google.com/android/maven2/com/android/tools/build/gradle/maven-metadata.xml) | 8.13.2 is the newest 8.13 patch |
+| T33 | [gdx-liftoff README](https://github.com/libgdx/gdx-liftoff/blob/master/README.md) | Setup is click-through only: Project Options → Next → Generate. No command-line mode |
 
 **Not opened today, and used as standard Android behaviour:**
 - [FileProvider](https://developer.android.com/reference/androidx/core/content/FileProvider)

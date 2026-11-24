@@ -1,0 +1,20 @@
+// Root build. Versions come from docs/TRD.md §1.2 (checked against the live docs on 2026-11-24).
+plugins {
+    // AGP 8.13.x supports API 36.1 (liftoff's default 8.9.3 stops at API 35) — TRD TD-08.
+    id 'com.android.application' version '8.13.2' apply false
+}
+
+subprojects {
+    plugins.withId('java') {
+        tasks.withType(JavaCompile).configureEach {
+            options.encoding = 'UTF-8'
+            // Compiler lint, strict from day one: any warning fails the build.
+            options.compilerArgs += ['-Xlint:all,-path,-processing,-options', '-Werror']
+        }
+        // Shipped Java compiles against the Java 8 API, so a Java 9+ call fails the
+        // build instead of crashing on Android 7 (TRD §1.2, TD-08).
+        tasks.named('compileJava', JavaCompile) {
+            options.release = 8
+        }
+    }
+}

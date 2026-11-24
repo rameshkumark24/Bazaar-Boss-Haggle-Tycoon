@@ -1,0 +1,9 @@
+// core: the libGDX game — screens, UI, art and sound (TRD §2.3).
+plugins {
+    id 'java-library'
+}
+
+dependencies {
+    api "com.badlogicgames.gdx:gdx:$gdxVersion"
+    implementation project(':logic')
+}
