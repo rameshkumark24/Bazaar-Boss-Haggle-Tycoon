@@ -82,7 +82,7 @@ Bazaar Boss: Haggle Tycoon is a free, single-player, offline Android game set in
 One in-game **day** is the session. It takes about 3–5 minutes [A]:
 
 1. **Morning — get stock.**
-   - Go to today's kabadi auction: a 10-second peek, then bid against 2 rivals, then watch the gunny bag empty item by item. Keep or scrap each item.
+   - Go to today's kabadi auction: a 10-second peek, then bid against 2 rivals, then watch the gunny bag empty item by item. On the Sort list that follows, keep or scrap each item.
    - Or skip the auction and deal with walk-in sellers.
 2. **Look closer.** Inspect anything doubtful. Clues (weight, marks, wear) show its condition and give fakes away.
 3. **Serve 5–8 customers** [A], one at a time; you choose whom to serve next. Each one is a haggle:
@@ -135,12 +135,14 @@ Each feature lists four things:
 ### F1 · First launch and the voice picker
 **Does:**
 - The first screen offers three voices — English, Tanglish, Hinglish — each with a sample line.
-- One tap and the stall opens, with a walk-in seller already waiting.
+- One tap and **the first haggle opens at once**: a walk-in seller is already at the stall, with an item to sell. The stall itself is introduced right after that first deal (APP-FLOW.md §2.1).
+- The first customer of a new game is always a patient walk-in seller with a genuine item, who won't walk away before round 3 [A].
 - Hints are one line each. There's no tutorial to sit through.
+- The first hint also says **"All ₹ here is game money."** [A] *Why:* in India, a new player may otherwise read prices as real money (CR1; APP-FLOW.md §4).
 
 **Acceptance**
 1. Given a fresh install, when I open the game, then the first screen is the voice picker: three voices, each with a sample line, and a mute control. Nothing asks for a name, sign-in, email, age or permission, and no ad appears.
-2. Given I tap a voice, then the stall opens with a walk-in seller at the counter and a one-line hint.
+2. Given I tap a voice, then the first haggle opens at once — a walk-in seller at my stall with an item — with a one-line hint. After that first deal, the stall appears for the first time.
 3. Given a fresh install and a stopwatch started at the icon tap, when I play normally, then I make my first offer within 30 seconds.
 4. Given my first 60 seconds of play, then I have closed a first deal and seen its verdict line, and no ad, sign-in or permission prompt has appeared.
 5. Given I chose a voice, when I relaunch, then the voice picker doesn't appear again; it returns only after Start over. I change voice in Settings.
@@ -156,7 +158,7 @@ Each feature lists four things:
 ### F2 · The haggle
 **Does:**
 - One negotiation with one customer over one item, in both directions: customers who buy from you, and walk-in sellers who sell to you.
-- The player sets a price with a slider or the quick buttons (−10%, −25%, "Last price?"), or walks away.
+- The quick buttons −10% and −25% make an offer in **one tap** [A]. The slider sets any other price, followed by Offer. "Last price?" asks for a firm price. Or the player walks away.
 - The customer:
   - hides a walk-away price
   - shows their mood as a face plus a word
@@ -182,6 +184,7 @@ Each feature lists four things:
 7. Given I tap Walk away, then the haggle ends. The customer may call me back once with a better price ("Okay okay, vaanga!" / "Achha theek hai, aao!"). If they don't, they're gone for the day.
 8. Given a haggle ends in a walk-away (mine or theirs), then a "Lesson: …" line says what went wrong, without the walk-away price [A].
 9. Given each of the five personalities in the haggle lab, then each reacts visibly to the habit it punishes (F3).
+10. Given I tap −10% or −25%, then that offer is made at once, with no second tap [A].
 
 **When it fails:** if a call comes in, or Android kills the game mid-haggle, reopening shows the same customer, item, offers, mood and patience. A deal is never lost and never applied twice.
 
@@ -254,7 +257,8 @@ What inspecting costs, and how sure a clue is, are still open (Q4).
 **Does:**
 - One auction each in-game morning.
 - A 10-second peek at part of the lot, then live bidding against 2 rival dealers. Each rival has a budget, a risk appetite and favourite categories.
-- The winner pays. The gunny bag is emptied item by item, and the player keeps or scraps each one.
+- The winner pays. The gunny bag empties itself item by item — tap to speed it up. That's the **Reveal**.
+- Then comes the **Sort** list: every item starts as Keep, and the player picks any junk to scrap. *Why two screens:* a fast tap through the show must never land on Scrap (APP-FLOW.md §4).
 - After every auction, each rival's estimate of the lot is shown.
 
 **Acceptance**
@@ -263,10 +267,11 @@ What inspecting costs, and how sure a clue is, are still open (Q4).
 3. Given my cash, then I can't bid above it, and a rival never bids above its budget.
 4. Given the hammer falls, then the result names the winner and the price, and shows every rival's estimate of the lot.
 5. Given I won, then my cash goes down by the price once, and the bag empties one item at a time.
-6. Given the reveal, when I scrap items, then one confirmation lists them with the total ("Scrap 3 items for ₹120?"), and they're sold at once.
+6. Given the Sort list, then every item starts as Keep and shows its scrap value. When I mark items to scrap and confirm, one confirmation lists them with the total ("Scrap 3 items for ₹120?"), and they're sold at once.
 7. Given I lost or skipped, then my cash is unchanged and walk-in sellers come instead.
 8. Given the game goes to the background during bidding, when I come back, then the auction is paused where it was: nobody bid while I was away.
 9. Given the reveal's look and sound, then nothing resembles a slot machine — no reels, spins, flashing jackpots or coin showers.
+10. Given the Reveal, when I press back, then every remaining item is revealed at once. Given the Sort list, when I press back, then everything is kept. Back never scraps anything.
 
 **When it fails:**
 - If the game dies during the reveal, the items already shown are in the godown and the rest are revealed on return.
@@ -293,6 +298,7 @@ What inspecting costs, and how sure a clue is, are still open (Q4).
   - a mute button
 
   Everything else is one tap away.
+- New stock fills empty display slots automatically; the player can rearrange [A].
 - In-game time moves only when the player acts.
 
 **Acceptance**
@@ -303,6 +309,7 @@ What inspecting costs, and how sure a clue is, are still open (Q4).
 5. Given I close the game mid-day and come back days later, then nothing has changed: no timers, no decay, no lost stock and no guilt message.
 6. Given I come back after a gap [A — the gap's length is a tuning number, Q9], then a "Welcome back — here's a cheap starter lot" offer appears, once.
 7. Given the day's last customer has gone, then the day ends with the kanakku (F10).
+8. Given new stock arrives (bought, kept from a lot, or brought by a seller) and a display slot is empty, then it goes on display automatically. I can rearrange or take anything off [A]. *Why:* an empty display means no buyers, which reads as "broken" (APP-FLOW.md §4).
 
 **When it fails:** if the phone's date has gone back by 1–2 days, no new Today's special appears until the date passes the last one seen. A jump back of more than 2 days is treated as a clock correction, and the special resets to today (DR26).
 
@@ -399,6 +406,7 @@ Still open: selling a fake you didn't know was fake (Q5).
   - Periyappa's small, interest-free loan, repaid automatically from sales
   - scrapping items
   - a cheap-seller day
+- While the player is broke, a **"Periyappa can help"** button stays on the stall, so closing the overlay never strands them (APP-FLOW.md §4).
 
 **Acceptance**
 1. Given I can't afford anything on offer and have nothing worth selling [A — "broke" is defined in tuning, Q9], then the low-cash overlay appears with the three ways out.
@@ -409,6 +417,7 @@ Still open: selling a fake you didn't know was fake (Q5).
    - only one loan can be open at a time [A]
 3. Given a cheap-seller day, then walk-in sellers bring items I can afford.
 4. Given the simulator plays thousands of days with every bot, then no game reaches a dead end — no cash, no sellable stock, no loan and no affordable seller all at once.
+5. Given I close the low-cash overlay while still broke, then a "Periyappa can help" button on the stall opens it again.
 
 **When it fails:** nothing to fail.
 
@@ -715,18 +724,19 @@ The next launch is a first launch.
 
 ## 6. Screens
 
-**v1: 9 screens plus overlays.** Every list screen has two empty states: one for never having had anything, and one for a filter that hides everything.
+**v1: 10 screens plus overlays.** The Reveal and the Sort became two screens on 2026-11-24. How the screens connect — navigation, back, launch routing — is in [APP-FLOW.md](APP-FLOW.md). Every list screen has two empty states: one for never having had anything, and one for a filter that hides everything.
 
 | # | Screen | Purpose | What it shows with no data |
 |---|---|---|---|
-| 1 | Voice picker | First launch: choose English, Tanglish or Hinglish, with a sample line in each; mute | It *is* the no-data screen |
-| 2 | Stall (home) | Cash, reputation, day, display slots, next-goal bar, Today's special, mute; the route to everything | At first launch:<br>• the starting cash<br>• the goal bar at 20% — Periyappa's gift<br>• empty display slots marked "Empty"<br>• a walk-in seller already waiting |
+| 1 | Voice picker | First launch: choose English, Tanglish or Hinglish, with a sample line in each; mute. One tap goes **straight into the first haggle** | It *is* the no-data screen |
+| 2 | Stall (home) | Cash, reputation, day, display slots, next-goal bar, Today's special, mute; the route to everything.<br>Three states:<br>• **morning** — the auction card<br>• **trading** — customers waiting<br>• **evening** — "Day N done — Start Day N+1"<br><br>While broke: **"Periyappa can help"** | First visit, right after the first deal:<br>• the cash left after that deal<br>• the goal bar at 20% — Periyappa's gift<br>• the first item already on display (F6 AC8); other slots marked "Empty"<br>• the first buyer on the way |
 | 3 | Haggle | Face, mood word, patience, item, slider, quick buttons, offers with reasons | Never opens without a customer and an item |
-| 4 | Inspect | Clues, condition, whether the clues point to a fake | Never opens without an item. Clues not yet found read "Look closer" [A] |
+| 4 | Inspect | Clues, condition, whether the clues point to a fake. The game's one "item, close up" screen — Item detail merges into it later | Never opens without an item. Clues not yet found read "Look closer" [A] |
 | 5 | Auction | Peek → live bidding → result with every rival's estimate | Today's auction done: "Next auction: tomorrow morning". Too little cash: the peek plays and the bid button says "Not enough cash" |
-| 6 | Lot reveal | The gunny bag emptied item by item; keep or scrap | A lot is never empty [A]. An all-junk lot offers "Scrap all for ₹X" |
+| 6a | Reveal | The gunny bag empties itself, item by item; tap to speed up. No decisions — back reveals the rest at once | A lot is never empty [A] |
+| 6b | Sort | Every item listed as Keep, with its condition and scrap value; mark the junk, confirm once | An all-junk lot offers "Scrap all for ₹X" |
 | 7 | Godown | All items, filter and sort, "Found X of 40" | Never had items: "Your godown is empty. Buy at the morning auction or from walk-in sellers." Filtered to nothing: "Nothing matches this filter" and a Clear button |
-| 8 | Day end (kanakku) | Best deal first, profit, reputation, today's deals, best deal ever, tomorrow's teaser, upgrade | No deals: "No deals today", then tomorrow's teaser. No best deal ever yet: "Your first deal will show here." |
+| 8 | Day end (kanakku) | Best deal first, profit, reputation, today's deals, best deal ever, tomorrow's teaser, upgrade. It opens automatically after the last customer. "Close for the day" leads to the stall's evening state | No deals: "No deals today", then tomorrow's teaser. No best deal ever yet: "Your first deal will show here." |
 | 9 | Settings | Voice, sound, vibration, text size, privacy policy, credits & licences, versions, Share my stats, Report a problem, Start over | Share my stats shows zeros before any play |
 
 **v1 overlays and messages**
@@ -735,13 +745,16 @@ The next launch is a first launch.
 |---|---|
 | Deal result | Profit or cost, the verdict line, reputation change, Share (never empty) |
 | Tier-up | The stall → shop celebration, once |
-| Low cash | Loan, scrap, or a cheap-seller day |
+| Low cash | Loan, scrap, or a cheap-seller day. Reopened by "Periyappa can help" on the stall while broke |
+| Pause | Resume · Settings — back, during a haggle or an auction |
 | Hints | One line, the first time each thing appears [A] |
 | Report a problem | Reason, the whole message, the crash-note option (only when a note exists), then the email app |
 | Credits & licences | Inside Settings |
 | Save recovered | "Couldn't read your save; restored your backup from <time>." |
 | Storage full | "Couldn't save — phone storage full." |
-| Newer save | "This save is from a newer version — update the game." [A] |
+| Newer save (blocks play) | "This save is from a newer version — update the game", with **Update on Play** and **Write to us** [A] |
+| Couldn't read any save | "Couldn't read your save — starting fresh. Sorry." Report a problem opens prefilled with "lost progress" |
+| Restored from backup | "Welcome back — your progress from <last played date> is here." Shown once, the first time a save arrives through Android's backup [A] |
 | Leave the game? / Leave the auction? | Back-button confirmations |
 
 Development builds also carry two dev screens (a text-and-content test and the haggle lab). Release builds don't.
@@ -756,10 +769,11 @@ Development builds also carry two dev screens (a text-and-content test and the h
 | Upgrades | Tier, display slots, storage, magnifier, workshop slots | After G3 |
 | Market map | Cities, unlock rules, travel | After G3 |
 | Event card | What the season changes, and for how long | After G3 |
-| Collections · Dealer's Guide | Set progress and bonuses · items discovered, value ranges learned, clue tips | After G3 |
-| Item detail · Reputation detail · Help | What you paid, estimate range, history · trust and what moves it · one page on mood, patience, reputation and auctions | After G3 |
+| Dealer's Guide | Items discovered, value ranges learned, clue tips — **with collections (set progress and bonuses) as sections**. Collections merged in on 2026-11-24 | After G3 |
+| Reputation detail · Help | Trust and what moves it · one page on mood, patience, reputation and auctions | After G3 |
+| *(Item detail)* | **Merged into Inspect (#4) on 2026-11-24.** Inspect grows price-paid and history sections | After G3 |
 | Ad offers | Extra peek, reopen a haggle (and instant finish once restoration exists); a "no ad right now" state | Milestone 4 |
-| Age screen + ads consent | Year of birth, then (for 18+) the notice: *Allow & watch* / *Not now* | Milestone 4 |
+| Age screen + ads consent | "Ads need an age check first", then year of birth, then (for 18+) the notice: *Allow & watch* / *Not now* | Milestone 4 |
 | Ads & privacy · Your data | Withdraw consent · everything kept on this phone, with Share and Start over | Milestone 4 |
 | Notification explainer | Shown before Android's one-shot permission prompt | Notifications |
 | Shop | Dealer Pack, themes, restore, payment pending | Purchases |
@@ -890,6 +904,12 @@ This section holds the business logic that isn't obvious. Each rule says why whe
 | Back pressed mid-haggle | Pause — never a walk-away |
 | Back pressed at the stall | The game asks before closing |
 | Back pressed during bidding | "Leave the auction?" Leaving means not winning, and nothing is paid [A] |
+| Back pressed on the voice picker (first launch) | Leaves the app — there's no game yet, so nothing is lost |
+| Back pressed in the first haggle | Pause — the stall doesn't exist yet to return to |
+| Back pressed during the Reveal | Every remaining item is revealed at once |
+| Back pressed on the Sort list | Everything is kept; nothing is scrapped |
+| Back pressed on the kanakku | The stall's evening state; the day stays finished |
+| Back pressed on any card | Its safe choice: Continue, Cancel, Keep, or Close |
 | Patience runs out, but the offer already meets the walk-away price | The customer accepts |
 | Reputation changes mid-day | It applies from the next customer |
 | A damaged save | The newest good backup loads, and the player is told |
@@ -986,6 +1006,8 @@ This section holds the business logic that isn't obvious. Each rule says why whe
   - only for something the player started
   - never about ads or purchases
   - scheduled on the phone, with no push service
+  - never posted while the game is open — an in-game banner instead
+  - a tap never interrupts a haggle or an auction (APP-FLOW.md §1.6)
 
 ---
 
@@ -1098,6 +1120,7 @@ These are product requirements. The legal reasoning and sources are in RESEARCH.
 ### 8.3 At Milestone 4 — ads, all in the same release as the ads SDK
 - **CR19 · The age screen.**
   - A neutral year-of-birth screen: nothing pre-filled, and no hint of the age needed.
+  - One neutral line says why: **"Ads need an age check first."** It never mentions the age that counts [A — ADV-1 checks the wording].
   - It appears at the first tap on an ad offer, never at launch.
   - It keeps only adult/minor and the date — never the year.
   - "Minor" can be re-checked once a year in Settings.
@@ -1237,6 +1260,7 @@ Pick one word and never drift.
 | **peek** | The 10-second partial look at a lot | preview, scan, x-ray |
 | **bid** | A price in an auction | bet, wager, stake |
 | **reveal** | Emptying the gunny bag, item by item | unboxing, opening, spin, draw |
+| **Sort** | The list after the reveal, where items are kept (the default) or scrapped | — |
 | **scrap** | Selling junk at once, at its fixed scrap price | trash, destroy, delete |
 | **item** · **condition** · **rarity** | A thing you can own · its state · how rare it is | product, card, loot |
 | **inspect** · **clue** | Look closer · what looking finds | scan, appraise |
@@ -1255,6 +1279,7 @@ Pick one word and never drift.
 | **Game money — no real money** | The exact line on the deal card | — |
 | **Periyappa** | The uncle behind the starting gift, the loan and, later, the tip. Same name in every voice [A] | uncle, bank, lender |
 | **loan** | Periyappa's interest-free help | credit, debt, EMI |
+| **Periyappa can help** | The stall's button while the player is broke | Get cash, Borrow |
 | **deal card** | The share image | brag card, receipt, certificate |
 | **voice** | English / Tanglish / Hinglish | language (for this setting) |
 | **Share my stats** · **Report a problem** · **Report this line** · **Start over** | Exact Settings labels | Feedback, Reset, Delete account, Contact us |
@@ -1297,7 +1322,7 @@ None of these is settled anywhere. Each carries a **recommendation** — my sugg
 | Q4 | **What inspecting costs, and how sure a clue is.** If inspecting is free and a fake clue is certain, the con artist never wins and fakes stop mattering. If it costs a round of patience, or a clue only suggests, skipping inspection becomes a real temptation | M2 (items and inspection), in the haggle lab | Each Inspect tap reveals one clue.<br>• Mid-haggle, each tap costs the customer one point of patience. In your own godown it's free.<br>• Clues are certain: a "wrong" clue proves a fake.<br>• A fake has at least one wrong clue among its 2–3, but not always the first.<br><br>So full inspection is possible but costs patience, and the rushed seller and the con artist pull you opposite ways. Confirm it in the haggle lab |
 | Q5 | **Selling a fake you didn't know was fake** — does reputation drop when the buyer finds out? | With Q4 | Yes, a small drop — a third of the penalty for a knowing sale — shown at day end as a Lesson ("A buyer found out the lamp was fake"). It keeps inspection worth doing after you buy, without treating an honest mistake like fraud |
 | Q6 | ~~What the next-goal bar counts~~ | **Decided 2026-11-24** | Profit earned since the last tier; the upgrade costs no cash once the bar is full; Periyappa's gift is a 20% head start. Now in F7 |
-| Q7 | **What a v1 player meets after the shop.** The showroom shows as the next goal. When that bar fills, can they buy it (which needs showroom content), or does it say "Coming in an update"? | M3, before the closed test | From the moment the shop opens, show the showroom as "Coming in an update" — never as a bar that fills to nothing. Make the next goal "Find all 40 items" (the found counter), which v1 can deliver. Don't build showroom content for v1 |
+| Q7 | **What a v1 player meets after the shop.** The showroom shows as the next goal. When that bar fills, can they buy it (which needs showroom content), or does it say "Coming in an update"? | M3, before the closed test | From the moment the shop opens, show the showroom as "Coming in an update" — never as a bar that fills to nothing. Make the next goal "Find all 40 items" (the found counter), which v1 can deliver. Once all 40 are found, keep a standing goal — "Beat your best deal (₹X)" — and say plainly that more of the bazaar arrives in updates (APP-FLOW.md §4). Don't build showroom content for v1 |
 | Q8 | **Throw-ins and bohni in v1?** IDEA counts them among the Indian-bargaining differentiators, but its v1 list doesn't name them | M1, in the haggle lab | Bohni in v1: one engine rule (a seller's first sale of the day comes a little cheaper, "for luck") and a few lines. Throw-ins after G1, because they need two-item deals on the haggle screen |
 | Q9 | **The economy numbers** are set in tuning against the 30–45-minute pacing target, using the simulator. None is decided yet, so don't treat a placeholder as a decision:<br>• starting cash<br>• item, scrap and tier prices<br>• patience per personality<br>• what counts as broke<br>• loan size and repayment share<br>• display slots and any godown limit<br>• the welcome-back gap | M1–M3 tuning | Keep the numbers out of this file. Tune them with the simulator in M1–M3 and record each in the TRD's tuning table. Fix two early, because they shape the code: a godown limit (start at 60 items) and the welcome-back gap (start at 3 calendar days) |
 | Q10 | **Native-script Tamil and Hindi menus later** — still wanted, now that the voices are Tanglish and Hinglish? | Before any work on them | No — unless players ask for it in reviews after G3. Latin-script voices are the product, and native script needs a text renderer this engine doesn't have |
@@ -1411,3 +1436,5 @@ How each part is measured:
 | 2026-11-24 | Every open question in §10 now carries a recommendation. All of them stay open until the owner decides |
 | 2026-11-24 | Applied the TRD's findings, as recommended:<br>• DR26, F6 and §7.7: a jump back of more than 2 days resets Today's special (a clock correction)<br>• §5: a Known limits entry — screen readers can't read the game<br>• Q6 decided: the goal bar counts profit earned since the last tier, and the upgrade costs no cash (F7, §6) |
 | 2026-11-24 | Precision fix from the first build: F20 AC2 and CR13 name the app-private permission AndroidX adds (TRD TD-24). No product change |
+| 2026-11-24 | From [APP-FLOW.md](APP-FLOW.md) — screens and flow:<br>• the first launch goes straight into the first haggle, with a patient first seller (F1, §6)<br>• quick buttons offer in one tap (F2)<br>• "Lot reveal & sort" is now two screens, Reveal and Sort (F5, §6)<br>• "Periyappa can help" on the stall while broke (F11, §6)<br>• the stall's three states; launch cards for a newer save (+ "Write to us"), an unreadable save, and a restore from backup (§6)<br>• Item detail merged into Inspect, and Collections into the Dealer's Guide (§6)<br>• back on every screen (§7.7)<br>• notifications never interrupt and are never posted while the game is open (DR39)<br>• Q7's recommendation adds a standing goal after all 40 items are found<br><br>The status bar now stays visible from the first frame (TRD TD-25) — no PRD text changed |
+| 2026-11-24 | APP-FLOW.md's three open recommendations, applied:<br>• new stock fills empty display slots automatically (F6 AC8, §6)<br>• the first hint says "All ₹ here is game money." (F1)<br>• the age screen opens with "Ads need an age check first.", wording to be checked by ADV-1 (CR19, §6) |
