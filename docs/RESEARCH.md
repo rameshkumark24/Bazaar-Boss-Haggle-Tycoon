@@ -1,6 +1,6 @@
 # Research — risks, legal and compliance, store rejection
 
-> **Status:** 2026-11-23. Reads [IDEA.md](IDEA.md), which is the product. Competitors are the next step and are left out here.
+> **Status:** 2026-11-23. Reads [IDEA.md](IDEA.md). Competitors are the next step and are left out here. **Since 2026-11-24 the product is defined in [PRD.md](PRD.md).** This file is background; its findings are carried there as compliance requirements (PRD §8).
 >
 > **Not legal advice.** Neither of us is a lawyer.
 > - **ADVICE** marks an item that needs a professional, with *when* it is needed. Advice that can wait is not a launch cost.

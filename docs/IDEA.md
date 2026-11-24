@@ -1,6 +1,6 @@
 # Bazaar Boss: Haggle Tycoon — the product as decided
 
-> **Status:** agreed 2026-11-23. Legal and store changes from [RESEARCH.md](RESEARCH.md) §0 folded in the same day. USP changes from [COMPETITORS.md → USP](COMPETITORS.md#usp) folded in 2026-11-24. Your bar's numbers (§9) and the [Business verdict](#business-verdict) added 2026-11-24; your address and CA decisions recorded the same day. [Hardening decisions](#hardening-decisions) added 2026-11-24 and folded into §2, §4, §6–§9 and the verdict. This file is the source of truth. Every later step reads it, not the chat. Change the product here.
+> **Status:** agreed 2026-11-23. Legal and store changes from [RESEARCH.md](RESEARCH.md) §0 folded in the same day. USP changes from [COMPETITORS.md → USP](COMPETITORS.md#usp) folded in 2026-11-24. Your bar's numbers (§9) and the [Business verdict](#business-verdict) added 2026-11-24; your address and CA decisions recorded the same day. [Hardening decisions](#hardening-decisions) added 2026-11-24 and folded into §2, §4, §6–§9 and the verdict. **Since 2026-11-24 the source of truth is [PRD.md](PRD.md).** This file is the background it was built from. Change the product in PRD.md, not here.
 >
 > **Labels:** **[F]** FACT — you said it, or you accepted my recommendation ("decided 2026-11-23") · **[A]** ASSUMPTION — inferred; correct it before it becomes the product · **[Q]** OPEN QUESTION — nobody knows yet · **[✓]** CHECKED — verified against a source (sources and tiers in [RESEARCH.md](RESEARCH.md))
 
@@ -760,6 +760,8 @@ SCORE — first version: 16 weeks · likely at month 12: ₹389 a month · needs
 | Location, contacts, files, camera, microphone | — | Never asked for |
 
 #### THE DATA TABLE
+
+> **Frozen 2026-11-24.** The live copy is in [PRD.md §8.5](PRD.md#85-the-data-table). Change that one, not this.
 
 Everything that survives the cut. **The privacy policy and Play's Data safety form are written from this table and nothing else.** A new SDK, field or form changes this table first.
 

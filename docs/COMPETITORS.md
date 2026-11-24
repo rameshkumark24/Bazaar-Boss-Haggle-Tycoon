@@ -1,6 +1,6 @@
 # Competitors — who sells the haggle-and-flip fantasy today, and where they leave a gap
 
-> **Status:** 2026-11-24. Reads [IDEA.md](IDEA.md) for the product. Research only — nothing here changes IDEA.md yet.
+> **Status:** 2026-11-24. Research only. The USP's asks were folded into IDEA.md and carried into [PRD.md](PRD.md), which since 2026-11-24 defines the product. This file is background.
 >
 > **Labels on every claim:**
 > - **SEEN** — I opened the page myself
