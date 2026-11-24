@@ -1275,40 +1275,40 @@ Pick one word and never drift.
 
 ## 10. Open questions
 
-None of these is settled anywhere. Don't cover one with a guess; when it's decided, move the answer into the right section and log it.
+None of these is settled anywhere. Each carries a **recommendation** — my suggested answer, not a decision. A question stays open until the owner accepts or changes the recommendation. Then the answer moves into the right section, with a line in the change log.
 
 **Product decisions still open**
 
-| # | Question | Decide by |
-|---|---|---|
-| Q1 | **The waitlist test's result** — go at ≥ 1,600 sign-ups, stop below 370, and between them build only to G1 (§12.1) | Day 7 of the test. It blocks the build |
-| Q2 | **Who reads the Hinglish lines as a native speaker?** Also ask that reader whether "kanakku" should read "hisaab" in Hinglish, and whether "Periyappa" works there | Before the closed test. It's a release blocker |
-| Q3 | **Closed-test reminders vs Check 1.** Play's production-access review favours an engaged closed test, and RESEARCH suggests a daily nudge. But Check 1 counts testers who play on day 7 "with nobody reminding them". Decide what reminders may say (for example, "stay opted in" only), or measure Check 1 only on testers who got none | Before the closed test |
-| Q4 | **What inspecting costs, and how sure a clue is.** If inspecting is free and a fake clue is certain, the con artist never wins and fakes stop mattering. If it costs a round of patience, or a clue only suggests, skipping inspection becomes a real temptation | M2 (items and inspection), in the haggle lab |
-| Q5 | **Selling a fake you didn't know was fake** — does reputation drop when the buyer finds out? | With Q4 |
-| Q6 | **What the next-goal bar counts:** cash on hand (it dips when you buy stock) or profit earned toward the tier (it only rises)? This also decides what Periyappa's gift is | M3 |
-| Q7 | **What a v1 player meets after the shop.** The showroom shows as the next goal. When that bar fills, can they buy it (which needs showroom content), or does it say "Coming in an update"? | M3, before the closed test |
-| Q8 | **Throw-ins and bohni in v1?** IDEA counts them among the Indian-bargaining differentiators, but its v1 list doesn't name them | M1, in the haggle lab |
-| Q9 | **The economy numbers** are set in tuning against the 30–45-minute pacing target, using the simulator. None is decided yet, so don't treat a placeholder as a decision:<br>• starting cash<br>• item, scrap and tier prices<br>• patience per personality<br>• what counts as broke<br>• loan size and repayment share<br>• display slots and any godown limit<br>• the welcome-back gap | M1–M3 tuning |
-| Q10 | **Native-script Tamil and Hindi menus later** — still wanted, now that the voices are Tanglish and Hinglish? | Before any work on them |
+| # | Question | Decide by | Recommended |
+|---|---|---|---|
+| Q1 | **The waitlist test's result** — go at ≥ 1,600 sign-ups, stop below 370, and between them build only to G1 (§12.1) | Day 7 of the test. It blocks the build | Publish the page this week. It needs only your Google Form link and the game's email — about 20 minutes, per site/README.md. Then post the clip. Start no build work until the day-7 count is in, and don't move the thresholds after seeing it |
+| Q2 | **Who reads the Hinglish lines as a native speaker?** Also ask that reader whether "kanakku" should read "hisaab" in Hinglish, and whether "Periyappa" works there | Before the closed test. It's a release blocker | Ask a native Hindi speaker among your 14 testers to read the Hinglish column (about 2 hours).<br>• Keep "kanakku" as the screen's name in every voice, and let Hinglish dialogue say "hisaab".<br>• Keep "Periyappa": he's the Coimbatore uncle, and Coimbatore is the setting.<br>• If nobody has read it in time, open the closed test with English and Tanglish only and add Hinglish in an update. Never ship it unread |
+| Q3 | **Closed-test reminders vs Check 1.** Play's production-access review favours an engaged closed test, and RESEARCH suggests a daily nudge. But Check 1 counts testers who play on day 7 "with nobody reminding them". Decide what reminders may say (for example, "stay opted in" only), or measure Check 1 only on testers who got none | Before the closed test | Send testers three messages only:<br>• day 0: welcome, and how to report<br>• day 8: "please send Share my stats"<br>• day 14: thanks<br><br>Never ask them to play. If a tester goes quiet, check only that they're still opted in. Check 1 then counts every tester honestly |
+| Q4 | **What inspecting costs, and how sure a clue is.** If inspecting is free and a fake clue is certain, the con artist never wins and fakes stop mattering. If it costs a round of patience, or a clue only suggests, skipping inspection becomes a real temptation | M2 (items and inspection), in the haggle lab | Each Inspect tap reveals one clue.<br>• Mid-haggle, each tap costs the customer one point of patience. In your own godown it's free.<br>• Clues are certain: a "wrong" clue proves a fake.<br>• A fake has at least one wrong clue among its 2–3, but not always the first.<br><br>So full inspection is possible but costs patience, and the rushed seller and the con artist pull you opposite ways. Confirm it in the haggle lab |
+| Q5 | **Selling a fake you didn't know was fake** — does reputation drop when the buyer finds out? | With Q4 | Yes, a small drop — a third of the penalty for a knowing sale — shown at day end as a Lesson ("A buyer found out the lamp was fake"). It keeps inspection worth doing after you buy, without treating an honest mistake like fraud |
+| Q6 | **What the next-goal bar counts:** cash on hand (it dips when you buy stock) or profit earned toward the tier (it only rises)? This also decides what Periyappa's gift is | M3 | **Profit earned since the last tier**, so the bar only rises.<br>• The upgrade costs no cash once the bar is full.<br>• Periyappa's gift is a 20% head start on the bar, on top of the starting cash.<br><br>A bar that drops when you buy stock would punish the move the game wants. If accepted, F7's criterion 2 changes from "the price is paid once" to "the upgrade is free once earned" |
+| Q7 | **What a v1 player meets after the shop.** The showroom shows as the next goal. When that bar fills, can they buy it (which needs showroom content), or does it say "Coming in an update"? | M3, before the closed test | From the moment the shop opens, show the showroom as "Coming in an update" — never as a bar that fills to nothing. Make the next goal "Find all 40 items" (the found counter), which v1 can deliver. Don't build showroom content for v1 |
+| Q8 | **Throw-ins and bohni in v1?** IDEA counts them among the Indian-bargaining differentiators, but its v1 list doesn't name them | M1, in the haggle lab | Bohni in v1: one engine rule (a seller's first sale of the day comes a little cheaper, "for luck") and a few lines. Throw-ins after G1, because they need two-item deals on the haggle screen |
+| Q9 | **The economy numbers** are set in tuning against the 30–45-minute pacing target, using the simulator. None is decided yet, so don't treat a placeholder as a decision:<br>• starting cash<br>• item, scrap and tier prices<br>• patience per personality<br>• what counts as broke<br>• loan size and repayment share<br>• display slots and any godown limit<br>• the welcome-back gap | M1–M3 tuning | Keep the numbers out of this file. Tune them with the simulator in M1–M3 and record each in the TRD's tuning table. Fix two early, because they shape the code: a godown limit (start at 60 items) and the welcome-back gap (start at 3 calendar days) |
+| Q10 | **Native-script Tamil and Hindi menus later** — still wanted, now that the voices are Tanglish and Hinglish? | Before any work on them | No — unless players ask for it in reviews after G3. Latin-script voices are the product, and native script needs a text renderer this engine doesn't have |
 
 **Answers only the owner has**
 
-| # | Question |
-|---|---|
-| Q11 | Where are the idle engine and the Bus Mudhalali text code — and are they still wanted, given Latin-script voices? This is for the TRD; if the code doesn't arrive by M0, the save system and number formatting get written fresh (about 1–2 days) |
-| Q12 | For how many weeks does ~5 hours a week hold? |
-| Q13 | Can the owner draw (for art direction)? And is there a 2–3 GB RAM phone to test on? F20 needs one; borrowing is fine |
-| Q14 | Which platform is the owner's social account on, and roughly how many followers? This moves one row of the reach estimate only |
-| Q15 | Before the first sale: the CA's GST answer (after AdMob's first payout, by the owner's rule), and whether the grievance page must publish a phone number (ADV-3) |
+| # | Question | Recommended |
+|---|---|---|
+| Q11 | Where are the idle engine and the Bus Mudhalali text code — and are they still wanted, given Latin-script voices? This is for the TRD; if the code doesn't arrive by M0, the save system and number formatting get written fresh (about 1–2 days) | Don't wait for it: write the save system and number formatting fresh in M0. If the code turns up, copy in only what's better, and never modify the originals. The Bus Mudhalali Indic text code isn't needed for Latin-script voices |
+| Q12 | For how many weeks does ~5 hours a week hold? | Commit only to the weeks up to G1 (about 8), then decide the rest with G1's result |
+| Q13 | Can the owner draw (for art direction)? And is there a 2–3 GB RAM phone to test on? F20 needs one; borrowing is fine | No drawing needed: the look is built from shapes in code (IDEA D2). Borrow a 2–3 GB RAM phone before M2, when the auction and the reveal first run |
+| Q14 | Which platform is the owner's social account on, and roughly how many followers? This moves one row of the reach estimate only | Post the test clip wherever you watch short video most (Reels or Shorts) — reach there comes from the platform more than from followers. Share the follower count only if you want the reach estimate redone |
+| Q15 | Before the first sale: the CA's GST answer (after AdMob's first payout, by the owner's rule), and whether the grievance page must publish a phone number (ADV-3) | Keep your rule: no CA until the first payout. Ask the phone-number question at that same visit (ADV-3). If a number is required, decide then between your own number and a separate prepaid SIM |
 
 **Facts to confirm at a set moment** (checks, not decisions)
 
-| # | Check | When |
-|---|---|---|
-| Q16 | That Play's content-rating questionnaire treats bidding as not gambling, and how Data safety treats Android-vitals crash reports | The first Play submission |
-| Q17 | Whether AdMob's console can block "Gambling & betting" and loan ads, and offers frequency capping on rewarded units; and that Play labels the listing "Contains ads" | Milestone 4 |
-| Q18 | What Play's Data safety requires for purchase order data | Purchases |
+| # | Check | When | Recommended |
+|---|---|---|---|
+| Q16 | That Play's content-rating questionnaire treats bidding as not gambling, and how Data safety treats Android-vitals crash reports | The first Play submission | Do both at the first internal-testing upload, before the closed test. Read the questionnaire's gambling definitions before answering. Follow Google's Data safety guidance on vitals data, and record the answer in §8.5 |
+| Q17 | Whether AdMob's console can block "Gambling & betting" and loan ads, and offers frequency capping on rewarded units; and that Play labels the listing "Contains ads" | Milestone 4 | Do it the day the AdMob account is created (Milestone 4, slice 1): set the blocks and the "T" rating, try frequency capping on the rewarded unit, and save screenshots to the release checklist |
+| Q18 | What Play's Data safety requires for purchase order data | Purchases | Check Play's Data safety guidance for Play Billing in the purchases slice, and update §8.5 before the form |
 
 ---
 
@@ -1398,3 +1398,4 @@ How each part is measured:
 | Date | Change |
 |---|---|
 | 2026-11-24 | Written from IDEA.md (including the USP changes, the Business verdict and the Hardening decisions), RESEARCH.md and COMPETITORS.md. This file becomes the source of truth, and the live data table moves here (§8.5). New in writing it:<br>• §7 writes down rules that IDEA implied but never stated; the ones that are real design choices are marked [A]<br>• Share my stats' contents, defined so the success checks can be measured (F18)<br>• open questions Q3–Q9, found while writing the rules |
+| 2026-11-24 | Every open question in §10 now carries a recommendation. All of them stay open until the owner decides |
