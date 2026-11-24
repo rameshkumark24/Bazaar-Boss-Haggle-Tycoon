@@ -39,7 +39,7 @@ Each change links to the finding behind it. Where a change touches the product, 
    - Under 18, or age unknown → the ads SDK is never initialised, and the game is fully playable without it.
    - 18+ → a plain consent notice naming Google as recipient, the first time the player taps "watch an ad". Record it on the phone; let them withdraw it in Settings.
    - This removes India's ban on targeted ads to children [S1 s.9(3)] from play entirely.
-3. **Rewarded ads first; interstitials only for adults who consented, and only after the day-end kanakku screen** (L-5). A rewarded ad starts with the player's own tap, so consent fits naturally at that tap. Interstitials don't, and Google only allows them at natural breaks [S20].
+3. **Rewarded ads first; interstitials only for adults who consented, and only after the day-end kanakku screen** (L-5). A rewarded ad starts with the player's own tap, so consent fits naturally at that tap. Interstitials don't, and Google only allows them at natural breaks [S20]. *Superseded 2026-11-24: interstitials are dropped entirely for the USP ([COMPETITORS.md → USP](COMPETITORS.md#usp)); only rewarded ads remain.*
 4. **Ads-only before purchases** (L-8, L-9, L-10). A single in-app purchase:
    - publishes your full address on the Play listing [S24]
    - makes you responsible for GST [S35]
@@ -247,9 +247,9 @@ India first (F3). Other places only matter if distribution widens (L-13). Each f
   - Interstitials *are* allowed at natural breaks, such as after a score screen.
   - Rewarded ads the player opts into are outside this policy.
   - [S20] T1
-- **Applies because:** IDEA plans an interstitial every 3 auctions and rewarded peek / instant-finish / reopen-haggle.
+- **Applies because:** IDEA planned an interstitial every 3 auctions (dropped 2026-11-24) and rewarded peek / instant-finish / reopen-haggle.
 - **Forces:**
-  - The only interstitial slot is **after the day-end kanakku screen**, and only for consenting adults.
+  - The only interstitial slot is **after the day-end kanakku screen**, and only for consenting adults. *(Superseded 2026-11-24: no interstitials at all — IDEA §2.)*
   - Never at an auction start, a customer's arrival, or app launch.
   - Rewarded ads stay opt-in buttons. **STANDARD.**
 
@@ -394,7 +394,7 @@ India first (F3). Other places only matter if distribution widens (L-13). Each f
 | 3 | **Data safety / ad ID declaration doesn't match the build** | When AdMob arrives, `AD_ID` merges in silently and the declarations go stale | Update Data safety and the ad ID declaration in the same release as the SDK; inspect the merged manifest | [S17] [S19] T1 |
 | 4 | **Target audience or appeal-to-children mismatch** | Cartoon shapes plus "13+" in India | Declare 18+; adult-facing listing | [S14] [S15] T1 |
 | 5 | **Metadata violations** | The brief's keyword list is tempting to stuff; v1 lacks 4 of 5 cities | Title ≤ 30 chars; keywords in natural sentences; no "#1/best"; no emoji in title; screenshots only of v1 | [S23] T1 |
-| 6 | **Ads policy breaches** | Interstitial at an auction start; testers clicking live ads | Day-end-only interstitials; test ads always | [S20] [S36] T1 |
+| 6 | **Ads policy breaches** | Interstitial at an auction start; testers clicking live ads | No interstitials at all (dropped 2026-11-24); test ads always | [S20] [S36] T1 |
 | 7 | **Read as simulated gambling** | Mystery lots + bidding + reveal | Gunny-bag reveal (never slot visuals); banned-word validator; answer the rating questionnaire honestly (bidding isn't wagering) | [S21] T1; questionnaire wording T4 **UNVERIFIED** → read it in Play Console at submission |
 | 8 | **IP / impersonation** | Vintage radios, film-style posters, clocks invite real designs | Generic shapes; no brand marks; original poster art | [S41] T1 |
 | 9 | **Hate speech / stereotypes** | Regional customer types in Mumbai/Delhi | Behaviour-based personalities only; human read-through | [S40] T1 |

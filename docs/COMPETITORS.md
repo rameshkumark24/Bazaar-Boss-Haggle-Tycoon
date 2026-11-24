@@ -501,7 +501,7 @@ Settings → Ads & privacy says it in one line: ads only play when you tap "watc
 
 > **For Indian phone gamers who love a good bargain but are tired of auction games that stop every few minutes for an ad, Bazaar Boss is the bazaar haggling game that never makes you watch an ad to keep playing, unlike Bid Wars and Bid Master.**
 
-### What this asks of IDEA.md — needs your yes
+### What this asks of IDEA.md — approved 2026-11-24 and folded in
 
 1. Drop the full-screen ad (interstitial) from Milestone 4 — the USP is false while it exists.
 2. Drop the "Remove ads ₹99" purchase; keep cosmetic themes and the Dealer Pack.
