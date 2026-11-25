@@ -60,6 +60,20 @@ ADB="$SDK/platform-tools/adb.exe"
 | List the permissions in the built app | `"$SDK/build-tools/35.0.0/aapt2.exe" dump permissions android/build/outputs/apk/debug/android-debug.apk` | Only AndroidX's app-private `…DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION` (TRD TD-24) — no internet |
 | Stop the emulator | `"$ADB" emu kill` | `OK: killing emulator, bye bye` |
 
+**The zoom test** (Phase 3; TD-36 and LLD U20 rely on it). It enlarges one region of a screenshot 4× with no smoothing, so blur, notched edges and bleeding show. It runs in **PowerShell**, using .NET's built-in System.Drawing; nothing to install. Verified 2026-11-25: a PNG 4× the region's size.
+
+```powershell
+Add-Type -AssemblyName System.Drawing
+$img = [System.Drawing.Image]::FromFile("C:\Bazaar Boss Haggle Tycoon\shots\<name>.png")
+$z = 4; $r = New-Object System.Drawing.Rectangle 40, 440, 240, 46   # x, y, width, height of the region
+$out = New-Object System.Drawing.Bitmap ($r.Width * $z), ($r.Height * $z)
+$g = [System.Drawing.Graphics]::FromImage($out)
+$g.InterpolationMode = [System.Drawing.Drawing2D.InterpolationMode]::NearestNeighbor
+$g.PixelOffsetMode = [System.Drawing.Drawing2D.PixelOffsetMode]::Half
+$g.DrawImage($img, (New-Object System.Drawing.Rectangle 0, 0, $out.Width, $out.Height), $r, [System.Drawing.GraphicsUnit]::Pixel)
+$out.Save("C:\Bazaar Boss Haggle Tycoon\shots\<name>-zoom.png"); $g.Dispose(); $out.Dispose(); $img.Dispose()
+```
+
 The boot wait, exactly as it ran:
 
 ```bash

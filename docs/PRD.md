@@ -1240,7 +1240,7 @@ This is the live copy. The copy in IDEA.md → Hardening H3 is frozen as of 2026
 | Game progress: cash, stock, reputation, day, stats | Play and resume | The phone, plus 2 local backups | Android Auto Backup copies it to the player's own Google Drive; we can't read it | Until Start over or uninstall | The game needs it | No — it stays on the device |
 | Settings: voice, sound, vibration, text size | Same | Same | Same | Same | Same | No |
 | Deal card image; Share my stats text | The player chooses to share | Leaves only through Android's share sheet | Whoever the player sends it to | Not ours | The player's own action | No — user-initiated |
-| Report or support email: the sender's address, the message, and anything they chose to include (versions, crash note) | Reply and fix | The game's mailbox | The mail provider (Google, if Gmail) | 12 months after the last message | Sent voluntarily for that purpose (DPDP s.7(a)) | No — sent from the player's own email app |
+| Report or support email: the sender's address, the message, and anything they chose to include (versions, crash note) | Reply and fix | The contact mailbox: the owner's own Gmail (CR12) | Google (Gmail) | 12 months after the last message | Sent voluntarily for that purpose (DPDP s.7(a)) | No — sent from the player's own email app |
 | Closed testers' email addresses | Run the closed test | Play Console's tester list | Google | Removed after the production launch | They agreed to test | — |
 | Crash and freeze reports | Fix crashes | Play Console (Android vitals) | Google, which collects them through Android from players who allow usage & diagnostics | Google's retention | Google's own collection | No [A — confirm against Play's Data safety guidance at submission, Q16] |
 | **Ads (Milestone 4)** | | | | | | |
@@ -1494,3 +1494,4 @@ How each part is measured:
 | 2026-11-25 | **Q19 and Q20 decided, as recommended** ([MONETISATION.md](MONETISATION.md)): purchases (F21) ship right after G3, before any ads; ads (M4) only if installs pass about 3,000 a month; ADV-2 and ADV-3 are paid once before the first sale (§5, §8.3, §8.4, §10, §11 H5-13, §12.4). The refund terms are set (Q20) |
 | 2026-11-25 | The game's contact email is the owner's own Gmail (CR12), and the waitlist form lives in that Google account (§8.5). Decided in Phase 1 |
 | 2026-11-25 | **Q1 changed by the owner:** the build starts now, before the waitlist test's day-7 count. The test still runs and its thresholds don't move; on day 7 they apply to the build in progress (Q1, §12.1). If the count says stop, the sessions spent before it are lost |
+| 2026-11-25 | Doc check: the data table's support-email row names the contact mailbox, the owner's own Gmail (CR12). No product change |

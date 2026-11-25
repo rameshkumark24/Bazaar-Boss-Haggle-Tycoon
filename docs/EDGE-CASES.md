@@ -279,6 +279,10 @@ Each case: the trigger · what happens if it isn't handled · what should happen
 - **Unhandled:** a new game object loads the save while the old one may still be writing it (LC-1's race). The Pause overlay, Settings and the slider position are gone. With both bugs present, the last action is lost.
 - **Should:** the old game's `dispose()` drains the writer's queue (a bounded wait of about 2 s) before the new one loads. Resume lands exactly where the save says.
 - **Fix in:** `core` (drain on dispose). `android`: add `density|fontScale|uiMode|locale|layoutDirection|smallestScreenSize` to `configChanges`, so most of these become a `resize()`. Process death takes the same path, so recreation must stay safe anyway.
+- **Seen in Phase 4 (2026-11-25), and it puts "drain on dispose" in doubt:**
+  - switching the navigation mode or the cutout also recreates the activity, and no `configChanges` value prevents that
+  - libGDX then called **no `dispose()`** on the old game (it disposes only when the activity is finishing), but it did call `pause()`
+  - Phase 5 (LLD U7) settles where the writer drains. **Recommended, if Phase 5 confirms it:** drain in `pause()`.
 - **Reproduce:** mid-haggle, `"$ADB" shell settings put system font_scale 1.3` (reset with `1.0`). Also `cmd uimode night yes`, `wm density 546`, `cmd locale set-app-locales $PKG --locales mr-IN`.
 
 #### LC-3 · A restart loses a result the player is owed — 16 · v1 · 3, then 6, 8, 10, 11
@@ -800,8 +804,8 @@ ST-5 (the pre-launch report) is in §4.
 - **Reproduce:** SV-7's downgrade test.
 
 #### OP-2 · The launch email goes out from the support address — 8 · Owner
-- **Trigger:** one email to up to 1,600 addresses (TRD §12, 1st), sent from the game's Gmail: the address that every build's Report a problem uses (TRD §6.1).
-- **Unhandled:** Gmail's sending limits or spam flags restrict that account, and reports from every installed build go nowhere.
+- **Trigger:** one email to up to 1,600 addresses (TRD §12, 1st), sent from the contact Gmail: the address that every build's Report a problem uses (TRD §6.1). Since 2026-11-25 that's the owner's own Gmail (PRD CR12).
+- **Unhandled:** Gmail's sending limits or spam flags restrict that account, and reports from every installed build go nowhere. It's now also the owner's personal mail that gets restricted.
 - **Should:** send from a different account or a Google Group, at most 450 a day. The support address only answers mail.
 - **Fix in:** `owner`.
 - **Reproduce:** nothing to run.

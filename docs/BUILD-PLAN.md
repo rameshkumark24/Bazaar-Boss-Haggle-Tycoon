@@ -25,7 +25,13 @@ The phase-by-phase plan for building the game. Written 2026-11-25 from all seven
   - screenshots go in `shots/p<NN>-<screen>-<state>[-xl].png` (not in git), each with DESIGN §10's 15 answers in PROGRESS
   - command output goes in PROGRESS, trimmed to the lines that prove the check
   - the commands are CLAUDE.md's, and EDGE-CASES §7's
-- **Spikes** run on a throwaway branch, `spike/<name>`. Only the written answer is kept, in the doc it affects. Code kept by accident is a bug.
+- **Spikes** run on a throwaway branch, `spike/<name>`. Only the written answer is kept, in the doc it affects. Code kept by accident is a bug. The spike branch stays local, never pushed, and is deleted once its phase merges.
+- **Branches and merges** (as practised since Phase 1, written down 2026-11-25):
+  - each phase gets a branch, `phase-N-<name>`, cut from `main`
+  - if `main` lacks an unmerged decision the phase needs, the branch is cut from the branch that holds it, and they merge in order (Phase 4 did this)
+  - the phase branch is pushed after each commit, so a new session can resume from GitHub
+  - a phase merges only on the owner's word, by fast-forwarding `main` to the branch tip and pushing `main`
+- **The doc check:** `/doc-check` runs after every third DONE phase, or when the owner asks. The first ran on 2026-11-25, after Phases 3 and 4; the next is due after Phase 7.
 - **Owner phases:** the agent prepares checklists and templates; the owner acts; the owner's confirmation is the evidence. Keys, accounts and logins stay the owner's (CLAUDE.md).
 - **Free tools only.** A download (a font, a library, a system image) needs the owner's yes first. Anything paid stops the build.
 - **The save format:** `formatVersion` stays at 1, and its shape may change freely, until the first closed-test build (Phase 30). The owner's own internal-track save may be reset before then. From Phase 30 on, every change needs a migration and a fixture (TRD §6.3).
@@ -75,7 +81,7 @@ GOAL: Know whether to build at all: the day-7 count of unique sign-ups against g
 
 BUILD:
 - **Owner:**
-  - make the game's Gmail, if it doesn't exist yet (IDEA H2-11)
+  - ~~make the game's Gmail (IDEA H2-11)~~: not needed. The contact address is the owner's own Gmail (PRD CR12, decided in this phase)
   - make the Google Form exactly as `site/README.md` says, including "View results summary: off" and no "submit another response" link
   - send the form link and the game's email
 - **Agent:** fill `CONFIG` in `site/bazaar-boss/index.html`, then check the page at 360 px.
@@ -201,7 +207,7 @@ PROGRESS:
   6. **A 2–3 GB RAM phone** to borrow: its model and RAM.
   7. **Downloads, yes or no to each:**
      - for Phase 3: Roboto and Rozha One (Google Fonts, OFL), and gdx-freetype (libGDX, Apache 2.0, from Maven Central)
-     - later: Material Symbols (Apache 2.0), gdx-tools, an Android 7 (API 24) emulator image (Phase 28), CC0 sounds or jsfxr (Phase 23)
+     - later: Material Symbols (Apache 2.0), which Phase 6 needs for its icon atlas (LLD U20); gdx-tools, which may not be needed now that the font baker writes its own files (TD-36; Phase 6 decides); an Android 7 (API 24) emulator image (Phase 28); CC0 sounds or jsfxr (Phase 23)
 - **Done:**
   - **People:** 20 people are ready to play (the owner, 2026-11-25). That's enough for 16–18 closed testers plus the 5 G1 playtesters, who can be among them. Their Android versions aren't checked yet.
   - **Item 7, in part:** yes to Roboto, Rozha One and gdx-freetype (the owner, 2026-11-25), so Phase 3 can start. Material Symbols, gdx-tools, the API 24 image and the sounds aren't answered yet.
@@ -413,7 +419,7 @@ GOAL: Know the save's costs and risks before building it (LLD U5–U8):
 BUILD (on branch `spike/save`, thrown away):
 - A synthetic 50 KB state and a 0.5 MB pack; time encoding and decoding on LowEnd_A9.
 - Time write, fsync and rename, 200 times; report p50 and p95.
-- Change the font scale while a write is pending, and log dispose, drain and GL-context events.
+- Change the font scale while a write is pending, and log dispose, drain and GL-context events. Also switch the navigation mode, which no `configChanges` value absorbs. First settle whether `dispose()` runs on a recreation at all: Phase 4 saw only `pause()` (EDGE-CASES LC-2).
 - Copy a fixture with `run-as` from `/data/local/tmp`.
 - Write the answers into LLD §10 and TRD §0.4 and §4.10. Add the fixture commands to CLAUDE.md if U8 works.
 
@@ -460,10 +466,15 @@ BUILD:
 - **`core`:**
   - the shell: `BazaarBossGame`, `ScreenRouter`, `ModalQueue`, `BackDispatcher` (in the haggle, back opens Pause), `TapGuard`, `RenderOnDemand` (as Phase 4 found)
   - the components it needs: Button (with its busy state), Quick-offer chip, Offer slider (bazaar steps, − and + nudges; its target 32 dp clear of each edge, and excluded from the back gesture on Android 10+), Price tag, Speech line, Meter, Panel, Modal card, Banner
-  - fonts as Phase 3 found; a placeholder face (shapes plus the mood word)
+  - fonts as Phase 3 found (TD-36): the distance-field baker in `tools`, with TD-36's base sizes, the glyph-offset fix and one-channel atlases, checked with the zoom test (CLAUDE.md); and labels that draw with the distance-field shader
+  - the icon atlas from Material Symbols through the same baker (LLD U20; the download needs the owner's yes first)
+  - a placeholder face (shapes plus the mood word)
   - `SaveWriter` (one per process, coalescing), `FileSaveFiles`
   - the haggle screen, the deal result card and the pause card
-- **`android`:** `singleTask` and the task-root check (LC-1); the wider `configChanges` (LC-2); pause on focus loss; insets passed to `core`.
+- **`android`:** `singleTask` and the task-root check (LC-1); the wider `configChanges` (LC-2); pause on focus loss.
+  - the view's `WindowInsets` passed to `core` (TD-35)
+  - back through the launcher's own callback on Android 13+, through `PlatformServices.catchBack` (TD-35); the manifest comment that still says back is "routed to libGDX" is corrected with it
+  - `excludeFromBackGesture` over the slider on Android 10+ (DESIGN §2.7, IN-4)
 
 OUT OF SCOPE:
 - Other personalities, selling and walking away's call-back (Phase 9)
@@ -1873,7 +1884,7 @@ PROGRESS:
 
 ## CURRENT STATE
 
-**Updated 2026-11-25, when Phase 3 was done.**
+**Updated 2026-11-25, after the first doc check.**
 
 **Built so far:**
 - **The planning docs:** PRD, TRD, APP-FLOW, DESIGN, EDGE-CASES, MONETISATION, LLD, and this plan.
@@ -1895,15 +1906,17 @@ PROGRESS:
 **Phase status:**
 - **Phase 4 is DONE** and merged into `main` on 2026-11-25, together with Phase 1's branch so far, at the owner's word.
 - **Phase 3 is DONE** on branch `phase-3-text-spike`, cut from `main`, waiting for its review and merge.
+- **The first doc check is done** on branch `doc-check-2026-11-25`, cut from `phase-3-text-spike`. It adds the `/doc-check` skill and the doc fixes, and merges after Phase 3.
 - **Phases 1 and 2 (owner) are IN PROGRESS.** Phase 1 waits for the posts and day 7.
 - Every other phase is NOT STARTED.
 
 **Next:**
 - **The build has started before day 7,** by the owner's decision on 2026-11-25 (PRD Q1). On day 7 the thresholds apply to the build in progress.
-- **The review and merge** of `phase-3-text-spike`.
+- **The review and merge** of `phase-3-text-spike`, then `doc-check-2026-11-25`. Both fast-forward `main`.
 - **Agent:** Phase 5, the save spike. Then Phase 6, the vertical slice: the first real haggle on the phone, with PLAN MODE yes, so its plan comes to the owner first.
 - **Phase 1 (owner):** confirm that the haggle plays in all three voices on the phone; record and post the clip, and send the date of the first post; on day 7, send the counts and each post's views.
-- **Phase 2 (owner):** the checklist in Phase 2's PROGRESS.
+- **Phase 2 (owner):** the checklist in Phase 2's PROGRESS. Phase 6 will need a yes to the Material Symbols download for its icons (LLD U20).
+- **From the doc check, a decision for the owner:** DESIGN §10's visual checklist has no item on text sharpness. **Recommended:** add one, "Is text free of blur, notched edges and bleeding in a 4× zoom (CLAUDE.md)?". That makes the checklist 16 answers, and the DONE WHEN checks that count to 15 follow. The checklist and DONE WHEN change only on the owner's word.
 - **Decided after Phase 4 (the owner, 2026-11-25):**
   - the offer slider's target stays 32 dp from the screen edges, and is excluded from the back gesture (DESIGN §2.7)
   - Phase 3's downloads are a yes
@@ -1935,10 +1948,13 @@ PROGRESS:
 
 ## KNOWN ISSUES
 
-None yet. Bugs we choose to live with, and security findings left unfixed, go here, so nothing lives only in a chat:
+Bugs we choose to live with, and security findings left unfixed, go here, so nothing lives only in a chat:
 
 | # | Issue | Severity | Found in | Why we live with it | Revisit when |
 |---|---|---|---|---|---|
+| K1 | Android Lint warns `MissingApplicationIcon` | Low | The empty project (2026-11-24); listed in CLAUDE.md | The app icon comes with the art, drawn as shapes in code | Phase 30 adds the icon and clears it |
+| K2 | `android/build.gradle`'s natives task copies only the **first** natives jar for each ABI. A second native library would be dropped silently and crash at runtime | Low, latent | Phase 3 (2026-11-25) | libGDX is the only native library, since FreeType stays at build time (TD-36) | A second native library is added: sync every matching jar, as the Phase 3 spike did |
+| K3 | libGDX 1.14.2's own back callback (Android 13+) asks for no frame, so back stalls when drawing on demand | Medium, worked around | Phase 4 (2026-11-25) | The launcher's own callback routes back instead (TD-35) | A libGDX release asks for a frame in its callback; then the workaround can go |
 
 ---
 

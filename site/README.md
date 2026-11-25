@@ -14,7 +14,9 @@ Try it now: open `bazaar-boss/index.html` in your browser. Add `?voice=ta` or `?
 
 **1. Check the lines.** Read the Tanglish lines in the haggle (tap through in Tanglish). The Hinglish lines need a native reader (open question 4) before you post them in Hindi-speaking groups.
 
-**2. Make the Google Form** (your Google login; a separate free Gmail for the game is better — it keeps your personal address off public pages):
+**Status (2026-11-25):** steps 2–4 are done. The form lives in the owner's own Google account, the contact address is the owner's own Gmail (PRD CR12), and the page is live at https://rameshkumark24.github.io/bazaar-boss/. Step 5 is done except the three voices on the phone (BUILD-PLAN Phase 1).
+
+**2. Make the Google Form** (your Google login. *Decided 2026-11-25: the owner's own account and Gmail, not a separate one, PRD CR12*):
 - Title: `Bazaar Boss: launch waitlist`
 - Description: `One email when Bazaar Boss launches on Google Play, or one saying it won't. Then we delete this list. For players 18 and over.`
 - Settings → Responses:

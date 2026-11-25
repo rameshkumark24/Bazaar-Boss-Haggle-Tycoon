@@ -350,6 +350,7 @@ Every screen designs all five states, and every phase screenshots them. Per-scre
 | Store screenshots and video | The **release build**, captured with `adb` | Owner's own | — |
 | Website share image (`og.png`) | Rendered from `site/og-card.html`, made by the owner | Owner's own | — |
 | Website fonts | The phone's own UI font (no external loads, to keep the page's "loads nothing from other sites" promise) | — | — |
+| Website favicon | A marigold coin drawn as an inline SVG in `site/bazaar-boss/index.html` | Owner's own | — |
 
 ---
 
