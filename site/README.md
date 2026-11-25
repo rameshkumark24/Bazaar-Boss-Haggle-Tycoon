@@ -49,7 +49,11 @@ Or send me both, and I'll fill them in. Until `formUrl` is set, the button reads
 
 Post per IDEA §7: one clip, plus one post in each of 3 communities. For the clip, screen-record the haggle in Tanglish and voice the seller's lines yourself.
 
-**Day 7:** count Form → Responses, and note each post's views. Go at ≥ 1,600 sign-ups; stop below 370; in between, build only to G1.
+**Day 7:**
+- Open the responses in Sheets (Form → Responses → the Sheets icon). Count the **unique** emails with `=COUNTUNIQUE(ARRAYFORMULA(LOWER(TRIM(B2:B))))`, where B is the email column. Note the raw number of rows too.
+- Note each post's views. A post whose sign-ups pass about 10% of its views is flagged as likely bots.
+- Decide on the unique count: go at ≥ 1,600; stop below 370; in between, build only to G1 (PRD §12.1).
+- Send both counts and the views to Claude, who records them in PRD §12.1.
 
 ## After the test
 
