@@ -88,7 +88,7 @@ One in-game **day** is the session. It takes about 3–5 minutes [A]:
 3. **Serve 5–8 customers** [A], one at a time; you choose whom to serve next. Each one is a haggle:
    1. They bring an item to sell, or want one from your display.
    2. They name a price. You see their face, their mood word and their patience.
-   3. You answer: slide to a price, tap −10%, −25% or "Last price?", or walk away.
+   3. You answer: slide to a price, tap a quick button (−10% or −25% when buying, +10% or +25% when selling) or "Last price?", or walk away.
    4. They counter. Their mood and patience move, and one line says why.
    5. Repeat until there's a deal or someone walks away.
    6. After a deal you see your profit, any reputation change and the verdict ("He'd have gone to ₹380"). Share the deal if it's a good one.
@@ -137,6 +137,7 @@ Each feature lists four things:
 - The first screen offers three voices — English, Tanglish, Hinglish — each with a sample line.
 - One tap and **the first haggle opens at once**: a walk-in seller is already at the stall, with an item to sell. The stall itself is introduced right after that first deal (APP-FLOW.md §2.1).
 - The first customer of a new game is always a patient walk-in seller with a genuine item, who won't walk away before round 3 [A].
+- If two walk-in sellers leave without a deal, the stall opens anyway, with one hint. The first seller's price always fits within the starting cash.
 - Hints are one line each. There's no tutorial to sit through.
 - The first hint also says **"All ₹ here is game money."** [A] *Why:* in India, a new player may otherwise read prices as real money (CR1; APP-FLOW.md §4).
 
@@ -158,7 +159,7 @@ Each feature lists four things:
 ### F2 · The haggle
 **Does:**
 - One negotiation with one customer over one item, in both directions: customers who buy from you, and walk-in sellers who sell to you.
-- The quick buttons −10% and −25% make an offer in **one tap** [A]. The slider sets any other price, followed by Offer. "Last price?" asks for a firm price. Or the player walks away.
+- The quick buttons make an offer in **one tap** [A], always in the player's favour: when buying, −10% and −25% below the seller's price; when selling, +10% and +25% above the customer's. No offer can be worse for the player than the other side's current price; that's what Accept is for. The slider sets any other price, followed by Offer. "Last price?" asks for a firm price. Or the player walks away.
 - The customer:
   - hides a walk-away price
   - shows their mood as a face plus a word
@@ -184,7 +185,7 @@ Each feature lists four things:
 7. Given I tap Walk away, then the haggle ends. The customer may call me back once with a better price ("Okay okay, vaanga!" / "Achha theek hai, aao!"). If they don't, they're gone for the day.
 8. Given a haggle ends in a walk-away (mine or theirs), then a "Lesson: …" line says what went wrong, without the walk-away price [A].
 9. Given each of the five personalities in the haggle lab, then each reacts visibly to the habit it punishes (F3).
-10. Given I tap −10% or −25%, then that offer is made at once, with no second tap [A].
+10. Given I tap a quick button (−10% or −25% when buying, +10% or +25% when selling), then that offer is made at once, with no second tap [A]. It's better for me than the price on the table by at least one bazaar step; a button that can't manage that is greyed out.
 
 **When it fails:** if a call comes in, or Android kills the game mid-haggle, reopening shows the same customer, item, offers, mood and patience. A deal is never lost and never applied twice.
 
@@ -318,7 +319,7 @@ What inspecting costs, and how sure a clue is, are still open (Q4).
 ### F7 · Growth: the next goal, stall → shop, and the tier-up
 **Does:**
 - One next goal is always visible, with a bar ("Shop: ₹18,400 / ₹25,000").
-- **The bar counts profit earned since the last tier,** so it only ever rises. Buying stock never moves it backwards. *(Q6, decided 2026-11-24.)*
+- **The bar counts profit earned since the last tier,** so it only ever rises. Buying stock never moves it backwards, and only haggled sales count: scrapping never fills it. *(Q6, decided 2026-11-24; scrap, 2026-11-25.)*
 - The first bar starts at 20%: Periyappa's gift is a head start on the bar, on top of the starting cash.
 - The v1 arc is stall → shop in 30–45 minutes of play [A], with the showroom shown as the next goal.
 - When the bar is full, the upgrade is offered at day end. It **costs no cash** — it's earned, not bought — and it's celebrated once.
@@ -358,6 +359,7 @@ Still open: selling a fake you didn't know was fake (Q5).
 ### F9 · The godown
 **Does:**
 - Lists everything the player holds, with filter and sort.
+- Holds 60 items [A] as a soft limit (§7.6). At or over it, bidding and buying from sellers say "Godown full". A won lot may push it over, and nothing is ever scrapped for the player.
 - Shows the "Found X of 40" counter.
 - Has two different empty states.
 
@@ -493,6 +495,7 @@ Still open: selling a fake you didn't know was fake (Q5).
 - Android's Auto Backup copies saves and settings, and nothing else, to the player's own Google Drive.
 - A damaged save is recovered from a backup, and a full phone is reported.
 - Back never quits by accident.
+- A result the player hasn't dismissed (a deal result, an auction result, a walk-away Lesson, the tier-up) survives a restart and shows once. A first-time hint counts as seen only when it's dismissed.
 
 **Acceptance**
 1. Given a haggle in progress, when I force-stop the game and reopen it, then the same customer, item, offers, mood and patience are on screen.
@@ -508,6 +511,7 @@ Still open: selling a fake you didn't know was fake (Q5).
    - at the stall, it asks before leaving the game
    - mid-haggle, it pauses — it never walks away from a customer or quits by accident
 7. Given a save written by a newer version of the game, when an older version opens it, then it leaves the save untouched and says the game needs an update [A].
+8. Given a deal result, an auction result, a Lesson or the tier-up was on screen when the game died, when I reopen, then I see it first, once.
 
 **When it fails:** the messages above. Never a silent, blank new game.
 
@@ -568,6 +572,7 @@ The next launch is a first launch.
   - current tier
   - play time to reach the shop
   - app and save versions
+- **Play time** counts only time within 60 seconds of the last tap [A], so a game left open but untouched doesn't inflate it.
 - Testers use it to report. It's also how the success checks are measured (§12.2).
 
 **Acceptance**
@@ -795,7 +800,7 @@ This section holds the business logic that isn't obvious. Each rule says why whe
 - **DR3 · Periyappa's loan:**
   - interest-free, with no deadline
   - offered only when the player is broke
-  - repaid automatically from a share of each sale [A — the share is a tuning number]
+  - repaid automatically from a share of each sale [A — the share is a tuning number], at least ₹1 per sale, or the rest of the loan if that's less
   - one open loan at a time [A]
 - **DR4 · There is always a way forward.** From any state:
   - scrap sells at once, at its scrap price
@@ -813,7 +818,7 @@ This section holds the business logic that isn't obvious. Each rule says why whe
   - After a walk-away it isn't shown; a "Lesson: …" line says why instead [A].
   - *Why:* showing it after a walk-away would make reopening a haggle (a later ad reward) a sure thing.
 - **DR8 · No deal past the line.** A customer never agrees to a price past their walk-away price. If patience runs out while the player's offer already meets it, they accept rather than walk [A].
-- **DR9 · Customers don't know your cost.** A walk-away price comes from the item, its condition and the customer's personality — never from what the player paid [A]. *Why:* Dealer's Life 2 players complain that buyers anchor on what they paid.
+- **DR9 · Customers don't know your cost.** A walk-away price comes from the item, its condition and the customer's personality — never from what the player paid [A]. A seller's walk-away price is never below the item's scrap value plus a margin [A], so buying only to scrap never pays. *Why:* Dealer's Life 2 players complain that buyers anchor on what they paid.
 - **DR10 · Every round explains itself:** one line on what changed in the customer's mood, and why.
 - **DR11 · No single habit wins.** Each personality punishes one habit (F3). The simulator's five bots must each lose to at least one personality. *Why:* if one opening offer and one step size beat everyone, haggling becomes a chore by day three.
 - **DR12 · Patience counts rounds, not seconds.** No haggle has a real-time clock [A]. *Why:* calls and app switches are common on cheap phones, and resume must be exact.
@@ -830,8 +835,9 @@ This section holds the business logic that isn't obvious. Each rule says why whe
 - **DR17 · Bids are final.**
   - A bid can't be withdrawn.
   - A new bid must beat the current one.
+  - The player can't bid while leading: the bid buttons read "You lead".
   - When the countdown ends, the highest bid wins [A for the countdown].
-- **DR18 · Leaving an auction asks first.** Leaving means you don't win, and nothing is paid [A].
+- **DR18 · Leaving an auction asks first.** Leaving means you don't win, and nothing is paid [A]. For Today's special, the question says what's lost: "Leave? Today's special lot goes to the rivals."
 - **DR19 · After every auction, every rival's estimate is shown** — whether you won or lost.
 
 ### 7.4 Items, fakes, reputation and content
@@ -879,6 +885,7 @@ This section holds the business logic that isn't obvious. Each rule says why whe
 | Open loans | 1 [A] | |
 | Today's special | 1 per calendar day | |
 | Bid or offer | No more than your cash. A rival: no more than its budget | |
+| Godown | 60 items [A], a soft limit: at or over it, bidding and buying say "Godown full"; a won lot may push it over | |
 | Cash | Never below ₹0 [A] | |
 | Rewarded ads | 0 | No more than 12 a day |
 | Full-screen ads | 0 | 0, ever |
@@ -963,6 +970,7 @@ This section holds the business logic that isn't obvious. Each rule says why whe
 | Periyappa's starting gift | Once per game (until Start over) |
 | Today's special | Once per calendar day |
 | The tier-up celebration | Once per tier |
+| A result owed to the player (a deal, an auction, a Lesson, the tier-up) | Shown once, and shown again after a restart if it was never dismissed |
 | The found counter | +1 per kind of item, once |
 | "Last price?" | Once per haggle [A] |
 | A call-back after a walk-away | Once per haggle [A] |
@@ -1385,6 +1393,7 @@ These were decided in IDEA.md → Hardening H5. They stay decisions: reopen one 
 **Status (2026-11-24): not run yet.** Record the sign-up count and the date here when it's done:
 - **Day 7 count:** count the Google Form's responses on day 7.
 - **Each post's views:** note them from each platform's own numbers.
+- **Count unique emails:** lower-case and trim them, record both the raw and the unique count, and decide on the unique one. A post whose sign-ups pass about 10% of its views is flagged as likely bots [A] (EDGE-CASES.md MS-1).
 
 The Business verdict, word for word:
 
@@ -1404,6 +1413,8 @@ The Business verdict, word for word:
 | **1. They come back without being pulled** | ≥ 7 of the 14 testers are still playing on day 7, with nobody reminding them (v1 has no notifications) | Each tester sends Share my stats on day 8. A last-played date at least 6 days after the first-played date counts as still playing. What counts as "reminding": Q3 |
 | **2. Haggling is the reason** | Testers average ≥ 20 haggles per day played, and most can name a specific customer or deal unprompted | Share my stats: haggles ÷ days played, averaged across testers. A day-7 check-in asks one open question — "What do you remember from the game?" — logged by tester number. Count the testers who name a customer or a deal |
 | **3. The pacing promise holds** | The median time to the shop tier is 30–45 minutes, within ±25% of the simulator's prediction | Share my stats: play time to the shop, for the testers who reached it. Compare the median with the simulator's prediction, which is written down before the test starts |
+
+**If stats are missing:** G2 is judged on the testers who sent Share my stats, if at least 10 of the 14 did. Below 10, the test runs one more week, and testers are asked once more (EDGE-CASES.md MS-2).
 
 ### 12.3 The gates
 
@@ -1437,5 +1448,6 @@ How each part is measured:
 | 2026-11-24 | Applied the TRD's findings, as recommended:<br>• DR26, F6 and §7.7: a jump back of more than 2 days resets Today's special (a clock correction)<br>• §5: a Known limits entry — screen readers can't read the game<br>• Q6 decided: the goal bar counts profit earned since the last tier, and the upgrade costs no cash (F7, §6) |
 | 2026-11-24 | Precision fix from the first build: F20 AC2 and CR13 name the app-private permission AndroidX adds (TRD TD-24). No product change |
 | 2026-11-24 | From [APP-FLOW.md](APP-FLOW.md) — screens and flow:<br>• the first launch goes straight into the first haggle, with a patient first seller (F1, §6)<br>• quick buttons offer in one tap (F2)<br>• "Lot reveal & sort" is now two screens, Reveal and Sort (F5, §6)<br>• "Periyappa can help" on the stall while broke (F11, §6)<br>• the stall's three states; launch cards for a newer save (+ "Write to us"), an unreadable save, and a restore from backup (§6)<br>• Item detail merged into Inspect, and Collections into the Dealer's Guide (§6)<br>• back on every screen (§7.7)<br>• notifications never interrupt and are never posted while the game is open (DR39)<br>• Q7's recommendation adds a standing goal after all 40 items are found<br><br>The status bar now stays visible from the first frame (TRD TD-25) — no PRD text changed |
-| 2026-11-24 | [DESIGN.md](DESIGN.md) written: direction A ("Dusk stall"), one fixed palette. On-screen text swept to its copy rules: no em dashes, e.g. "Annoyed. You barely moved.", and the one-sentence pitch, which store copy will reuse The deal card's exact line is now **"Game money. No real money."** (F12, §9). CR6 adds Apache-2.0 for the icons |
+| 2026-11-24 | [DESIGN.md](DESIGN.md) written: direction A ("Dusk stall"), one fixed palette. On-screen text swept to its copy rules: no em dashes, e.g. "Annoyed. You barely moved.", and the one-sentence pitch, which store copy will reuse. The deal card's exact line is now **"Game money. No real money."** (F12, §9). CR6 adds Apache-2.0 for the icons |
 | 2026-11-24 | APP-FLOW.md's three open recommendations, applied:<br>• new stock fills empty display slots automatically (F6 AC8, §6)<br>• the first hint says "All ₹ here is game money." (F1)<br>• the age screen opens with "Ads need an age check first.", wording to be checked by ADV-1 (CR19, §6) |
+| 2026-11-25 | From [EDGE-CASES.md](EDGE-CASES.md) §5.1, as recommended:<br>• quick buttons always favour the player: −10%/−25% when buying, +10%/+25% when selling (§3, F2)<br>• only haggled sales fill the goal bar, and no seller's walk-away price is below scrap value (F7, DR9)<br>• no bidding while leading (DR17); leaving the special's auction says so (DR18)<br>• a soft godown limit of 60 (F9, §7.6)<br>• the stall opens after two sellers leave without a deal (F1)<br>• every sale repays at least ₹1 of a loan (DR3)<br>• results owed to the player survive a restart (F15 AC8, §7.10)<br>• play time counts only near a tap (F18)<br>• the waitlist is decided on unique emails (§12.1); G2 when stats are missing (§12.2) |

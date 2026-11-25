@@ -76,7 +76,7 @@ Anywhere: long-press a line of dialogue ─► Report this line (modal) ─► e
 | On launch, the save is… | The player sees | Traces to |
 |---|---|---|
 | Missing (first launch, or after Start over) | **Voice picker** | F1 |
-| Fine | **Exactly where they left off:** stall, a haggle in progress (same round), a paused auction, the reveal, the Sort list, or the kanakku | F15 AC1, DR12 |
+| Fine | **Exactly where they left off:** stall, a haggle in progress (same round), a paused auction, the reveal, the Sort list, or the kanakku. A result not yet dismissed (deal, auction, Lesson, tier-up) shows first | F15 AC1, AC8; DR12 |
 | Damaged, but a backup is good | A **"Restored your backup from <time>"** card, then where that backup was | F15 AC3 |
 | Unreadable, with every backup too | A **"Couldn't read your save or its backups, so a new game has started."** card. The broken files are kept for a report, and Report a problem is prefilled with "lost progress" | TRD §4.10 |
 | From a **newer** version of the game | A **block** card: "This save is from a newer version. Update the game to keep playing.", with **Update on Play** and **Write to us**. No play is possible, so the save can't be overwritten | F15 AC7 |
@@ -127,7 +127,7 @@ The rule: **back never does anything irreversible, and never quits by accident.*
 | Stall | "Leave the game?" — Stay · Leave | F15 AC6 |
 | Haggle | Pause — never a walk-away | PRD §7.7 |
 | Inspect | Back to the haggle or the godown it came from | — |
-| Auction, during the peek or bidding | "Leave the auction?" Leaving means not winning, and nothing is paid | DR18 |
+| Auction, during the peek or bidding | "Leave the auction?" Leaving means not winning, and nothing is paid. For Today's special: "Leave? Today's special lot goes to the rivals." | DR18 |
 | Auction, after the hammer | Stall | — |
 | **Reveal** | **Reveals everything at once.** No decision is made for the player | Back means "hurry", not "throw away" |
 | **Sort** | **Keeps everything** and returns to the stall | Keeping is reversible — scrap later from the godown. Scrapping isn't |
@@ -152,7 +152,7 @@ The rule: **back never does anything irreversible, and never quits by accident.*
 | 2 | Stall (hub) — morning, trading, evening; "broke" | none | Launch routing; back from places; after the first deal | L: no · **E:** first visit has no stock and empty display slots marked "Empty" · Er: "Couldn't save. Phone storage is full." card (F15 AC4) · O: n/a | A display slot whose item was sold shows "Empty" | 10 (hub, goal bar), 11 (Today's special, teaser) |
 | 3 | Haggle | none | Push: a waiting customer; the first launch; a special visitor | L: no · E: never opens without a customer and an item · Er: save failure card; play goes on · O: n/a | The item is reserved while the haggle lasts (TRD §4.8), so it can't go. If the customer left, it returns to the stall | 6 (screen), 4–5 (engine, personalities) |
 | 4 | Inspect (one item, close up) | none | Push: from the haggle or the godown | L: no · E: clues not yet found read "Look closer" [A] · Er: — · O: n/a | "That item's gone", then back | 7 |
-| 5 | Auction (peek → bidding → result) | none | Push: the stall's morning card; a special lot | L: no · E: today's auction done → "Next auction: tomorrow morning" · Er: too little cash → peek plays, bid says "Not enough cash", **Skip** stays (F5) · O: n/a | — (a lot is fixed before the peek) | 8 |
+| 5 | Auction (peek → bidding → result) | none | Push: the stall's morning card; a special lot | L: no · E: today's auction done → "Next auction: tomorrow morning" · Er: too little cash → peek plays, bid says "Not enough cash", **Skip** stays (F5); godown full → bid says "Godown full" (PRD §7.6) · O: n/a | — (a lot is fixed before the peek) | 8 |
 | 6a | **Reveal** *(split from "Lot reveal & sort")* | none | Push: after winning an auction | L: no · E: a lot is never empty [A] · Er: killed mid-reveal → resumes (F5) · O: n/a | — | 9 |
 | 6b | **Sort** *(split)* | none | Push: after the Reveal | L: no · E: an all-junk lot shows "Scrap all for ₹X" · Er: — · O: n/a | — | 9 |
 | 7 | Godown | none | Push: from the stall | L: no · **E: two kinds** — never had items / filtered to nothing (F9) · Er: — · O: n/a | Sold or scrapped items simply aren't listed | 9 |
@@ -206,7 +206,7 @@ The three journeys that matter most, in order:
 | 0 | The app icon → Android's launch splash, then the voice picker (cold start ≤ 4 s [A]) | — | A slow first start on a cheap phone. The splash shows a default icon until the art arrives | — |
 | 1 | **Voice picker:** English, Tanglish, Hinglish, each with a sample line; "Change it any time in Settings"; mute | Which voice | "What's Tanglish?" — the sample line answers it | They pick a voice they read badly → Settings → Voice changes it at once (F1 AC5). Back here quits, losing nothing |
 | 2 | **Tap 1 → the first haggle, at once.** A walk-in seller at your stall with a brass lamp, asking ₹400. Her face and mood word ("Hopeful"), patience dots, and one hint: "Sellers start high. Try −25%." | What to offer | **Is ₹ real money?** The first hint says "All ₹ here is game money." (§4, 3). What the patience dots mean — a one-line hint the first time | Nothing yet |
-| 3 | **Tap 2: −25%** — the offer is made in one tap. She counters "₹350. Last, I swear!", her mood moves, and one line says why | Accept, or push further | The verdict hasn't appeared yet, so they can't tell whether ₹350 is good | **They lowball hard:** the first seller is patient and won't leave before round 3 [A]. **They walk away:** she calls back once ("Okay okay, vaanga!"). **She does leave:** a second walk-in seller arrives (the floor, F11) — never a dead end |
+| 3 | **Tap 2: −25%** — the offer is made in one tap. She counters "₹350. Last, I swear!", her mood moves, and one line says why | Accept, or push further | The verdict hasn't appeared yet, so they can't tell whether ₹350 is good | **They lowball hard:** the first seller is patient and won't leave before round 3 [A]. **They walk away:** she calls back once ("Okay okay, vaanga!"). **She does leave:** a second walk-in seller arrives (the floor, F11). If two leave without a deal, the stall opens anyway (F1) — never a dead end |
 | 4 | **Tap 3: Accept** → the Deal result: "Bought: brass lamp, ₹350. She'd have taken ₹300." | Continue, or Share | The verdict can read as "I lost ₹50". It's worded as a tip: "Next time, try lower" [A] | — |
 | 5 | Continue → **the stall, for the first time:** the goal bar at 20% ("Periyappa's gift"), the lamp on display, the first buyer arriving | — | What the bar is for: a one-line hint | — |
 
@@ -248,7 +248,7 @@ The old flow took **5**:
 | 9 | **Kanakku** — automatic after the last customer: best deal first … tomorrow's teaser | Upgrade (when the bar is full) | — | **Leaves the app here:** it returns to the kanakku |
 | 10 | **Stall, evening:** "Day 4 done", with the button "Start Day 5" | Play on, or stop | — | It's a natural place to stop. The day ends on a high (DR29) |
 
-**Taps from app-open to the core action done (one sale), resuming mid-day with a buyer waiting: 3** — tap the buyer, −10%, Accept.
+**Taps from app-open to the core action done (one sale), resuming mid-day with a buyer waiting: 3** — tap the buyer, +10%, Accept. (When selling, the quick buttons ask for more: +10% and +25%, F2.)
 
 **Taps in a whole day:** roughly 30–50. **Most of these taps are play, not overhead:** offers and bids are the game. Navigation, confirmations and dismissals add at most **2 per customer** (tap them; Continue on the result). The **target: overhead ≤ 3 per customer.**
 

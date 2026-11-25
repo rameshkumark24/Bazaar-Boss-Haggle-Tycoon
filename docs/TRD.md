@@ -143,7 +143,7 @@ Every row costs **₹0 at 1,000 players**: nothing here charges per player.
 | Engine | **libGDX 1.14.2**, the latest release (2026-06-05) [T1][T2]. Since 1.13.0 it supports Android's predictive back [T4] and since 1.13.5 its minimum Android is 21 [T4]; its Android libraries are aligned for 16 KB memory pages (RESEARCH S27) | IDEA §6 [F]; CR9; F15 AC6; F20 | Apache-2.0 — no limits |
 | Project layout | **Written by hand from gdx-liftoff's template** (v1.14.2.4 [T3]). Same shape: `core`, `android`, `lwjgl3`, plus libGDX's native-library unpacking step | Liftoff only runs as a click-through window app; it has no command-line mode [T33]. The hand-written build runs entirely from the command line and is checked into git (TD-21) | Free |
 | Gradle | **8.14.8**, through the Gradle wrapper, with the download's SHA-256 pinned in `gradle-wrapper.properties` | The newest 8.x release (2026-11-19) [T30]; AGP 8.13 needs Gradle 8.13 or newer [T8]. With the wrapper, nobody installs Gradle by hand; the checksum blocks a tampered download | Free |
-| Language | **Java**, compiled for Java 8 (`--release 8`) in every module that ships | One language for the game, the logic, the simulator and the tests; the owner's engine is Java (Q11). `--release 8` stops code from calling Java 9+ APIs that Android 7 doesn't have — crash-safety on the oldest supported phones (F20 AC6). Cheap to raise later | — |
+| Language | **Java**, compiled for Java 8 (`--release 8`) in every module that ships | One language for the game, the logic, the simulator and the tests; the owner's engine is Java (Q11). `--release 8` stops code from calling Java 9+ APIs that Android 7 doesn't have — crash-safety on the oldest supported phones (F20 AC6). It doesn't stop Java 8 APIs that Android 7 lacks (`java.nio.file`, `String.join` and others); the Android 7 API test does (§4.11). Cheap to raise later | — |
 | Build JDK | **JDK 17 or newer** [T5][T8]. Verified on the owner's PC with Oracle JDK 17.0.11, the `java` on PATH. Android Studio's bundled JDK 21.0.9 is also there (TD-22) | Gradle 8.10+ and the Android plugin need JDK 17 or newer [T5][T8]. Liftoff's "21 recommended" is a preference, not a requirement | Free |
 | Android Gradle plugin (AGP) | **8.13.2** — maximum API level 36.1; needs Gradle 8.13 and JDK 17 [T8] | **Liftoff's default is 8.9.3 [T6], and AGP 8.9 supports API 35 at most [T7].** Play has required API 36 since 31 Aug 2026 [T10]. AGP 9.5 (Oct 2026, up to API 37 [T9]) is a major version that libGDX's templates haven't adopted — TD-08 | Free |
 | SDK levels | **compileSdk 36 · targetSdk 36 · minSdk 24** | target: Play's requirement [T10], CR9. min: PRD F20 (Android 7.0); also exactly what the ads SDK needs from 25.5.0 [T17]; liftoff's default is 21 [T3] | — |
@@ -205,7 +205,7 @@ Hardening's rule of thumb (H4) applies. If getting around a rule only changes th
 | Whether a payment has cleared | Play Billing's purchase state. PENDING never grants anything | — | DR38 |
 | Which ad categories and ratings may show | AdMob's console (and also the code) | A modified app could strip the code setting | CR23, H1-7 |
 | Whether the app may use the network, or any permission | The build: the allowlist guard (§4.11), and Android itself | Android blocks network use without the permission | CR13, H4-1 |
-| Whether a build contains real ad IDs | The build: only the release variant gets them, and they're kept out of git | — | CR24, H4-4 |
+| Whether a build contains real ad IDs | The build: only the release variant gets them, and they're kept out of git. Play's tester tracks get release builds, so at M4 testers' phones are registered as AdMob test devices (TD-32) | — | CR18, CR24, H4-4 |
 | What the privacy policy says | The data table (PRD §8.5), written by the owner | — | CR15 |
 
 **What the phone does decide, knowingly** (accepted risks):
@@ -407,7 +407,7 @@ sequenceDiagram
 | In the background | Run by | Why it's not in the foreground |
 |---|---|---|
 | Writing the save file | The SaveWriter thread: a single thread, so commits stay in order | File writes and fsync must never block a frame (F20) |
-| Rotating the backups (at each day end and after each successful load) | The SaveWriter thread | Day-level checkpoints are what PRD F15 AC3 restores from |
+| Rotating the backups (at each day end, and after a load that found something new) | The SaveWriter thread | Day-level checkpoints are what PRD F15 AC3 restores from |
 | Cleaning the share cache | At launch, on the SaveWriter thread | Temporary files never pile up |
 | The Auto Backup to Drive | **Android itself:** every 24+ hours, when the phone is idle, on Wi-Fi (unless the player opted otherwise) [T12] | It's Android's job; we only supply the rules (§4.11) |
 | *Later:* local notification alarms | AlarmManager | DR39 |
@@ -446,6 +446,7 @@ sequenceDiagram
 | IDs of instances in a save | `long` from the save's `nextId` counter: monotonic, unique within the save, never reused | Random UUIDs — they'd be identifiers we don't need |
 | Enums | Their stable lowercase names as strings | Ordinal numbers |
 | JSON numbers | Integers only. libGDX's JsonReader parses integers with `Long.parseLong`, without a detour through `double` [T28] | Decimal points in a save |
+| Text made from numbers and dates | Our own `IndianNumberFormat`, and one fixed English date format. Any `String.format`, `toLowerCase` or `toUpperCase` takes `Locale.ROOT`. A test runs them under `mr-IN`, `bn-IN`, `ur-IN`, `ar-EG` and `tr-TR` (TD-29) | The phone's locale: it gives digits the font can't draw, and Turkish lowercasing breaks enum names |
 
 ### 4.3 Determinism
 
@@ -484,6 +485,7 @@ The simulator must predict the phone (Check 3, DR11), so the logic gives the sam
 - Line 1 is a header: `BBSAVE <crc32-hex> <byteLength>`.
 - Line 2 is the JSON.
 - The header lets the loader reject a damaged file before parsing it.
+- **Explicit keys, no reflection.** The codec reads with `JsonReader`/`JsonValue` and writes with `JsonWriter`, every key a string literal. Never libGDX's reflection-based `Json`: release builds' R8 renames fields, and renaming a field in code would change the file. The content pack (§4.4) is read the same way. Migration fixtures compare values, not just "it parsed" (TD-27).
 
 | Entity | Fields — type — empty? | Notes |
 |---|---|---|
@@ -518,7 +520,7 @@ The simulator must predict the phone (Check 3, DR11), so the logic gives the sam
 
 | Data | Owner | What proves ownership | How it's enforced, in this store |
 |---|---|---|---|
-| The save, settings, crash notes, the compliance record, owned items | **The one player of this install** | **No field does, deliberately.** A field can't prove anything on a phone the player controls. The proof is *where the file lives*: the app's private storage, under Android's per-app Linux user ID (libGDX's "local" files are Android internal storage [T26]) | **Android's app sandbox:**<br>• files are private to the app<br>• no component is exported except the launcher activity<br>• the FileProvider exposes `cache/share/` only<br>• the backup rules list what may leave (§4.11) |
+| The save, settings, crash notes, the compliance record, owned items | **The one player of this install** | **No field does, deliberately.** A field can't prove anything on a phone the player controls. The proof is *where the file lives*: the app's private storage, under Android's per-app Linux user ID (libGDX's "local" files are Android internal storage [T26]) | **Android's app sandbox:**<br>• files are private to the app<br>• no component is exported except the launcher activity, and AndroidX's `ProfileInstallReceiver`, which only callers holding the system's `DUMP` permission can reach (verified 2026-11-25, TD-30)<br>• the FileProvider exposes `cache/share/` only<br>• the backup rules list what may leave (§4.11) |
 | The content pack | The developer | The signature on the app bundle (Play App Signing) | Assets are read-only. A tampered app only changes the tamperer's own game (H5-1) |
 | Waitlist rows, the requests log, the support inbox | The game's Google account (the owner) | Access to that account | Google's access controls. 2-step verification (CR11). Sheets are private — never "anyone with the link" |
 | Testers' email addresses | The owner's Play Console | Console access | Google's access controls, with 2-step verification |
@@ -527,7 +529,7 @@ The simulator must predict the phone (Check 3, DR11), so the logic gives the sam
 
 **⚠ Flags — the places a leak would come from, with the rule that closes each:**
 1. **FileProvider paths.** `res/xml/share_paths.xml` declares only `<cache-path name="share" path="share/"/>`. Exposing `files/` would let the share sheet reach the save. Guarded by a unit test.
-2. **Two sets of backup rules.** Android 12+ reads `dataExtractionRules`; Android 11 and older read `fullBackupContent`. Forgetting one would back up the compliance record on some phones. Both are checked (§4.11).
+2. **Two sets of backup rules.** Android 12+ reads `dataExtractionRules`; Android 11 and older read `fullBackupContent`. Forgetting one would back up the compliance record on some phones. Both are checked (§4.11). Inside `dataExtractionRules`, `<cloud-backup>` and `<device-transfer>` are separate sections: without the second, a phone-to-phone transfer copies everything, and `allowBackup` doesn't stop it (TD-30).
 3. **The Google Form's "view results summary" setting** must be off. If it's on, respondents can see other people's answers, including their emails. This is on the owner's form checklist (site/README.md).
 4. **The report email is built field by field** (§5.3). Never "attach the save" or "dump the state".
 5. **Release builds don't log.** The log facade is a no-op in release, and the crash note holds stack traces only.
@@ -569,18 +571,21 @@ The simulator must predict the phone (Check 3, DR11), so the logic gives the sam
 
 **Writing (every action):**
 1. Serialize the state on the render thread, which owns the state. ≈ 15 KB in a few milliseconds [A].
-2. The SaveWriter thread writes `save/game.json.tmp`, calls `FileOutputStream.getFD().sync()`, closes it, then `renameTo("save/game.json")`. A rename is atomic within one directory on Android's file systems (from memory).
+2. The SaveWriter thread writes `save/game.json.tmp`, calls `FileOutputStream.getFD().sync()`, closes it, then `renameTo("save/game.json")`. A rename is atomic within one directory on Android's file systems (from memory). `renameTo`'s result is checked: `false` is a failed commit.
 3. On success, post "committed" back to the render thread.
+
+**One writer per process** (TD-28): the `SaveWriter` outlives any one game object. A new game object waits for its queue before loading, and `dispose()` drains it, waiting up to about 2 s. Start over raises a generation number, and the writer drops writes from older generations.
 
 **Checkpoints:**
 - At each day end, after the kanakku commit, the backups rotate: `bak2 ← bak1`, then `bak1 ← game`. Each copy is itself written to a temp file and renamed.
-- The same rotation runs after each successful load.
+- After a successful load, the rotation runs only if the loaded file differs from `bak1`; otherwise two launches in a row would make all three copies identical (TD-27).
 
 **Loading:**
-1. Try `game.json`: check the header, the CRC and the length, then parse, migrate (§6) and check the invariants (cash ≥ 0, unique IDs, references resolve).
+0. If the previous launch never finished loading (a marker is written before the load and cleared after the first frame), start from `bak1` and keep the crash note (TD-27).
+1. Try `game.json`: check the header, the CRC and the length, then parse, migrate (§6) and check the invariants (cash ≥ 0, unique IDs, references resolve). What can be repaired is repaired (a reservation for a visit that ended, a display slot past the slot count); only what can't be repaired fails the load (TD-27).
 2. If anything fails, try `bak1`, then `bak2` — "Couldn't read your save; restored your backup from <time>" (F15 AC3).
 3. If all three fail, move them to `broken/` and start a new game, saying so plainly. Report a problem opens prefilled with "lost progress". Never a silent blank game.
-4. **A newer format** (`formatVersion` > the current one) is never touched. The game shows "This save is from a newer version. Update the game to keep playing.", with a button to the Play listing, and blocks play until then — so the save can't be overwritten (F15 AC7).
+4. **A newer save** (`formatVersion` or `writtenBy` above this build's, or content this build doesn't have) is never touched (TD-27). The game shows "This save is from a newer version. Update the game to keep playing.", with a button to the Play listing, and blocks play until then — so the save can't be overwritten (F15 AC7).
 
 **Performance rules** (F20 AC3):
 - No allocation per frame in the hot screens.
@@ -592,9 +597,10 @@ The simulator must predict the phone (Check 3, DR11), so the logic gives the sam
 | Guard | Runs | Fails the build when… | Traces to |
 |---|---|---|---|
 | `tools:validateContent` | Part of `check`, and before every release bundle | IDs are malformed or duplicated; a reference doesn't resolve; an item lacks 2–3 clues; a number is out of range; a voice is missing a line; placeholders differ between voices; a line is too long; a banned word appears; a character isn't in the baked font; **an ID listed in `content/ids-ever-shipped.txt` has been removed** | F13 AC1, DR24, CR2, §6 |
-| `android:checkMergedManifest` (each variant) | After the manifest merge | It asks for any permission off the allowlist. v1's allowlist: `VIBRATE`, plus `<applicationId>.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION` — a signature-level permission AndroidX Core declares for the app's own receivers, which grants no access to anything (TD-24)<br>• `allowBackup`, `dataExtractionRules`, `fullBackupContent`, `enableOnBackInvokedCallback="true"` or `appCategory="game"` is missing<br>• anything besides the launcher is exported<br>• the FileProvider is exported<br>• a release build is debuggable | CR13, H2-8, H4-1, F15 AC6 |
-| The backup-rules unit test | `check` | Either XML includes anything beyond `save/game.json`, the two backups and `bb-settings`, or fails to exclude the compliance record | H4-13, H1-10 |
+| `android:checkMergedManifest` (each variant) | After the manifest merge | It asks for any permission off the allowlist. v1's allowlist: `VIBRATE`, plus `<applicationId>.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION` — a signature-level permission AndroidX Core declares for the app's own receivers, which grants no access to anything (TD-24)<br>• `allowBackup`, `dataExtractionRules`, `fullBackupContent`, `enableOnBackInvokedCallback="true"` or `appCategory="game"` is missing<br>• anything is exported besides the launcher and AndroidX's `ProfileInstallReceiver` (while it keeps the `DUMP` permission)<br>• the launcher isn't `launchMode="singleTask"`<br>• the FileProvider is exported<br>• a release build is debuggable | CR13, H2-8, H4-1, F15 AC6 |
+| The backup-rules unit test | `check` | Either XML includes anything beyond `save/game.json`, the two backups and `bb-settings`, or fails to exclude the compliance record, or `dataExtractionRules` lacks a `<device-transfer>` section matching `<cloud-backup>` | H4-13, H1-10, TD-30 |
 | The logic-imports test | `check` | `logic` imports libGDX beyond its JSON utilities | §2.3, DR11 |
+| The Android 7 API test | `check` | `logic` or `core` uses `java.nio.file`, `java.time`, `java.util.Base64`, `String.join` or `File.toPath`: all API 26, which `--release 8` allows (verified 2026-11-25) | F20 AC6, TD-30 |
 | The FileProvider-paths test | `check` | Any path other than `cache/share/` is exposed | §4.7, flag 1 |
 | *M4:* `checkAdIds` | Every non-release variant | It contains anything but Google's published test ad-unit IDs | CR24, H4-4 |
 | *Purchases:* the price-literal test | `check` | The shop code contains a "₹" price literal | DR37, H4-9 |
@@ -617,15 +623,15 @@ v1 can't open a connection: it has no internet permission (CR13). The app's real
 
 Screens never touch `GameState` directly. They send a command and get back a **view**: a small object holding only what that screen may show. **Never the whole state.**
 
-A rule is enforced by the types here: `HaggleView` has no walk-away field, so a screen can't leak one. The walk-away price exists only in `DealResult.verdictPrice` (DR7). Every command except `ShareStats` is one atomic commit (§3.2).
+A rule is enforced by the types here: `HaggleView` has no walk-away field, so a screen can't leak one. The walk-away price exists only in `DealResult.verdictPrice` (DR7). Every command except `ShareStats` is one atomic commit (§3.2). Every command also names the round it answers; a stale one returns `Rejected` and changes nothing (TD-31).
 
 | Command | Request | Result (the view) |
 |---|---|---|
 | `NewGame` | `voice` | `StallView` |
 | `StartDay` | — | `MorningView` {auctionAvailable bool, specialId?, welcomeBackLot bool, teaserLineId?} |
 | `OpenAuction` / `SkipAuction` | — | `PeekView` {visible: [{itemDefId, condition}], rivals: [{rivalDefId}], peekRemainingMs} / `MorningView` |
-| `PlaceBid` | `rupees` long | `AuctionView` {currentBid, leader, countdownMs, minNextBid, maxAffordable} or `Rejected` {reason: over_cash / too_low} |
-| `AuctionTick` | `elapsedMs` long (monotonic) | `AuctionView` or `AuctionResult` {winner, price, rivalEstimates: [{rivalDefId, estimate}]} |
+| `PlaceBid` | `rupees` long | `AuctionView` {currentBid, leader, countdownMs, minNextBid, maxAffordable} or `Rejected` {reason: over_cash / too_low / leading / godown_full} |
+| `AuctionTick` | `elapsedMs` long (monotonic; at most 100 per tick, so a stalled frame slows the auction instead of skipping it) | `AuctionView` or `AuctionResult` {winner, price, rivalEstimates: [{rivalDefId, estimate}]} |
 | `LeaveAuction` | — | `MorningView` (nothing paid — DR18) |
 | `RevealNext` / `DecideReveal` | — / `decisions`: [keep or scrap per index] | `RevealView` {itemDefId, condition} / `RevealDone` {kept: [id], scrapTotal long} |
 | `Inspect` | `itemRef` {ownedId or visit's item} | `InspectView` {condition, cluesSeen: [clueLineId], patienceAfter?} (patience cost per Q4) |
@@ -900,6 +906,12 @@ Append new entries; never overwrite. Each entry's "rules out" is what the decisi
 | TD-24 | 2026-11-24 | **The permission allowlist includes AndroidX's app-private `DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION`.** *Corrects §4.11's "VIBRATE only"* | Exclude AndroidX (impossible: libGDX's Android backend depends on it); strip the entry from the manifest | Found in the first build (`aapt2 dump permissions`). It's signature-level, defined by the app for its own receivers, and grants nothing. Stripping it could break AndroidX receivers on Android 13+. PRD F20 AC2 and CR13 now say so | — |
 | TD-25 | 2026-11-24 | **The system bars stay visible: no immersive mode, no full screen.**<br>• `AndroidLauncher`: `useImmersiveMode = false`, and clear `FLAG_FULLSCREEN` after `initialize()`<br>• theme `Theme.Material.NoActionBar`<br>• also `useAccelerometer = false` and `useCompass = false`<br><br>At API 36 the game draws edge-to-edge behind the bars, so the UI keeps to the safe insets (TD-20) | Immersive full screen, accepting Android's notice; full screen without immersive mode | Android shows "Viewing full screen" over the first screen of an app that hides the bars — the first haggle (PRD F1). libGDX hides them by default [T34]. Turning off the unused motion sensors saves battery (F20) | Full-bleed, bar-free screens. The status bar's height is permanent UI overhead (≈ 80 px at 1080 × 2400) |
 | TD-26 | 2026-11-24 | **Fonts: Roboto (UI) and Rozha One (what characters say), baked per text-size step; icons from Material Symbols.** *Supersedes TD-12's Noto Sans* | Noto Sans; Yatra One for the display face; Lucide or game-icons.net icons | DESIGN.md: the platform's own face for the UI, plus one display face picked for the subject. Rozha One stays crisp at 26 dp, where Yatra One blurs. Material Symbols are what Android players already read. All three licences allow bundling (DESIGN.md §8). If baked bitmaps look soft on high-density screens, M0 switches to distance-field fonts | Font-engine features at runtime (still none, L-11) |
+| TD-27 | 2026-11-25 | **The save codec: explicit keys, no reflection. Repair before reject; a loading marker against crash loops; "newer" judged by `formatVersion`, `writtenBy` and unknown content; backups rotate at load only when something changed** | libGDX's reflection-based `Json`; reject on any invariant failure; rotate at every load | EDGE-CASES SV-1, SV-3, SV-6, SV-7, SV-8: R8 renames reflected fields, so every update would lose every save; a fixable save shouldn't cost a day; a crash in load mustn't repeat at every launch | Saving an object by reflection |
+| TD-28 | 2026-11-25 | **One game per process.** `launchMode="singleTask"`, plus finishing a launcher instance that isn't its task's root; one `SaveWriter` per process, drained on dispose; a generation number for Start over; `configChanges` adds `density\|fontScale\|uiMode\|locale\|layoutDirection\|smallestScreenSize` | The default launch mode; a writer per game object | Verified 2026-11-25: the current manifest allows two instances in one process, and font size, display size, dark mode and language changes recreate the activity (EDGE-CASES LC-1, LC-2, LC-4) | — |
+| TD-29 | 2026-11-25 | **Text is locale-proof:** `Locale.ROOT` everywhere, our own number and date formats, and a test under `mr-IN`, `bn-IN`, `ur-IN`, `ar-EG` and `tr-TR` | The phone's locale | Verified on JDK 17: Marathi, Bengali, Assamese and Urdu give non-Latin digits, and Turkish lowercasing changes `I` (EDGE-CASES DV-1, CL-3) | Localised digits (not wanted: the voices are Latin-only) |
+| TD-30 | 2026-11-25 | **More build guards and settings:** the Android 7 API test; the exported-components allowlist names `ProfileInstallReceiver`; the backup rules need `<device-transfer>`; javac adds `-this-escape` only on JDK 21 and newer; debug builds use `applicationIdSuffix '.dev'`, with the FileProvider authority from `${applicationId}`. *Corrects §4.7's "no component is exported except the launcher"* | — | Verified 2026-11-25 (EDGE-CASES SV-2, BR-1, BR-2, BR-3, BR-5). JDK 17 rejects `-Xlint:-this-escape`, so the flag depends on the JDK. When the debug suffix lands (slice 1), CLAUDE.md's launch and uninstall commands change with it | — |
+| TD-31 | 2026-11-25 | **Commands name the round they answer; `AuctionTick` advances at most 100 ms; `PlaceBid` is rejected while the player leads or the godown is full** | — | EDGE-CASES IN-1, HE-4, HE-5; PRD DR17, §7.6 | — |
+| TD-32 | 2026-11-25 | **At M4, testers' phones are registered as AdMob test devices.** To confirm at M4 | A separate tester build with test IDs | Play's tester tracks get release builds, which carry the real ad IDs (§2.2), but CR18 forbids a real ad in a tester build (EDGE-CASES MN-1) | — |
 
 ---
 

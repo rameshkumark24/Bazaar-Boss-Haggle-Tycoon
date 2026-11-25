@@ -8,6 +8,7 @@ An offline, single-player Android haggling game, built with libGDX in Java.
 - **[docs/TRD.md](docs/TRD.md)** — how it's built: the stack, the data model, the decision log.
 - **[docs/APP-FLOW.md](docs/APP-FLOW.md)** — how the screens connect: navigation, back, launch routing, and one row per screen.
 - **[docs/DESIGN.md](docs/DESIGN.md)** — how it looks, moves and speaks: the scales, the colour roles, the components, the copy rules, and the §10 visual checklist.
+- **[docs/EDGE-CASES.md](docs/EDGE-CASES.md)** — what can go wrong, ranked, with the slice each case belongs to (§1.1) and verified ways to reproduce it (§7). Before building a slice, handle its cases.
 - `docs/IDEA.md`, `docs/RESEARCH.md` and `docs/COMPETITORS.md` are the background they were built from.
 
 ## Rules that are easy to break
@@ -65,3 +66,5 @@ for i in $(seq 1 120); do s=$("$ADB" shell getprop sys.boot_completed 2>/dev/nul
 - Maestro (deferred until there are screens to tap through)
 
 **Known harmless warning:** "SDK processing. This version only understands SDK XML versions up to 3…". Android Studio's newer SDK manager wrote files that AGP 8.13 only partly reads. The build is unaffected.
+
+**Git Bash rewrites device paths:** an adb argument starting with `/` becomes a Windows path (`/data` → `C:/Program Files/Git/data`). Prefix such commands with `MSYS_NO_PATHCONV=1`. Verified 2026-11-25, with more reproduction commands (process death, storage full, clock, font and display size, navigation mode) in [docs/EDGE-CASES.md](docs/EDGE-CASES.md) §7.

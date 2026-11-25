@@ -23,7 +23,10 @@ Try it now: open `bazaar-boss/index.html` in your browser. Add `?voice=ta` or `?
 - Questions, and nothing else (no name, phone or city):
   1. *Which voice would you play in?* Multiple choice: English / Tanglish / Hinglish. **Not required.**
   2. *I'm 18 or older.* One checkbox. **Required.**
-- Settings → Presentation → confirmation message: `Thanks. You'll hear from us once, at launch.`
+- Settings → Presentation:
+  - Confirmation message: `Thanks. You'll hear from us once, at launch.`
+  - **View results summary: off.** If it's on, every respondent can read the others' email addresses.
+  - **Show link to submit another response: off.** It cuts accidental duplicate sign-ups.
 - Send → link icon → tick "Shorten URL" → copy the `forms.gle/…` link.
 
 **3. Put two values into the page.** Near the bottom of `index.html`:

@@ -9,7 +9,13 @@ subprojects {
         tasks.withType(JavaCompile).configureEach {
             options.encoding = 'UTF-8'
             // Compiler lint, strict from day one: any warning fails the build.
-            options.compilerArgs += ['-Xlint:all,-path,-processing,-options', '-Werror']
+            // JDK 21 added the this-escape lint (scene2d code trips it), and JDK 17 rejects
+            // the flag that turns it off, so it's added only on JDK 21+ (TRD TD-30).
+            def lint = '-Xlint:all,-path,-processing,-options'
+            if (JavaVersion.current().isCompatibleWith(JavaVersion.VERSION_21)) {
+                lint += ',-this-escape'
+            }
+            options.compilerArgs += [lint, '-Werror']
         }
         // Shipped Java compiles against the Java 8 API, so a Java 9+ call fails the
         // build instead of crashing on Android 7 (TRD §1.2, TD-08).
