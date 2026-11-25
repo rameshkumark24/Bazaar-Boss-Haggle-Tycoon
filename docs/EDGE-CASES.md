@@ -444,6 +444,7 @@ The other first-run cases are SV-9 (settings without a save) and EF-2 (§4).
 - **Trigger:** with gesture navigation, a drag that starts near the screen's left or right edge is Android's back gesture.
 - **Unhandled:** the player drags the slider from the edge and gets Pause instead of a price.
 - **Should:** the slider's track keeps clear of both edges. On Android 10 and later, the slider can also be excluded from the back gesture (`setSystemGestureExclusionRects`; from memory).
+- **Measured 2026-11-25 (Phase 4), Android 16 emulator, default sensitivity:** a drag starting within 28 dp of either edge is a back, and one starting at 30 dp reaches the game. The zone is `config_backGestureInset`, 30 dp, and it widens if the player raises the back sensitivity. So DESIGN §2.7's "at least 24 dp" isn't enough; the fix is the owner's decision (Phase 4's report).
 - **Fix in:** `core`, `android`.
 - **Reproduce:** switch to gesture navigation (§7, verified) and drag the thumb from the edge.
 
@@ -937,7 +938,10 @@ Run on the owner's PC in Git Bash: the `Medium_Phone_API_36.1` emulator (Android
 | Recreate the activity | `"$ADB" shell settings put system font_scale 1.3` (reset: `1.0`). Also `cmd uimode night yes` (reset: `no`), `wm density 546` (reset: `wm density reset`), `cmd locale set-app-locales $PKG --locales mr-IN` (reset: `--locales ""`) | Each logs `ActivityThread.handleRelaunchActivity` and libGDX's ~15 start-up lines again. The control, a volume key, logs none |
 | Font size 200% | `"$ADB" shell settings put system font_scale 2.0` | Accepted |
 | A narrow screen | `"$ADB" shell wm density 546` | 1080 px ≈ 316 dp |
-| Navigation mode | `"$ADB" shell cmd overlay enable-exclusive --category com.android.internal.systemui.navbar.gestural` (or `.threebutton`) | Switches both ways |
+| Navigation mode | `"$ADB" shell cmd overlay enable-exclusive --category com.android.internal.systemui.navbar.gestural` (or `.threebutton`) | Switches both ways. *Phase 4:* it also recreates a running game's activity |
+| A camera cutout (Phase 4) | `"$ADB" shell cmd overlay enable-exclusive --category com.android.internal.display.cutout.emulation.hole` (also `.corner`, `.double`, `.tall`, `.waterfall`). Reset: `cmd overlay disable com.android.internal.display.cutout.emulation.hole` | The top inset grows from 63 to 136 px, and the running activity is recreated |
+| The back gesture's edge zone (Phase 4) | `"$ADB" shell input swipe <x> 1500 <x+450> 1500 300`, in gesture navigation, with the game catching back | From either edge, a drag starting within 28 dp is a back; from 30 dp it reaches the game. The zone is `config_backGestureInset`, 30 dp at default sensitivity |
+| Back, by key and by button (Phase 4) | `"$ADB" shell input keyevent 4` injects a key; `"$ADB" shell input tap 229 2337` presses the 3-button bar's back | On Android 13+ they differ: the key also reaches the view as a key event; the bar's button only fires the callback |
 | Battery saver | `"$ADB" shell cmd battery unplug`, then `"$ADB" shell settings put global low_power 1`. Reset: `low_power 0`, `cmd battery reset` | `mSettingBatterySaverEnabled=true` |
 | Animations off | `"$ADB" shell settings put global animator_duration_scale 0` (reset: `1`) | Set |
 | The clock | `"$ADB" shell settings put global auto_time 0`, then `"$ADB" shell cmd alarm set-time <epoch ms>` | The date moved back 3 days, with no root |

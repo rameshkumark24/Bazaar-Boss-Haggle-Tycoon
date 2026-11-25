@@ -308,7 +308,8 @@ public interface PlatformServices {                 // android and lwjgl3 implem
     HandOff openUrl(String https);
     HandOff openStoreListing();
     AppVersions versions();
-    Insets  safeInsets();                           // the system bars and the cutout (DV-3)
+    Insets  safeInsets();                           // the system bars and the cutout, from the view's WindowInsets; never libGDX's (DV-3, U2)
+    void    catchBack(boolean on, Runnable onBack); // Android 13+: android's own OnBackInvokedCallback, posted with postRunnable; below 13, setCatchKey (U1, TD-35)
     void    onFocusChange(FocusListener listener);  // pause the auction on focus loss (LC-6)
     boolean talkBackOn();
     float   animatorScale();                        // "Remove animations" (DV-8)
@@ -775,15 +776,15 @@ What this design leans on that nobody has proven yet. The build plan turns each 
 
 | # | The question | What rides on it | Time-box | Slice |
 |---|---|---|---|---|
-| U1 | Does libGDX 1.14.2's back key work with `enableOnBackInvokedCallback` on Android 16, in both navigation modes? | F15 AC6, CR9 | 2 h | 1 |
-| U2 | With the system bars visible, do libGDX's safe insets include them, or must `android` read `WindowInsets` itself (DV-3)? | Buttons under the bars | 2 h | 1 |
+| U1 | Does libGDX 1.14.2's back key work with `enableOnBackInvokedCallback` on Android 16, in both navigation modes?<br>**Answered 2026-11-25 (Phase 4): not as TD-20 planned.**<br>• With `setCatchKey(BACK)`, libGDX registers its own `OnBackInvokedCallback` on Android 13+. That callback queues a key-down but never asks for a frame, so with drawing on demand a back waits for the next touch: 9 s with the 3-button bar, 3 s with a gesture, in the tests.<br>• An injected `KEYCODE_BACK` arrives twice: as a key, and through the callback.<br>• **What works in both modes:** `android` registers its own callback only while `core` catches back, and hands the back over with `postRunnable`, which asks for a frame. Back reached the game within 1 ms. `core` ignores BACK key events on Android 13+. Below 13, libGDX's key path works: one key-down per press on Android 9.<br>• No new dependency. TRD TD-35; evidence in BUILD-PLAN Phase 4 | F15 AC6, CR9 | 2 h | 1 |
+| U2 | With the system bars visible, do libGDX's safe insets include them, or must `android` read `WindowInsets` itself (DV-3)?<br>**Answered 2026-11-25 (Phase 4): `android` must read them.**<br>• libGDX's safe insets come only from the display cutout, read when the surface starts: 0 for the bars in both modes. Android reported the status bar as 63 px, and the bottom as 126 px (3 buttons) or 63 px (gestures).<br>• `android` reads the view's `WindowInsets` (system bars plus cutout) in an `OnApplyWindowInsetsListener`, passes them to `core` and asks for a frame. They arrive after `create()` and change with the navigation mode, so `core` re-lays out when they change.<br>• On Android 9 the surface sits between the bars, and the view gets no insets: 0 is correct there, with no double padding.<br>• TRD TD-35 | Buttons under the bars | 2 h | 1 |
 | U3 | Are baked bitmap fonts crisp at XL on a 420-dpi screen, or do we need distance-field fonts (TD-26)? Does Rozha One include ₹? | Every screen's text | 4 h | 1 |
-| U4 | Does drawing only on demand work with scene2d's actions and input (DV-5)? | Battery | 2 h | 1 |
+| U4 | Does drawing only on demand work with scene2d's actions and input (DV-5)?<br>**Answered 2026-11-25 (Phase 4): yes, apart from libGDX's back callback (U1).**<br>• With `setContinuousRendering(false)`, the stage's actions keep frames coming: 180 frames in a 3 s animation (60 a second), 15–18 for the 250 ms card, and 0 a second when idle.<br>• Touches, ordinary key events, `postRunnable` and `requestRendering()` from another thread all wake the loop.<br>• Clamp the frame time (≤ 33 ms) so the first frame after an idle spell doesn't jump | Battery | 2 h | 1 |
 | U9 | Does Android's `String.format` give non-Latin digits under `mr-IN`, as the JDK does (DV-1)? | Confirms the locale guard | 1 h | 1 |
-| U19 | Does `./gradlew :lwjgl3:run` work on this PC? CLAUDE.md lists it as not verified | The fastest loop; the haggle lab | 1 h | 1 |
+| U19 | Does `./gradlew :lwjgl3:run` work on this PC? CLAUDE.md lists it as not verified<br>**Answered 2026-11-25 (Phase 4): yes.** With only cached libraries (`--offline`), it built and opened the 405 × 720 window in 8 s. The spike drew the Haggle and the pause card there (`shots/p04-shell-desktop.png`). Now in CLAUDE.md's verified table | The fastest loop; the haggle lab | 1 h | 1 |
 | U5 | How fast are libGDX's `JsonReader` and `JsonWriter` with literal keys, on 50 KB and on the 0.5 MB pack? Do longs stay exact (TRD [T28])? | Every commit; cold start | 2 h | 3 |
 | U6 | What does a commit (write, fsync, rename) take at p95 on LowEnd_A9, and on a real cheap phone? | Tap to reaction ≤ 100 ms | 2 h | 3 |
-| U7 | When the activity is recreated: the order of dispose, draining the writer, a new GL context (LC-2, LC-5) | A lost last move; blank faces | 3 h | 3 |
+| U7 | When the activity is recreated: the order of dispose, draining the writer, a new GL context (LC-2, LC-5)<br>*A lead from Phase 4 (2026-11-25), not an answer:*<br>• Switching the navigation mode or the cutout recreates the activity, and `configChanges` can't prevent that.<br>• libGDX called no `dispose()` on the old game, since it disposes only when the activity is finishing. The old game's timer thread kept running | A lost last move; blank faces | 3 h | 3 |
 | U8 | Can `run-as` copy a fixture from `/data/local/tmp` into the save folder? | The whole USER level (§7.3) | 1 h | 3 |
 | U10 | Can five personalities make every habit lose (DR11), and is the haggle fun? | The product's central bet (R6) | Slices 4–6; G1 decides | 4–6 |
 | U12 | What do faces drawn into textures cost, in memory and time, on a 2 GB phone? | Frame time; running out of memory | 2 h | 6 |

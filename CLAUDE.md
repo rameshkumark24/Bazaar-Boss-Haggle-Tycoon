@@ -49,6 +49,7 @@ ADB="$SDK/platform-tools/adb.exe"
 | Typecheck only | `./gradlew :logic:compileJava :logic:compileTestJava :core:compileJava :lwjgl3:compileJava :android:compileDebugJavaWithJavac` | `BUILD SUCCESSFUL` |
 | Lint only | `./gradlew :android:lintDebug` | `BUILD SUCCESSFUL`; report at `android/build/reports/lint-results-debug.html`. One warning is expected: `MissingApplicationIcon` (the icon arrives with the art) |
 | Tests only | `./gradlew :logic:test` | `SmokeTest > theTestRunnerRuns() PASSED` |
+| The desktop window (development only) | `./gradlew :lwjgl3:run` | A 405 × 720 window opens; `BUILD SUCCESSFUL` once it closes. Verified 2026-11-25 (Phase 4): 8 s, even with `--offline` |
 | List the virtual devices | `"$SDK/emulator/emulator.exe" -list-avds` | `LowEnd_A9`, `Medium_Phone_API_36.1` |
 | Start the emulator — run it in the background | `"$SDK/emulator/emulator.exe" -avd Medium_Phone_API_36.1 -no-snapshot-save -no-boot-anim` | A window opens; `"$ADB" devices` shows `emulator-5554 device` |
 | Wait until it has booted | The script below — run it in the background | `BOOTED after ~57s` |
@@ -66,7 +67,6 @@ for i in $(seq 1 120); do s=$("$ADB" shell getprop sys.boot_completed 2>/dev/nul
 ```
 
 **Not verified yet** — run one successfully before adding it to the table:
-- `./gradlew :lwjgl3:run` (the desktop window)
 - installing on a real phone
 - the API 24 emulator (no system image on this PC yet; TRD TD-23)
 - `./gradlew :android:bundleRelease` (needs the upload key — TRD §1.3, Ship)

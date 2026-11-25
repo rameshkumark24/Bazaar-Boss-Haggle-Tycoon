@@ -244,7 +244,7 @@ PROGRESS:
 
 ## Phase 4 — Spike: the Android 16 shell
 
-STATUS: IN PROGRESS
+STATUS: DONE
 
 GOAL: Know how libGDX 1.14.2 handles four things on Android 16: back, the safe area, drawing only on demand, and the desktop window (LLD U1, U2, U4, U19).
 
@@ -296,6 +296,45 @@ PROGRESS:
      - back while nothing is drawing
   4. `./gradlew :lwjgl3:run --offline`.
   5. Write the answers into LLD §10 (U1, U2, U4, U19), into TRD TD-20 and TD-25 if they change, and into CLAUDE.md if the desktop window works.
+- **Done:** steps 1–5. Tests ran on the `Medium_Phone_API_36.1` emulator (Android 16, 1080 × 2400, 420 dpi), on `LowEnd_A9` (Android 9), and in the desktop window. Every emulator setting was put back: 3-button navigation, no cutout.
+- **What the spike found:**
+  - **Back with libGDX's own route (`setCatchKey`), Android 16:**
+    - the 3-button bar's back reached the game 9 s late, only when the screen was next touched
+    - a gesture back reached it 3 s late, the same way
+    - an injected `input keyevent 4` arrived twice, so the card opened and closed in 14 ms
+  - **Back with the launcher's own callback, Android 16:** both modes opened and closed the card, reaching the game within 1 ms each time. Only the injected key still arrived twice, hence TD-35's rule: `core` ignores BACK key events on Android 13+.
+  - **Back on Android 9:** libGDX's route is right there: one key-down and one key-up per press, with no stall.
+  - **Insets on Android 16:**
+
+    | Setup | Android's insets for the view | libGDX's safe insets |
+    |---|---|---|
+    | 3-button | top 63, bottom 126 px | all 0 |
+    | Gesture | top 63, bottom 63 px | all 0 |
+    | Gesture with a punch-hole cutout, cold start | top 136, bottom 63 px | top 136, bottom 0 |
+
+    Inside libGDX's insets, the title and Mute sit under the status bar, and the bottom button under the 3-button bar.
+  - **Insets on Android 9:** the surface is 720 × 1136, between the bars, and the view gets no insets. A padding of 0 is correct there.
+  - **Drawing on demand:** 0 frames a second when idle; 180 frames in the 3 s animation; 15–18 for each 250 ms card.
+  - **The Stall doesn't catch back:** Android took it and showed the home screen.
+  - **Desktop:** `./gradlew --offline :lwjgl3:run` was `BUILD SUCCESSFUL` in 8 s.
+  - **For Phase 5 (U7):** a navigation-mode or cutout change recreates the activity, and libGDX didn't dispose the old game. Its timer thread kept logging.
+  - **For Phase 6 (IN-4):** the back-gesture zone is 30 dp (`config_backGestureInset`), so DESIGN §2.7's 24 dp slider margin is too small. Raised with the owner.
+- **Where the answers went:** LLD §10 (U1, U2, U4, U19, plus a lead on U7) and `PlatformServices` in LLD §4; TRD TD-35, which corrects TD-20; CLAUDE.md's verified table; EDGE-CASES IN-4 and §7.
+- **DONE WHEN 1: PASS.** LLD §10's U1, U2, U4 and U19 rows carry dated answers, with this evidence:
+  - **3-button navigation:**
+    - `shots/p04-shell-3button-stall.png`: the layout inside Android's insets
+    - `shots/p04-shell-3button-stall-gdxinsets.png`: the failure inside libGDX's insets
+    - `shots/p04-shell-3button-haggle-navback-launcher.png`: back opened the pause card
+    - libGDX's route: `…-back-idle-libgdx.png`, `…-navback-libgdx.png`, `…-navback-libgdx-aftertap.png`
+  - **Gesture navigation:**
+    - `shots/p04-shell-gesture-haggle.png`: the layout
+    - `shots/p04-shell-gesture-haggle-swipe-launcher.png`: back opened the pause card
+    - `…-swipe-libgdx.png`, `…-card.png`, `…-animating.png`, `…-stall-back-home.png`
+  - **The cutout:** `shots/p04-shell-gesture-cutout-hole-stall.png` and `…-cold.png`.
+  - **Android 9:** `shots/p04-shell-android9-stall.png`, `…-haggle-back.png`.
+  - **Frames a second:** the logcat lines above, from the spike's once-a-second counter.
+  - **Desktop:** the output of `:lwjgl3:run` and `shots/p04-shell-desktop.png`. CLAUDE.md's verified table now has `:lwjgl3:run`.
+- **Checks on this branch:** `./gradlew --offline check` → `BUILD SUCCESSFUL in 12s`. The branch holds no spike code; that stays on the local branch `spike/shell`, to be deleted after the review.
 
 ## Phase 5 — Spike: the save on a cheap phone
 
@@ -1770,7 +1809,7 @@ PROGRESS:
 
 ## CURRENT STATE
 
-**Updated 2026-11-25, during Phase 1.**
+**Updated 2026-11-25, when Phase 4 was done.**
 
 **Built so far:**
 - **The planning docs:** PRD, TRD, APP-FLOW, DESIGN, EDGE-CASES, MONETISATION, LLD, and this plan.
@@ -1779,21 +1818,31 @@ PROGRESS:
   - `./gradlew check` passes; it runs on the Android 16 emulator, and screenshots work (CLAUDE.md)
   - the javac lint is JDK-aware (BR-3), verified on JDK 17 and JDK 21
 - **The waitlist test is live:** the page at https://rameshkumark24.github.io/bazaar-boss/, and the Google Form behind its button. Nothing is posted yet, so the seven days haven't started.
+- **Phase 4's answers:**
+  - back on Android 13+ goes through the launcher's own callback, because libGDX's route stalls when drawing on demand (TD-35)
+  - the insets come from Android's `WindowInsets`, not libGDX's
+  - drawing on demand works
+  - the desktop window works
 
-**Phase 1 is IN PROGRESS** on branch `phase-1-waitlist-test`, waiting for the posts and day 7. **Phase 2 (owner) is IN PROGRESS.** Every other phase is NOT STARTED.
+**Phase status:**
+- **Phase 4 is DONE** on branch `phase-4-android-shell`, waiting for its review and merge. That branch is cut from `phase-1-waitlist-test`, so Phase 1's branch merges first.
+- **Phases 1 and 2 (owner) are IN PROGRESS.** Phase 1 waits for the posts and day 7.
+- Every other phase is NOT STARTED.
 
 **Next:**
 - **The build has started before day 7,** by the owner's decision on 2026-11-25 (PRD Q1). On day 7 the thresholds apply to the build in progress.
-- **Agent:** Phase 4, the Android 16 shell spike. Phase 3 waits for the owner's yes to its downloads (Phase 2, item 7). Phase 5 follows.
+- **The review and merge** of `phase-1-waitlist-test`, then `phase-4-android-shell`.
+- **Agent:** Phase 3, the text spike, once the owner says yes to its downloads (Phase 2, item 7). Without that yes, Phase 5, the save spike.
 - **Phase 1 (owner):** confirm that the haggle plays in all three voices on the phone; record and post the clip, and send the date of the first post; on day 7, send the counts and each post's views.
 - **Phase 2 (owner):** the checklist in Phase 2's PROGRESS.
+- **A decision for the owner, from Phase 4:** DESIGN §2.7 keeps the offer slider "at least 24 dp" from the screen edges, but the back gesture takes drags that start within 30 dp. **Recommended:** at least 32 dp, plus a gesture-exclusion area over the slider on Android 10+. DESIGN changes only when the owner says so.
 
 **Sessions, used against the estimate:**
 
 | Group | Estimate | Used | Status |
 |---|---|---|---|
 | Before M1 | 0 build sessions; 7 days | 1: the agent made the form and published the page, at the owner's request | Phase 1 in progress; the 7 days start with the first post |
-| M1 (Phases 3–12) | 9 | 0 | — |
+| M1 (Phases 3–12) | 9 | 1: Phase 4 | Phase 4 done; Phases 3 and 5 next |
 | M2 (Phases 13–29) | 17 | 0 | — |
 | M3 (Phases 30–32) | 5 | 0 | — |
 | After M3 (33–42) | 4 purchases + 4 ads | 0 | Behind G3 and Q19 |
