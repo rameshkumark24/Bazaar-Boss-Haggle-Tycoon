@@ -410,7 +410,7 @@ PROGRESS:
 
 ## Phase 5 — Spike: the save on a cheap phone
 
-STATUS: IN PROGRESS
+STATUS: DONE
 
 GOAL: Know the save's costs and risks before building it (LLD U5–U8):
 - U5: how fast libGDX's JSON reader and writer are with literal keys, and whether longs stay exact
@@ -462,6 +462,64 @@ PROGRESS:
      - the question: is `dispose()` called, and does the new game load the pending write?
   4. **U8:** push a valid fixture (`BBSAVE` header, CRC and length) to `/data/local/tmp`, copy it into `files/save/` with `run-as`, relaunch, and log what loads. On Android 16 and Android 9.
   5. **Write the answers** into LLD §10 (U5–U8), TRD §0.4 and §4.10, and EDGE-CASES LC-2 and T-3; add a new TRD entry correcting TD-28 if the drain moves; and add the fixture commands to CLAUDE.md if U8 works.
+- **Done:** steps 1–5.
+  - Tests ran on `LowEnd_A9` (Android 9, 2 GB) and `Medium_Phone_API_36.1` (Android 16), both on debug builds.
+  - Every emulator setting was put back: font scale 1.0, 3-button navigation.
+- **U5, on `LowEnd_A9`, warm, launched with `--ez bench true`:**
+  ```
+  U5 longs: 8/8 exact; text: {"v":[9223372036854775807,-9223372036854775808,9007199254740993,-9007199254740993,0,-1,1764000000123,-7046029254386353131]}
+  U5 typical save, 14074 bytes: encode+CRC: p50 2.92 ms  p95 22.25 ms | check+decode: p50 2.27 ms  p95 12.00 ms
+  U5 worst save, 49639 bytes: encode+CRC: p50 5.79 ms  p95 20.33 ms | check+decode: p50 5.58 ms  p95 15.75 ms
+  U5 pack, 524343 bytes, 1945 entries: parse+walk: p50 30.81 ms  p95 41.36 ms
+  ```
+  The first run measured the typical save at encode p50 2.87 / p95 11.80 and decode p50 2.29 / p95 7.57, and the pack at p50 10.93 / p95 25.99 ms.
+- **U6, on `LowEnd_A9`, 200 commits each:**
+  ```
+  U6 typical commit, 14064 bytes: write+fsync+rename: p50 7.54 ms  p95 11.55 ms  max 20.80 ms
+  U6 worst commit, 49647 bytes: write+fsync+rename: p50 7.96 ms  p95 11.21 ms  max 18.71 ms
+  ```
+  Android 16 measured p95 7.9–19.8 ms, max 65 ms. **Under 100 ms, so ASK FIRST didn't trigger.**
+- **Cold code, on Android 16:**
+  - Just after install and boot, the 50 KB encode's p95 was 177 ms and its decode's 359 ms. A minute later they were 19 and 17 ms.
+  - The first taps after a cold launch encoded in 29.6, 11.7, 9.5, 8.6 and 7.1 ms.
+  - `cmd package compile -m speed` left the debug build at `status=verify`, because debuggable apps aren't compiled ahead of time.
+- **U7, the order of events.** On Android 9, the font scale went to 1.3 with a 1.5 s write pending:
+  ```
+  game #1 tap: queued seq 1 (14056 bytes, slow: 1.5 s)
+  activity #1 onPause begins (finishing=false, changingConfigurations=true)
+  game #1 pause (EGL context 0x7d97d2af3b00)
+  writer: seq 1 committed in 1524 ms
+  game #1 pause: drained in 1273 ms (idle=true, committed up to 1)
+  activity #1 onPause returned, onStop, onDestroy (changingConfigurations=true)
+  activity #2 onCreate (restoring=true)
+  game #2 create (EGL context 0x7d97c92eb800)
+  game #2 load: nextId 1 from 14056 bytes, header and CRC ok
+  ```
+  - **There's no `game #1 DISPOSE` line.** Android 16 with the navigation-mode switch did the same: drained in 1006 ms, and game #2 loaded nextId 6.
+  - **With no drain,** the rebuild went straight on. Game #2 "waited 974 ms for the writer before loading" and loaded nextId 2.
+  - **Process death:**
+    - with no drain, a 4 s write pending, then home and `am kill`: the relaunch loaded nextId 3, so seq 4 was lost
+    - with the drain and a 1.5 s write: "pause: drained in 1122 ms", and the relaunch loaded nextId 4
+  - **Back on the root screen:** `onPause begins (finishing=true)`, then `pause` (drained in 1139 ms), then `game #1 DISPOSE`, `onStop` and `onDestroy`.
+  - **libGDX's limit:** `AndroidGraphics.pause` waits `4000l` ms, then logs "waiting for pause synchronization took too long; assuming deadlock and killing" and calls `Process.killProcess`.
+- **U8, on Android 9 and 16:** `1 file pushed`, then `-rw------- 1 u0_a231 u0_a231 432 … game.json`, then `game #1 load: nextId 777 from 432 bytes, header and CRC ok`. A damaged file gave `load: REJECTED, CRC mismatch`.
+- **Where the answers went:**
+  - LLD §10 U5–U8, and §6 rows 1–2
+  - TRD §0.4, §4.10, and TD-38, which corrects TD-28
+  - EDGE-CASES LC-2 and T-3
+  - CLAUDE.md's fixture row
+  - Phase 6's build list: TD-38, and warming the codec
+  - KNOWN ISSUES: K5 resolved
+- **For Phase 6 and later:**
+  - **One writer per process, and no threads or timers inside a game object.** The old game object is never disposed on a rebuild, so anything it owns outlives it.
+  - **The drain in `pause()` holds Android's `onPause` while it waits:** normally milliseconds (U6), at most 2 s.
+  - **Warm the codec while loading** by encoding the loaded state once.
+  - **Phase 29 measures a release build on the borrowed phone.** A baseline profile may matter for the first taps.
+- **DONE WHEN 1: PASS.** LLD §10's U5–U8 rows carry dated answers, with this evidence, all above:
+  - the encode and decode times for 50 KB and the pack, on `LowEnd_A9`
+  - the commit's p50 and p95
+  - the recreation sequence, as logcat lines
+  - the fixture commands and their output, now in CLAUDE.md
 
 ## Phase 6 — The vertical slice: one haggle, saved and resumed
 
@@ -490,7 +548,8 @@ BUILD:
   - fonts as Phase 3 found (TD-36): the distance-field baker in `tools`, with TD-36's base sizes, the glyph-offset fix and one-channel atlases, checked on the phone with the zoom test (CLAUDE.md), including the extremes: `label` at S on 280 dpi and `price` at XL on density 4.5; and a label that draws with the distance-field shader, sets its smoothing from its size on screen, and turns integer positions off (TD-37)
   - the icon atlas from Material Symbols through the same baker (LLD U20; the download needs the owner's yes first)
   - a placeholder face (shapes plus the mood word)
-  - `SaveWriter` (one per process, coalescing), `FileSaveFiles`
+  - `SaveWriter` (one per process, coalescing), `FileSaveFiles`. The new game waits for the writer before loading, and `pause()` drains it, for at most 2 s (TD-38)
+  - the codec warmed while loading, so the first tap isn't paying for cold code (U5)
   - the haggle screen, the deal result card and the pause card
 - **`android`:** `singleTask` and the task-root check (LC-1); the wider `configChanges` (LC-2); pause on focus loss.
   - the view's `WindowInsets` passed to `core` (TD-35)
@@ -1905,7 +1964,7 @@ PROGRESS:
 
 ## CURRENT STATE
 
-**Updated 2026-11-25, after the first doc check and its code review.**
+**Updated 2026-11-25, when Phase 5 was done.**
 
 **Built so far:**
 - **The planning docs:** PRD, TRD, APP-FLOW, DESIGN, EDGE-CASES, MONETISATION, LLD, and this plan.
@@ -1923,18 +1982,27 @@ PROGRESS:
   - text is drawn from distance-field atlases baked at build time, one per face (TD-36), because bitmaps baked at build time are either soft or tied to one density
   - all three faces have ₹ and the punctuation the game needs, and Roboto's digits are already tabular
   - Android writes non-Latin digits under Marathi and other locales, as the JDK does, so the locale guard stands (U9)
+- **Phase 5's answers:**
+  - the save's JSON is fast enough when warm (50 KB encodes at p95 20 ms on `LowEnd_A9`), and longs are exact
+  - a commit takes p95 8–20 ms on the emulators
+  - **libGDX calls no `dispose()` on a rebuild,** so the writer drains in `pause()`, at most 2 s (TD-38)
+  - fixtures install through `run-as` (CLAUDE.md)
 
 **Phase status:**
 - **Phase 4 is DONE** and merged into `main` on 2026-11-25, together with Phase 1's branch so far, at the owner's word.
 - **Phase 3's work is finished** on branch `phase-3-text-spike`, cut from `main`, but it isn't DONE: its DONE WHEN 1 waits on the owner's word (below). Then its review and merge.
-- **The first doc check is done** on branch `doc-check-2026-11-25`, cut from `phase-3-text-spike`. It adds the `/doc-check` skill and the doc fixes, and merges after Phase 3.
+- **The first doc check is done** on branch `doc-check-2026-11-25`, cut from `phase-3-text-spike`. It adds the `/doc-check` skill and the doc fixes, with its code review's fixes, and merges after Phase 3.
+- **Phase 5 is DONE** on branch `phase-5-save-spike`, cut from `doc-check-2026-11-25`, waiting for its review and merge after that branch.
 - **Phases 1 and 2 (owner) are IN PROGRESS.** Phase 1 waits for the posts and day 7.
 - Every other phase is NOT STARTED.
 
 **Next:**
 - **The build has started before day 7,** by the owner's decision on 2026-11-25 (PRD Q1). On day 7 the thresholds apply to the build in progress.
-- **The review and merge** of `phase-3-text-spike`, then `doc-check-2026-11-25`. Both fast-forward `main`.
-- **Agent:** Phase 5, the save spike. Then Phase 6, the vertical slice: the first real haggle on the phone, with PLAN MODE yes, so its plan comes to the owner first.
+- **The review and merge,** in order: what's left of `phase-3-text-spike` (its handoff note; PR #1 merged the rest), then `doc-check-2026-11-25`, then `phase-5-save-spike`.
+- **Agent:** Phase 6, the vertical slice, the first real haggle on the phone. **It's blocked on two of the owner's answers:**
+  - Phase 3's DONE WHEN 1, below, because Phase 6 depends on Phase 3 being DONE
+  - the Material Symbols download (Phase 2, item 7)
+  - Phase 6 has PLAN MODE yes, so its plan comes to the owner before any code. Every later phase depends on Phase 6.
 - **Phase 1 (owner):** confirm that the haggle plays in all three voices on the phone; record and post the clip, and send the date of the first post; on day 7, send the counts and each post's views.
 - **Phase 2 (owner):** the checklist in Phase 2's PROGRESS. Phase 6 will need a yes to the Material Symbols download for its icons (LLD U20).
 - **From the doc check, a decision for the owner:** DESIGN §10's visual checklist has no item on text sharpness. **Recommended:** add one, "Is text free of blur, notched edges and bleeding in a 4× zoom (CLAUDE.md)?". That makes the checklist 16 answers, and the DONE WHEN checks that count to 15 follow. The checklist and DONE WHEN change only on the owner's word.
@@ -1952,7 +2020,7 @@ PROGRESS:
 | Group | Estimate | Used | Status |
 |---|---|---|---|
 | Before M1 | 0 build sessions; 7 days | 1: the agent made the form and published the page, at the owner's request | Phase 1 in progress; the 7 days start with the first post |
-| M1 (Phases 3–12) | 9 | 2: Phases 4 and 3 | Phase 4 done; Phase 3's work finished, waiting on DONE WHEN 1; Phase 5 next |
+| M1 (Phases 3–12) | 9 | 3: Phases 4, 3 and 5 | Phases 4 and 5 done; Phase 3 finished, waiting on DONE WHEN 1; Phase 6 next, after the owner's answers |
 | M2 (Phases 13–29) | 17 | 0 | — |
 | M3 (Phases 30–32) | 5 | 0 | — |
 | After M3 (33–42) | 4 purchases + 4 ads | 0 | Behind G3 and Q19 |
@@ -1981,7 +2049,7 @@ Bugs we choose to live with, and security findings left unfixed, go here, so not
 | K2 | `android/build.gradle`'s natives task copies only the **first** natives jar for each ABI. A second native library would be dropped silently and crash at runtime | Low, latent | Phase 3 (2026-11-25) | libGDX is the only native library, since FreeType stays at build time (TD-36) | A second native library is added: collect every natives jar for the ABI with `findAll`, then copy them in **one** `fs.sync` (`jars.each { from archives.zipTree(it) }`). One `fs.sync` per jar deletes the earlier jars' `.so` files (shown in the code review, 2026-11-25) |
 | K3 | libGDX 1.14.2's own back callback (Android 13+) asks for no frame, so back stalls when drawing on demand | Medium, worked around | Phase 4 (2026-11-25) | The launcher's own callback routes back instead (TD-35) | A libGDX release asks for a frame in its callback; then the workaround can go |
 | K4 | The waitlist page fills two coins with marigold (`accent`): its favicon and the cash coin in its demo's top bar. DESIGN §2.3 rule 1 and §2.5 rule that out for icons, and §10's question 3 fails (two marigold elements on the page) | Low | The code review (2026-11-25); in the page since 2026-11-24 | The page is live mid-test, the colour is the owner's design call, and a change only shows once the page is published again | The owner decides (CURRENT STATE); the fix ships with the page's next publish |
-| K5 | TRD TD-28 still says the writer is "drained on dispose", though Phase 4 saw a recreation with no `dispose()` | Low | The code review (2026-11-25) | The decision log is never overwritten. TRD §4.10 and EDGE-CASES T-3 now mark it pending, and nothing is built on it before Phase 5 | Phase 5 settles LLD U7: if the drain moves, a new TRD entry corrects TD-28 |
+| K5 | ~~TRD TD-28 still says the writer is "drained on dispose"~~ **Resolved 2026-11-25:** TRD TD-38 corrects it. Phase 5 found no `dispose()` on a rebuild, and the drain is in `pause()` | — | The code review (2026-11-25) | — | — |
 
 ---
 

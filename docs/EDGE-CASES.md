@@ -277,12 +277,12 @@ Each case: the trigger · what happens if it isn't handled · what should happen
 #### LC-2 · A settings change rebuilds the whole game — 16 · v1 · 3, 12
 - **Trigger:** **verified:** changing the font size, display size, dark mode or the app's language destroys and recreates `AndroidLauncher`. Logcat shows `ActivityThread.handleRelaunchActivity`, and libGDX logs its ~15 start-up lines again. None of these changes is in the manifest's `configChanges`.
 - **Unhandled:** a new game object loads the save while the old one may still be writing it (LC-1's race). The Pause overlay, Settings and the slider position are gone. With both bugs present, the last action is lost.
-- **Should:** the old game's `dispose()` drains the writer's queue (a bounded wait of about 2 s) before the new one loads. Resume lands exactly where the save says.
-- **Fix in:** `core` (drain on dispose). `android`: add `density|fontScale|uiMode|locale|layoutDirection|smallestScreenSize` to `configChanges`, so most of these become a `resize()`. Process death takes the same path, so recreation must stay safe anyway.
-- **Seen in Phase 4 (2026-11-25), and it puts "drain on dispose" in doubt:**
+- **Should:** the new game waits for the process-wide writer's queue before it loads, and the game's `pause()` drains the queue, for at most 2 s (under libGDX's 4 s limit). Resume lands exactly where the save says. *Corrected in Phase 5: libGDX calls no `dispose()` on a rebuild (TRD TD-38).*
+- **Fix in:** `core` (wait before loading; drain in `pause()`). `android`: add `density|fontScale|uiMode|locale|layoutDirection|smallestScreenSize` to `configChanges`, so most of these become a `resize()`. Process death takes the same path, so recreation must stay safe anyway.
+- **Seen in Phase 4 (2026-11-25) and settled in Phase 5 (LLD U7, TRD TD-38):**
   - switching the navigation mode or the cutout also recreates the activity, and no `configChanges` value prevents that
   - libGDX then called **no `dispose()`** on the old game (it disposes only when the activity is finishing), but it did call `pause()`
-  - Phase 5 (LLD U7) settles where the writer drains. **Recommended, if Phase 5 confirms it:** drain in `pause()`.
+  - Phase 5 confirmed it, on Android 9 (font size) and Android 16 (navigation mode), each with a write pending. Waiting before loading saved the pending write on every rebuild. Only a process killed in the background lost one, and the drain in `pause()` prevents that.
 - **Reproduce:** mid-haggle, `"$ADB" shell settings put system font_scale 1.3` (reset with `1.0`). Also `cmd uimode night yes`, `wm density 546`, `cmd locale set-app-locales $PKG --locales mr-IN`.
 
 #### LC-3 · A restart loses a result the player is owed — 16 · v1 · 3, then 6, 8, 10, 11
@@ -901,7 +901,7 @@ Gaps and conflicts this file found, each with its recommendation. **All applied 
 |---|---|---|---|
 | T-1 | The save and the content pack would be read by reflection, which R8 breaks | SV-1 | Explicit keys with `JsonReader` and `JsonWriter`; fixture tests compare values (§4.5, §6.3) |
 | T-2 | `--release 8` doesn't stop API 26 calls | SV-2 | A `check` test that rejects `java.nio.file`, `java.time`, `java.util.Base64`, `String.join` and `File.toPath` in `logic` and `core` (§1.2, §4.11) |
-| T-3 | Two activity instances, and recreation | LC-1, LC-2, LC-4 | `singleTask` plus the task-root check; one `SaveWriter` per process, drained on dispose (pending Phase 5, LLD U7: see LC-2); a generation number for Start over; more `configChanges` (§3, §4.10) |
+| T-3 | Two activity instances, and recreation | LC-1, LC-2, LC-4 | `singleTask` plus the task-root check; one `SaveWriter` per process, which the new game waits for before loading and `pause()` drains (TRD TD-38; LC-2); a generation number for Start over; more `configChanges` (§3, §4.10) |
 | T-4 | Formatting that follows the phone's language | DV-1, CL-3 | `Locale.ROOT` everywhere; a test under `mr-IN`, `bn-IN`, `ur-IN`, `ar-EG` and `tr-TR` (§4.2) |
 | T-5 | A crash during load repeats at every launch | SV-6 | A loading marker; the next launch goes to `bak1` (§4.10) |
 | T-6 | The newer-save rule looks only at `formatVersion` | SV-7, OP-1 | Also `writtenBy` and unknown content IDs. The build refuses a lower format or content version than the last release (§4.10, §6) |
