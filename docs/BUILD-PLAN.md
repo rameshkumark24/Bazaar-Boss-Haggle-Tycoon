@@ -106,15 +106,25 @@ PLAN MODE: No: no code. The form collects emails, so it follows `site/README.md`
 PROGRESS:
 - **Plan** (2026-11-25; plan mode not needed):
   1. Agent: bring `site/README.md`'s day-7 count into line with PRD §12.1, counting unique emails. **Done.**
-  2. Owner: make the game's Gmail; make the Google Form as `site/README.md` says; send Claude the form's `forms.gle` link and the game's email. **Waiting.**
-  3. Agent: fill `CONFIG` in `site/bazaar-boss/index.html`, render the page at 360 px, check it, commit on this branch. **Waits for step 2.**
-  4. Owner: publish the `bazaar-boss` folder; check the live page on your phone (DONE WHEN 1); screenshot the form's Responses and Presentation settings (DONE WHEN 2). **Waiting.**
+  2. The game's email and the Google Form. **Done, except publishing the form:**
+     - the owner's own Gmail is the contact address; the decision is in PRD CR12 and §8.5
+     - no connector can make Google Forms, so at the owner's request the agent built the form in the owner's Chrome with Claude in Chrome, exactly as `site/README.md` says. It's a **draft, not yet published**
+  3. Agent: publish the form (with the owner's OK), copy its shortened responder link, fill `formUrl`, render the page at 360 px, commit. **Waits for the owner's OK to publish.**
+  4. Owner: publish the `bazaar-boss` folder; check the live page on your phone (DONE WHEN 1). **Waiting.**
   5. Owner: record and post the clip. On day 7, send the counts and each post's views. Agent: record them, with the decision, in PRD §12.1 (DONE WHEN 3). **Waiting.**
 - **Done:**
   - branch `phase-1-waitlist-test`, cut from `main` at `e406a8d`
   - the README's day-7 step now uses unique emails and the bot flag
   - the page's share tags checked: `og:url` and `og:image` are absolute, so WhatsApp can show the picture
-- **Left:** steps 2–5. **Blocked on the owner:** the form link and the game's email.
+  - `contactEmail` filled in the page's `CONFIG`
+  - the Google Form "Bazaar Boss: launch waitlist", in the owner's Drive: its title, description, two questions and settings, each checked in the editor and in the responder preview
+- **Checks so far:**
+  - DONE WHEN 2: **PASS**, the settings match `site/README.md`:
+    - `shots/p01-form-responses-settings.jpg`: email by responder input; no copy to responders; no editing; "Limit to 1 response" off
+    - `shots/p01-form-presentation-settings.jpg`: the confirmation message; no "submit another response" link; no results summary
+    - the responder's view: `shots/p01-form-preview-top.jpg` and `shots/p01-form-preview-bottom.jpg`
+  - DONE WHEN 1 and 3: not run yet
+- **Left:** steps 3–5. **Blocked on the owner:** an OK to publish the form.
 
 ## Phase 2 — Long-lead setup
 

@@ -1117,7 +1117,7 @@ These are product requirements. The legal reasoning and sources are in RESEARCH.
 
   *(H2-12)*
 - **CR12 · Contact and requests.**
-  - One contact email for the game — ideally a separate free Gmail — used on Play, on the waitlist page and in the policy.
+  - One contact email for the game, used on Play, on the waitlist page and in the policy. **Decided 2026-11-25: the owner's own Gmail**, not a separate one. It's public on those pages, and from Phase 7 it's built into every release (TRD §6.1), so changing it after that takes a release.
   - Removals within 7 days.
   - A private requests log: date in, acknowledged, done. Entries are kept 12 months after closing.
   - DPDP replies within 90 days, from 13 May 2027.
@@ -1231,7 +1231,7 @@ This is the live copy. The copy in IDEA.md → Hardening H3 is frozen as of 2026
 | What | Why | Kept where | Who else receives it | How long | Allowed by | On Play's Data safety form |
 |---|---|---|---|---|---|---|
 | **Now — the waitlist and the owner's inbox** | | | | | | |
-| Email address | Send one email: the launch, or the news that it won't launch | Google Forms, in the game's Google account | Google (runs Forms) | Deleted within 30 days of that email; removed on request within 7 days | Consent — submitted for that purpose | — (a web form, not the app) |
+| Email address | Send one email: the launch, or the news that it won't launch | Google Forms, in the owner's own Google account (decided 2026-11-25) | Google (runs Forms) | Deleted within 30 days of that email; removed on request within 7 days | Consent — submitted for that purpose | — (a web form, not the app) |
 | Preferred voice (optional) | Choose which voice to polish first | Same | Google | Same | Consent | — |
 | "I'm 18 or older" tick | Keep children's emails off the list | Same | Google | Same | Consent | — |
 | Visitors' IP address and browser details | Serve the page and the form; security | GitHub's and Google's servers; we never see them | GitHub (hosts the page and logs IPs "for security purposes"); Google (Forms) | Their own retention | Their terms | — |
@@ -1492,3 +1492,4 @@ How each part is measured:
 | 2026-11-25 | From [EDGE-CASES.md](EDGE-CASES.md) §5.1, as recommended:<br>• quick buttons always favour the player: −10%/−25% when buying, +10%/+25% when selling (§3, F2)<br>• only haggled sales fill the goal bar, and no seller's walk-away price is below scrap value (F7, DR9)<br>• no bidding while leading (DR17); leaving the special's auction says so (DR18)<br>• a soft godown limit of 60 (F9, §7.6)<br>• the stall opens after two sellers leave without a deal (F1)<br>• every sale repays at least ₹1 of a loan (DR3)<br>• results owed to the player survive a restart (F15 AC8, §7.10)<br>• play time counts only near a tap (F18)<br>• the waitlist is decided on unique emails (§12.1); G2 when stats are missing (§12.2) |
 | 2026-11-25 | From [MONETISATION.md](MONETISATION.md): **F21, the shop**, specified so the build plan builds it (cosmetics only, one link on the first Tier-up card, restore, pending, refunds). The shop's rows in §5 and §6 point to it. New open questions **Q19** (purchases before ads; recommended yes) and **Q20** (refund terms). The order of ads and purchases is unchanged until Q19 is decided |
 | 2026-11-25 | **Q19 and Q20 decided, as recommended** ([MONETISATION.md](MONETISATION.md)): purchases (F21) ship right after G3, before any ads; ads (M4) only if installs pass about 3,000 a month; ADV-2 and ADV-3 are paid once before the first sale (§5, §8.3, §8.4, §10, §11 H5-13, §12.4). The refund terms are set (Q20) |
+| 2026-11-25 | The game's contact email is the owner's own Gmail (CR12), and the waitlist form lives in that Google account (§8.5). Decided in Phase 1 |
