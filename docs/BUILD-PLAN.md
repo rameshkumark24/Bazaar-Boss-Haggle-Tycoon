@@ -30,7 +30,7 @@ The phase-by-phase plan for building the game. Written 2026-11-25 from all seven
 - **Free tools only.** A download (a font, a library, a system image) needs the owner's yes first. Anything paid stops the build.
 - **The save format:** `formatVersion` stays at 1, and its shape may change freely, until the first closed-test build (Phase 30). The owner's own internal-track save may be reset before then. From Phase 30 on, every change needs a migration and a fixture (TRD §6.3).
 - **Gates stop the plan:**
-  - **Phase 1** (the waitlist test): stop ends it; the middle band builds only through Phase 12, then the Business verdict is re-run.
+  - **Phase 1** (the waitlist test): stop ends it; the middle band builds only through Phase 12, then the Business verdict is re-run. **Changed 2026-11-25 by the owner (PRD Q1):** the build starts before day 7, so Phases 2–5 don't wait for Phase 1. The thresholds don't move; on day 7 they apply to the build in progress.
   - **Phase 12** (G1): failure means reworking the haggle at most twice, then stopping.
   - **Phase 31** (G2) and **Phase 33** (G3) decide what follows.
 
@@ -84,7 +84,7 @@ BUILD:
   - record the 20–30 s Tanglish clip; post it on your own account, and once in each of 3 communities
 - **Day 7:** count the raw and unique emails (`=COUNTUNIQUE(ARRAYFORMULA(LOWER(TRIM(B2:B))))`), note each post's views, and record both in PRD §12.1.
 
-OUT OF SCOPE: Any game code (PRD Q1: no build work until day 7); paid promotion; moving the thresholds after seeing the count.
+OUT OF SCOPE: Any game code (it's built in its own phases, from Phase 3); paid promotion; moving the thresholds after seeing the count.
 
 EDGE CASES: MS-1 (duplicates and bots), OP-3 (the form's results summary), AB-6 (removal requests checked by reply).
 
@@ -110,7 +110,7 @@ PROGRESS:
      - the owner's own Gmail is the contact address; the decision is in PRD CR12 and §8.5
      - no connector can make Google Forms, so at the owner's request the agent built the form in the owner's Chrome with Claude in Chrome, exactly as `site/README.md` says
   3. Agent: publish the form (with the owner's OK), copy its shortened responder link, fill `formUrl`, render the page at 360 px, commit. **Done.**
-  4. Publish the `bazaar-boss` folder: **done by the agent, at the owner's request.** Owner: check the live page on your phone (DONE WHEN 1). **Waiting.**
+  4. Publish the `bazaar-boss` folder: **done by the agent, at the owner's request.** Owner: check the live page on your phone (DONE WHEN 1). **Done, except the three voices.**
   5. Owner: record and post the clip, and send the date of the first post; the seven days start then. On day 7, send the counts and each post's views. Agent: record them, with the decision, in PRD §12.1 (DONE WHEN 3). **Waiting.**
 - **Done:**
   - branch `phase-1-waitlist-test`, cut from `main` at `e406a8d`
@@ -121,7 +121,7 @@ PROGRESS:
   - **the form, published** 2026-11-25 with the owner's OK (`shots/p01-form-live.jpg`). Its shortened link, `https://forms.gle/KGxi4apVkGwpkabMA`, is the page's `formUrl`
   - **the page, published** 2026-11-25: commit `ad8bf3b` in `rameshkumark24.github.io` adds only `bazaar-boss/index.html` and `bazaar-boss/og.png`; the repo's other files are untouched. Live at https://rameshkumark24.github.io/bazaar-boss/ within a minute of the push
 - **Checks so far:**
-  - DONE WHEN 1: **NOT VERIFIED.** It needs the owner's phone. What the agent could check from the PC passes:
+  - DONE WHEN 1: **PARTLY CONFIRMED.** The owner confirmed in chat on 2026-11-25 that the page opens on their phone and "Join the waitlist" opens the form. Not confirmed yet: the haggle in all three voices on the phone. No screenshots were sent; the owner's word stands in for them. What the agent checked from the PC passes:
     - the live page returns HTTP 200 and is byte-identical to `site/bazaar-boss/index.html` (SHA-256 `b721bd1f…`, line endings normalised); `og.png` returns 200 `image/png` and is byte-identical (`48ed8fd5…`)
     - `forms.gle/KGxi4apVkGwpkabMA` lands on the form's `viewform` page, which shows its title and both questions and isn't closed to responses
     - the live page at 360 px in headless Edge: `shots/p01-page-360-live.png`. "Join the waitlist" is enabled, which happens only when `formUrl` is a Google Forms link
@@ -130,17 +130,17 @@ PROGRESS:
     - `shots/p01-form-presentation-settings.jpg`: the confirmation message; no "submit another response" link; no results summary
     - the responder's view: `shots/p01-form-preview-top.jpg` and `shots/p01-form-preview-bottom.jpg`
   - DONE WHEN 3: waits for day 7
-- **Left:** the phone check (step 4); the clip, the posts and day 7 (step 5). **Blocked on the owner.**
+- **Left:** the three voices on the phone (step 4); the clip, the posts and day 7 (step 5). **Blocked on the owner.**
 
 ## Phase 2 — Long-lead setup
 
-STATUS: NOT STARTED
+STATUS: IN PROGRESS
 
 GOAL: Every account, key, person and phone that takes calendar time is ready before a phase has to wait for it.
 
 BUILD (owner; the agent writes each checklist and the exact commands):
 - 2-step verification on the Google account and on GitHub (CR11, H2-12).
-- The game's Gmail and a private requests-log sheet (H2-10, H2-11), if Phase 1 didn't make them.
+- A private requests-log sheet (H2-10). No separate Gmail: the contact address is the owner's own (PRD CR12, decided in Phase 1).
 - **The upload key:** the agent gives the `keytool` command, and the owner runs it. The keystore and its passwords go in a password manager plus an offline copy, never in git. Phase 7 needs it.
 - **The Play Console app entry:** "Bazaar Boss: Haggle Tycoon", a free game. Phase 7 needs it.
 - **People:**
@@ -164,7 +164,7 @@ READS: PRD CR11, CR12, CR17, Q2, Q13; IDEA H2-10 to H2-12; EDGE-CASES ST-1, OP-4
 
 DONE WHEN:
 1. PRODUCT — 2-step verification is on for Google and GitHub → the owner confirms in chat. No codes or screenshots of codes.
-2. PRODUCT — The game's Gmail and the requests log exist → the owner gives the address, which goes into the privacy policy.
+2. PRODUCT — The requests log exists, and the contact address is the one in PRD CR12 → the owner confirms. *(Reworded by the owner on 2026-11-25: the contact address is the owner's own Gmail.)*
 3. PRODUCT — The upload keystore exists outside git, backed up twice → the owner confirms; `git status` shows no `.jks` or `.keystore`.
 4. PRODUCT — The Play Console app entry exists → a screenshot of its dashboard.
 5. PRODUCT — Testers (count, and each one's Android version), the Hinglish reader and the 5 G1 playtesters are lined up → counts in PROGRESS. No names in git.
@@ -178,6 +178,33 @@ DEPENDS ON: Phase 1 says go or G1 only.
 PLAN MODE: No: no code. Keys and accounts are the owner's.
 
 PROGRESS:
+- **Started 2026-11-25,** when the owner chose to build before day 7 (PRD Q1). It runs alongside the spikes, Phases 3–5.
+- **The owner's checklist.** The agent's part is this list and its commands:
+  1. **2-step verification** on Google (myaccount.google.com → Security → 2-Step Verification) and on GitHub (Settings → Password and authentication). Say "done" in chat. Never send codes.
+  2. **The requests log:** a private Google Sheet with four columns: Date in · Request · Acknowledged · Done. A row is deleted 12 months after Done (CR12). The agent can make it in the owner's Drive, if asked.
+  3. **The upload key.** In Git Bash, outside the repo:
+     ```bash
+     mkdir -p ~/keys && keytool -genkeypair -v -storetype PKCS12 -keystore ~/keys/bazaarboss-upload.jks -alias upload -keyalg RSA -keysize 4096 -validity 10000
+     ```
+     - It asks for a password, twice, then a name and an organisation. Any answers work; they aren't shown to players.
+     - Put the password in a password manager.
+     - Copy the `.jks` file to two places off this PC, for example a USB drive and your own cloud drive.
+     - Never put it in the repo; `.gitignore` already blocks `*.jks` and `*.keystore`.
+  4. **The Play Console app entry:** Play Console → Create app.
+     - Name: "Bazaar Boss: Haggle Tycoon"; language: English (India), if offered; Game; Free.
+     - Read and tick the declarations, then create the app.
+     - Send a screenshot of the new app's dashboard.
+  5. **People.** For each tester, kept privately, never in git:
+     - their phone's Android version (Settings → About phone), which must be 7 or later
+     - the Google account on that phone (ST-1)
+     - then choose the 5 G1 playtesters, and the native Hindi speaker who reads the Hinglish lines (Q2)
+  6. **A 2–3 GB RAM phone** to borrow: its model and RAM.
+  7. **Downloads, yes or no to each:**
+     - for Phase 3: Roboto and Rozha One (Google Fonts, OFL), and gdx-freetype (libGDX, Apache 2.0, from Maven Central)
+     - later: Material Symbols (Apache 2.0), gdx-tools, an Android 7 (API 24) emulator image (Phase 28), CC0 sounds or jsfxr (Phase 23)
+- **Done:**
+  - **People:** 20 people are ready to play (the owner, 2026-11-25). That's enough for 16–18 closed testers plus the 5 G1 playtesters, who can be among them. Their Android versions aren't checked yet.
+- **Left:** items 1–7, apart from the head count. **Phase 3 waits for item 7's fonts and gdx-freetype.**
 
 ---
 
@@ -1734,12 +1761,13 @@ PROGRESS:
   - the javac lint is JDK-aware (BR-3), verified on JDK 17 and JDK 21
 - **The waitlist test is live:** the page at https://rameshkumark24.github.io/bazaar-boss/, and the Google Form behind its button. Nothing is posted yet, so the seven days haven't started.
 
-**Phase 1 is IN PROGRESS** on branch `phase-1-waitlist-test`. Every other phase is NOT STARTED.
+**Phase 1 is IN PROGRESS** on branch `phase-1-waitlist-test`, waiting for the posts and day 7. **Phase 2 (owner) is IN PROGRESS.** Every other phase is NOT STARTED.
 
 **Next:**
-- **Phase 1 (owner):** check the live page on your phone (DONE WHEN 1); record and post the clip, and send the date of the first post; on day 7, send the counts and each post's views.
-- **No build phase starts before Phase 1's day-7 decision** (PRD Q1).
-- After a "go" or "G1 only": Phase 2 (owner) runs alongside Phases 3–5 (the spikes).
+- **The build has started before day 7,** by the owner's decision on 2026-11-25 (PRD Q1). On day 7 the thresholds apply to the build in progress.
+- **Agent:** Phase 4, the Android 16 shell spike. Phase 3 waits for the owner's yes to its downloads (Phase 2, item 7). Phase 5 follows.
+- **Phase 1 (owner):** confirm that the haggle plays in all three voices on the phone; record and post the clip, and send the date of the first post; on day 7, send the counts and each post's views.
+- **Phase 2 (owner):** the checklist in Phase 2's PROGRESS.
 
 **Sessions, used against the estimate:**
 
@@ -1752,7 +1780,7 @@ PROGRESS:
 | After M3 (33–42) | 4 purchases + 4 ads | 0 | Behind G3 and Q19 |
 
 **Open questions that stop a phase until they're decided:**
-- Q1 (Phase 1)
+- Q1's day-7 count: it decides whether the build in progress goes on
 - Q8, bohni (Phase 9)
 - Q4 and Q5 (Phase 15)
 - Q7 (Phase 19)
@@ -1762,9 +1790,6 @@ PROGRESS:
 - Q3 (Phase 31)
 - Q18 (Phase 36)
 - Q17 (Phase 41)
-
-**A check only the owner can change:**
-- Phase 2's DONE WHEN 2 asks for "the game's Gmail". The contact address is now the owner's own Gmail (PRD CR12, decided 2026-11-25), so there's no separate one to make. **Recommended:** reword it as "The requests log exists, and the contact address is the one in PRD CR12 → the owner confirms." It stays as written until the owner decides.
 
 ---
 
