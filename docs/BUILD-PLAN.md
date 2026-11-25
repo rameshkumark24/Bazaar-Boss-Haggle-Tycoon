@@ -244,7 +244,7 @@ PROGRESS:
 
 ## Phase 4 — Spike: the Android 16 shell
 
-STATUS: NOT STARTED
+STATUS: IN PROGRESS
 
 GOAL: Know how libGDX 1.14.2 handles four things on Android 16: back, the safe area, drawing only on demand, and the desktop window (LLD U1, U2, U4, U19).
 
@@ -277,6 +277,25 @@ DEPENDS ON: Phase 1.
 PLAN MODE: No.
 
 PROGRESS:
+- **Started 2026-11-25.**
+  - The answers go on branch `phase-4-android-shell`. It's cut from `phase-1-waitlist-test`, not `main`, because `main` doesn't have the build-now decision (PRD Q1) yet, so Phase 1's branch merges first.
+  - The throwaway code goes on `spike/shell`, which stays local.
+- **Plan:**
+  1. Read libGDX 1.14.2's Android backend, already in Gradle's cache, for back and insets. **Done**, with `javap`:
+     - **Back:** on Android 13+ (API 33), `setCatchKey(BACK, true)` registers an `OnBackInvokedCallback`, and `false` removes it. The callback queues a key-down only (no key-up), and **it doesn't ask for a frame**. Touches, ordinary key events and `postRunnable` do ask for one.
+     - **Insets:** `getSafeInset*()` reads only the display cutout (API 28+), never the status or navigation bars.
+  2. On `spike/shell`, a two-screen scene2d prototype:
+     - The Stall opens the Haggle. In the Haggle, back opens a pause card, and back again closes it. The Stall doesn't catch back, so Android takes it.
+     - Drawing only on demand, with frames counted and logged each second.
+     - `android` reads the window insets and passes them to `core`. Both sets are drawn on screen, and the layout can switch between them.
+     - Two back routes: libGDX's own, and one through the launcher.
+  3. On the Android 16 emulator, in gesture and 3-button navigation, with and without a cutout:
+     - screenshots
+     - back by key and by edge swipe
+     - frames per second, idle and while animating
+     - back while nothing is drawing
+  4. `./gradlew :lwjgl3:run --offline`.
+  5. Write the answers into LLD §10 (U1, U2, U4, U19), into TRD TD-20 and TD-25 if they change, and into CLAUDE.md if the desktop window works.
 
 ## Phase 5 — Spike: the save on a cheap phone
 
