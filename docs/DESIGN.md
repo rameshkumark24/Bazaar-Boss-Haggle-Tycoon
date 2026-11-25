@@ -189,7 +189,7 @@ These are the look of a generated app: anonymous, "nobody decided anything". **N
 - **Filled** (FILL 1) only for an active or selected state, e.g. `volume_off` while muted.
 - **Size:** 24 dp, centred in a 48 dp target.
 - **Colour:** `text` or `text-muted`. Never accent.
-- **Baked:** only the glyphs we use go into an atlas at build time (TRD TD-26). No other icon set.
+- **Baked:** only the glyphs we use go into an atlas at build time (TRD TD-26), through the fonts' distance-field baker if LLD U20 confirms it (TD-36). No other icon set.
 
 ### 2.6 Large screens and landscape
 
@@ -350,7 +350,7 @@ Every screen designs all five states, and every phase screenshots them. Per-scre
 | Store screenshots and video | The **release build**, captured with `adb` | Owner's own | — |
 | Website share image (`og.png`) | Rendered from `site/og-card.html`, made by the owner | Owner's own | — |
 | Website fonts | The phone's own UI font (no external loads, to keep the page's "loads nothing from other sites" promise) | — | — |
-| Website favicon | A marigold coin drawn as an inline SVG in `site/bazaar-boss/index.html` | Owner's own | — |
+| Website favicon | A marigold coin drawn as an inline SVG in `site/bazaar-boss/index.html`. **It breaks §2.3 rule 1** (marigold on an icon), as does the cash coin in the page's demo; the owner decides the fix (BUILD-PLAN CURRENT STATE, KNOWN ISSUES K4) | Owner's own | — |
 
 ---
 
