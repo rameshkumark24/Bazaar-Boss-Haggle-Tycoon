@@ -106,7 +106,7 @@ These are the look of a generated app: anonymous, "nobody decided anything". **N
   - It's a high-contrast poster face from Indian Type Foundry, with the hand-painted signboard and film-poster feel of a bazaar.
   - It also covers Devanagari, should Hindi script ever come (Q10).
   - *Considered:* **Yatra One** (the same foundry; brush-like). It loses because its brushy shapes blur at 26 dp, the size where Rozha stays crisp.
-- **Both are baked to bitmaps at build time**, with no font engine at runtime (TRD TD-12, TD-26).
+- **Both are baked at build time into distance-field atlases**, one per face, so text stays sharp at every size, text-size step and screen density, with no font engine at runtime (TRD TD-36, from Phase 3's comparison; it was bitmaps per step, TD-26).
 
 **The scale** — five sizes, and nothing else:
 

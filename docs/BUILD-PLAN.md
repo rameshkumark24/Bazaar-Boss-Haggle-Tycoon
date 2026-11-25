@@ -213,7 +213,7 @@ PROGRESS:
 
 ## Phase 3 — Spike: text on screen
 
-STATUS: NOT STARTED
+STATUS: DONE
 
 GOAL: Know how text will be drawn: baked bitmap fonts or distance-field fonts, crisp at XL on a 420-dpi screen, with ₹ in both faces. Also know whether Android writes non-Latin digits under Marathi (LLD U3, U9).
 
@@ -242,6 +242,56 @@ DEPENDS ON: Phase 1 (go or G1 only); Phase 2's answer on the font downloads.
 PLAN MODE: No: throwaway code.
 
 PROGRESS:
+- **Started 2026-11-25.**
+  - The answers go on branch `phase-3-text-spike`, cut from `main` at `aeb69a3`.
+  - The throwaway code goes on `spike/text`, which stays local.
+  - The owner said yes to the downloads on 2026-11-25: Roboto, Rozha One and gdx-freetype.
+- **A gap in the docs that this spike has to fill:** DESIGN §2.2 and TRD §1.2 say the fonts are "baked at build time, per text-size step", but not at which screen density. A build can't know the phone's density, and "Display size" changes it too.
+- **Plan:**
+  1. Download the fonts from Google's own sources into a new folder, check that they're TrueType, and note their SHA-256. gdx-freetype comes through Gradle.
+  2. On `spike/text`, one test screen per text-size step (from Android's font scale, as DESIGN §2.2 says), drawn three ways:
+     - **A:** baked at this phone's exact pixel size: what a build could only do per density, or FreeType at runtime (which L-11 rules out)
+     - **B:** baked once at density 4.0 and scaled down with mipmaps: one realistic build-time bake
+     - **C:** a distance-field font, one atlas per face, generated in the spike (no new library)
+     - each way shows Rozha One `display` in curly quotes with ₹, a Roboto 500 `price` "₹1,25,000" with "−10%", `body` "Annoyed. You barely moved." and `caption`
+  3. Log:
+     - which glyphs each face has: ₹, curly quotes, the minus sign, the en dash, the ellipsis
+     - whether Roboto's digits are tabular
+     - each way's time to make its fonts, and its atlas sizes against the 2,048 px limit (DV-4)
+     - U9: `String.format` and `NumberFormat` under `mr-IN` and other locales, explicit and as the app's language; and JDK 17 for comparison
+  4. Screenshots at S, M, L and XL at 420 dpi, and again at `wm density 546` (316 dp), plus zoomed crops to compare the three ways.
+  5. Write the answers into LLD §10 (U3, U9), and into the TRD if the font method changes.
+- **Done:** steps 1–5. Tests ran on the `Medium_Phone_API_36.1` emulator (Android 16, 420 dpi) and in the desktop window (JDK 17). Every emulator setting was put back: font scale 1.0, density 420, no app language.
+- **The downloads,** from Google's own sources (the owner said yes):
+  - **Roboto 400 and 500:** the static files the Google Fonts API serves (v51).
+    - 400: SHA-256 `dece7c71bbe61710787f0839c722c65e87355dd2eb4a823e6b5488121ff81e4b`
+    - 500: SHA-256 `4d984240cefb093a74300bcae4b5dbd49f700e0af501eaaa079c56aa64142d2f`
+  - **Rozha One:** `RozhaOne-Regular.ttf` from `github.com/google/fonts`, SHA-256 `8491b838c31f30272aa6da67e4749afabab8297db82a055fd2d0aa689f500ee3`.
+  - All three are TrueType under the SIL OFL, and the licence texts came with them.
+  - **gdx-freetype 1.14.2** and its natives came through Gradle.
+- **What the spike found:**
+  - **Glyphs:** all three faces have ₹, “ ” ‘ ’, the en dash, the minus sign and the ellipsis. Roboto 500's digits are tabular: the advances were 20 px at 36 px, 54 at 95, and 98 at 172.
+  - **A, bitmaps for the exact pixel size:** crisp everywhere. Making them on the phone took 0.3–0.5 s warm (1.8 s cold), and 10–16 MB of atlases per step.
+  - **B, bitmaps baked once at density 4.0 and scaled:** softer, with thin lines bleeding from neighbouring glyphs ("left", "it", "late", and before "Okay"). It took 16–20 MB of atlases per step.
+  - **C, distance fields:** close to A at S–XL, at 420 dpi, 316 dp and 280 dpi, from three 1024 px atlases of about 75 KB each as PNG.
+    - Making them took 0.4 s on the PC but 3.3 s warm on the emulator, so it's a build step.
+    - Magnified 2.7× (the price at XL on 316 dp), the 64 px base shows notched edges. A 128 px base is smooth (`shots/p03-text-zoom-base64-vs-128.png`) and costs 215 KB as PNG.
+  - **U9:** as LLD §10 records. Android writes non-Latin digits under `mr-IN` and other locales, also as the app's language, and its `NumberFormat` groups the Indian way, unlike JDK 17.
+- **The decision:** distance-field atlases baked at build time (TRD TD-36). TD-26 already said to switch "if baked bitmaps look soft". TD-26 itself stays as written, because the decision log only grows, so TD-36 corrects it, as TD-35 did for TD-20. DESIGN §2.2, TRD §0 and TRD §1.2 now point to TD-36.
+- **For Phase 6 and later:**
+  - **The font baker in `tools`:**
+    - TD-36's base sizes, checked with the zoom test
+    - FreeType's padding, with each glyph moved back by it, because gdx-freetype pads the bitmap but leaves the offsets at the ink
+    - one-channel textures
+  - **Drawing:** scene2d labels need the distance-field shader while they draw. That means a label that swaps the batch's shader, at the cost of one batch flush per swap.
+  - **Android natives:** the build's natives task keeps only the first natives jar per ABI. That's fine while FreeType stays at build time, but sync every jar if a second native library ever ships (the spike's fix).
+  - **Icons:** Material Symbols is a font, so the icon atlas can use the same baker.
+- **DONE WHEN 1: PASS.** LLD §10's U3 and U9 rows carry dated answers, with this evidence:
+  - **The four steps at 420 dpi:** `shots/p03-text-s.png`, `-m.png`, `-l.png`, `-xl.png`
+  - **The four steps at 316 dp:** `shots/p03-text-s-316dp.png` … `-xl-316dp.png`, plus `-xl-316dp-c.png`, which shows C on its own because three blocks overflow at XL
+  - **Zoomed crops:** `shots/p03-text-zoom-s-caption.png`, `-zoom-xl-display.png`, `-zoom-s-280dpi-caption.png`, `-zoom-xl-316dp-price.png`, `-zoom-base64-vs-128.png`, with `p03-text-s-280dpi.png`
+  - **The digits the phone printed under `mr-IN`:** the logcat lines in LLD §10 U9, plus `shots/p03-text-mr-IN.png` and `-mr-IN-header.png`
+  - **The chosen method:** TRD TD-36
 
 ## Phase 4 — Spike: the Android 16 shell
 
@@ -1810,7 +1860,7 @@ PROGRESS:
 
 ## CURRENT STATE
 
-**Updated 2026-11-25, when Phase 4 was done.**
+**Updated 2026-11-25, when Phase 3 was done.**
 
 **Built so far:**
 - **The planning docs:** PRD, TRD, APP-FLOW, DESIGN, EDGE-CASES, MONETISATION, LLD, and this plan.
@@ -1824,15 +1874,21 @@ PROGRESS:
   - the insets come from Android's `WindowInsets`, not libGDX's
   - drawing on demand works
   - the desktop window works
+- **Phase 3's answers:**
+  - text is drawn from distance-field atlases baked at build time, one per face (TD-36), because bitmaps baked at build time are either soft or tied to one density
+  - all three faces have ₹ and the punctuation the game needs, and Roboto's digits are already tabular
+  - Android writes non-Latin digits under Marathi and other locales, as the JDK does, so the locale guard stands (U9)
 
 **Phase status:**
 - **Phase 4 is DONE** and merged into `main` on 2026-11-25, together with Phase 1's branch so far, at the owner's word.
+- **Phase 3 is DONE** on branch `phase-3-text-spike`, cut from `main`, waiting for its review and merge.
 - **Phases 1 and 2 (owner) are IN PROGRESS.** Phase 1 waits for the posts and day 7.
 - Every other phase is NOT STARTED.
 
 **Next:**
 - **The build has started before day 7,** by the owner's decision on 2026-11-25 (PRD Q1). On day 7 the thresholds apply to the build in progress.
-- **Agent:** Phase 3, the text spike; its downloads are a yes. Then Phase 5, the save spike.
+- **The review and merge** of `phase-3-text-spike`.
+- **Agent:** Phase 5, the save spike. Then Phase 6, the vertical slice: the first real haggle on the phone, with PLAN MODE yes, so its plan comes to the owner first.
 - **Phase 1 (owner):** confirm that the haggle plays in all three voices on the phone; record and post the clip, and send the date of the first post; on day 7, send the counts and each post's views.
 - **Phase 2 (owner):** the checklist in Phase 2's PROGRESS.
 - **Decided after Phase 4 (the owner, 2026-11-25):**
@@ -1845,7 +1901,7 @@ PROGRESS:
 | Group | Estimate | Used | Status |
 |---|---|---|---|
 | Before M1 | 0 build sessions; 7 days | 1: the agent made the form and published the page, at the owner's request | Phase 1 in progress; the 7 days start with the first post |
-| M1 (Phases 3–12) | 9 | 1: Phase 4 | Phase 4 done; Phases 3 and 5 next |
+| M1 (Phases 3–12) | 9 | 2: Phases 4 and 3 | Phases 3 and 4 done; Phase 5 next |
 | M2 (Phases 13–29) | 17 | 0 | — |
 | M3 (Phases 30–32) | 5 | 0 | — |
 | After M3 (33–42) | 4 purchases + 4 ads | 0 | Behind G3 and Q19 |

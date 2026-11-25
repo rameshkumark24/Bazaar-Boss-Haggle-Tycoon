@@ -463,7 +463,9 @@ The other first-run cases are SV-9 (settings without a save) and EF-2 (§4).
   - with the phone in Marathi, Bengali, Assamese or Urdu, all common in India, `String.format("%,d", 125000)` gives `१२५,०००`, `১২৫,০০০` or `۱۲۵٬۰۰۰`
   - in Turkish, `"TRADING".toLowerCase()` gives `tradıng`
 
-  Android's formatting uses the same locale data (from memory; the unit test below settles it).
+  **Verified on Android 16 too (Phase 3, LLD §10 U9):**
+  - the same digits, and with the app's language set to Marathi, a plain `String.format` gives `१२५,०००`, so the price drew as two bare commas (`shots/p03-text-mr-IN.png`)
+  - Android's `NumberFormat` also groups the Indian way (`1,25,000`) where the JDK gives `125,000`, so JDK tests can't stand in for the phone
 - **Unhandled:** the baked Latin-only font (TRD §1.2) has no glyphs for those digits, so prices draw as blanks or boxes. In a haggling game, the price itself vanishes. The Turkish case writes enum names such as `tradıng` into `game.json`; the next load can't read them, so the save and then its backups count as damaged.
 - **Should:** every number on screen goes through our own `IndianNumberFormat` (TRD §2.3), which writes ASCII digits. `String.format`, `toLowerCase` and `toUpperCase` always take `Locale.ROOT`.
 - **Fix in:** `logic` (the formatter, the save codec), `core`. `build`: a test that runs the formatter and a save round trip with the default locale set to `mr-IN`, `bn-IN`, `ur-IN`, `ar-EG` and `tr-TR`.
