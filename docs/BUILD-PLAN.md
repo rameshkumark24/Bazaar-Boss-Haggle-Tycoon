@@ -292,6 +292,19 @@ PROGRESS:
   - **Zoomed crops:** `shots/p03-text-zoom-s-caption.png`, `-zoom-xl-display.png`, `-zoom-s-280dpi-caption.png`, `-zoom-xl-316dp-price.png`, `-zoom-base64-vs-128.png`, with `p03-text-s-280dpi.png`
   - **The digits the phone printed under `mr-IN`:** the logcat lines in LLD §10 U9, plus `shots/p03-text-mr-IN.png` and `-mr-IN-header.png`
   - **The chosen method:** TRD TD-36
+- **Handoff, 2026-11-25** (the session stopped here at the owner's request):
+  - **Done:** the whole phase. Its answers are committed and pushed on `phase-3-text-spike`: LLD §10 U3 and U9; TRD TD-36, §0 and §1.2; DESIGN §2.2's font sentence; EDGE-CASES DV-1.
+  - **Half-finished:** nothing.
+    - Nothing uncommitted belongs to the work. The untracked `.vscode/settings.json` was made by VS Code's Java tooling; leave it out of git.
+    - The screenshots live only in `shots/` on this PC, which git ignores.
+    - The emulator was stopped with every setting put back.
+  - **Left, in order:**
+    1. **The owner** reviews `phase-3-text-spike` and says whether to merge. It fast-forwards `main` from `aeb69a3`, as Phases 1 and 4 did.
+    2. **The agent**, on the owner's "merge": fast-forward `main`, push it, and delete the local throwaway branch `spike/text` (its code was never pushed and isn't needed; the answers are in the docs).
+    3. **The next phase is Phase 5,** the save spike (CURRENT STATE). Cut its branch from the updated `main`.
+  - **Waiting on the owner, so not in any doc as a decision yet:**
+    - **DESIGN §2.2:** the agent changed one sentence to point at TD-36 ("baked to bitmaps" became "distance-field atlases"). The faces, sizes and steps are unchanged. The owner was asked whether that edit is all right; if not, revert that line and keep TD-36 in the TRD only.
+    - **Phase 1 and Phase 2 items:** whether the waitlist haggle played in all three voices on the owner's phone (Phase 1, DONE WHEN 1), and the owner's Phase 2 list. Both are in their phases' PROGRESS and in CURRENT STATE.
 
 ## Phase 4 — Spike: the Android 16 shell
 
