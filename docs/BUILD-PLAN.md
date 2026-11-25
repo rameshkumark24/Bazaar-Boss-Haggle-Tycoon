@@ -17,6 +17,7 @@ The phase-by-phase plan for building the game. Written 2026-11-25 from all seven
 8. Stop and report:
    - what to test on the phone
    - the known issues; anything you choose to live with goes in KNOWN ISSUES, not only in the chat
+   - whether the doc check is due (the rule below), so the owner can run `/doc-check`
    - then wait for the owner's "commit" and "go"
 
 **Rules for every phase:**
@@ -25,7 +26,13 @@ The phase-by-phase plan for building the game. Written 2026-11-25 from all seven
   - screenshots go in `shots/p<NN>-<screen>-<state>[-xl].png` (not in git), each with DESIGN §10's 15 answers in PROGRESS
   - command output goes in PROGRESS, trimmed to the lines that prove the check
   - the commands are CLAUDE.md's, and EDGE-CASES §7's
-- **Spikes** run on a throwaway branch, `spike/<name>`. Only the written answer is kept, in the doc it affects. Code kept by accident is a bug.
+- **Spikes** run on a throwaway branch, `spike/<name>`. Only the written answer is kept, in the doc it affects. Code kept by accident is a bug. The spike branch stays local, never pushed, and is deleted once its phase merges.
+- **Branches and merges** (as practised since Phase 1, written down 2026-11-25):
+  - each phase gets a branch, `phase-N-<name>`, cut from `main`
+  - if `main` lacks an unmerged decision the phase needs, the branch is cut from the branch that holds it, and they merge in order (Phase 4 did this)
+  - the phase branch is pushed after each commit, so a new session can resume from GitHub
+  - a phase merges only on the owner's word, by fast-forwarding `main` to the branch tip and pushing `main`
+- **The doc check:** `/doc-check` runs after every third DONE phase, or when the owner asks. The first ran on 2026-11-25 at the owner's request, after Phases 3 and 4; the next is due after Phase 7, and step 8's report says so.
 - **Owner phases:** the agent prepares checklists and templates; the owner acts; the owner's confirmation is the evidence. Keys, accounts and logins stay the owner's (CLAUDE.md).
 - **Free tools only.** A download (a font, a library, a system image) needs the owner's yes first. Anything paid stops the build.
 - **The save format:** `formatVersion` stays at 1, and its shape may change freely, until the first closed-test build (Phase 30). The owner's own internal-track save may be reset before then. From Phase 30 on, every change needs a migration and a fixture (TRD §6.3).
@@ -75,7 +82,7 @@ GOAL: Know whether to build at all: the day-7 count of unique sign-ups against g
 
 BUILD:
 - **Owner:**
-  - make the game's Gmail, if it doesn't exist yet (IDEA H2-11)
+  - ~~make the game's Gmail (IDEA H2-11)~~: not needed. The contact address is the owner's own Gmail (PRD CR12, decided in this phase)
   - make the Google Form exactly as `site/README.md` says, including "View results summary: off" and no "submit another response" link
   - send the form link and the game's email
 - **Agent:** fill `CONFIG` in `site/bazaar-boss/index.html`, then check the page at 360 px.
@@ -201,7 +208,7 @@ PROGRESS:
   6. **A 2–3 GB RAM phone** to borrow: its model and RAM.
   7. **Downloads, yes or no to each:**
      - for Phase 3: Roboto and Rozha One (Google Fonts, OFL), and gdx-freetype (libGDX, Apache 2.0, from Maven Central)
-     - later: Material Symbols (Apache 2.0), gdx-tools, an Android 7 (API 24) emulator image (Phase 28), CC0 sounds or jsfxr (Phase 23)
+     - later: Material Symbols (Apache 2.0), which Phase 6 needs for its icon atlas (LLD U20); gdx-tools, which may not be needed now that the font baker writes its own files (TD-36; Phase 6 decides); an Android 7 (API 24) emulator image (Phase 28); CC0 sounds or jsfxr (Phase 23)
 - **Done:**
   - **People:** 20 people are ready to play (the owner, 2026-11-25). That's enough for 16–18 closed testers plus the 5 G1 playtesters, who can be among them. Their Android versions aren't checked yet.
   - **Item 7, in part:** yes to Roboto, Rozha One and gdx-freetype (the owner, 2026-11-25), so Phase 3 can start. Material Symbols, gdx-tools, the API 24 image and the sounds aren't answered yet.
@@ -213,7 +220,7 @@ PROGRESS:
 
 ## Phase 3 — Spike: text on screen
 
-STATUS: DONE
+STATUS: IN PROGRESS
 
 GOAL: Know how text will be drawn: baked bitmap fonts or distance-field fonts, crisp at XL on a 420-dpi screen, with ₹ in both faces. Also know whether Android writes non-Latin digits under Marathi (LLD U3, U9).
 
@@ -284,14 +291,28 @@ PROGRESS:
     - FreeType's padding, with each glyph moved back by it, because gdx-freetype pads the bitmap but leaves the offsets at the ink
     - one-channel textures
   - **Drawing:** scene2d labels need the distance-field shader while they draw. That means a label that swaps the batch's shader, at the cost of one batch flush per swap.
-  - **Android natives:** the build's natives task keeps only the first natives jar per ABI. That's fine while FreeType stays at build time, but sync every jar if a second native library ever ships (the spike's fix).
+  - **Android natives:** the build's natives task keeps only the first natives jar per ABI. That's fine while FreeType stays at build time. If a second native library ever ships, copy every matching jar in one `fs.sync` (KNOWN ISSUES K2).
   - **Icons:** Material Symbols is a font, so the icon atlas can use the same baker.
-- **DONE WHEN 1: PASS.** LLD §10's U3 and U9 rows carry dated answers, with this evidence:
+- **DONE WHEN 1: NOT VERIFIED as written; waiting on the owner** (found in the code review, 2026-11-25). The check says the chosen method is "copied into TRD TD-26", but the TRD's decision log never overwrites an entry, so the method went into TD-36, which corrects TD-26. Meeting a check in a way other than as it's written is the owner's call, so the phase isn't DONE until the owner accepts it (CURRENT STATE). Everything else the check names is here: LLD §10's U3 and U9 rows carry dated answers, with this evidence:
   - **The four steps at 420 dpi:** `shots/p03-text-s.png`, `-m.png`, `-l.png`, `-xl.png`
   - **The four steps at 316 dp:** `shots/p03-text-s-316dp.png` … `-xl-316dp.png`, plus `-xl-316dp-c.png`, which shows C on its own because three blocks overflow at XL
   - **Zoomed crops:** `shots/p03-text-zoom-s-caption.png`, `-zoom-xl-display.png`, `-zoom-s-280dpi-caption.png`, `-zoom-xl-316dp-price.png`, `-zoom-base64-vs-128.png`, with `p03-text-s-280dpi.png`
   - **The digits the phone printed under `mr-IN`:** the logcat lines in LLD §10 U9, plus `shots/p03-text-mr-IN.png` and `-mr-IN-header.png`
   - **The chosen method:** TRD TD-36
+- **Handoff, 2026-11-25** (the session stopped here at the owner's request):
+  - **Done:** the whole phase. Its answers are committed and pushed on `phase-3-text-spike`: LLD §10 U3 and U9; TRD TD-36, §0 and §1.2; DESIGN §2.2's font sentence; EDGE-CASES DV-1.
+  - **Half-finished:** nothing.
+    - Nothing uncommitted belongs to the work. The untracked `.vscode/settings.json` was made by VS Code's Java tooling; leave it out of git.
+    - The screenshots live only in `shots/` on this PC, which git ignores.
+    - The emulator was stopped with every setting put back.
+  - **Left, in order:**
+    1. **The owner** reviews `phase-3-text-spike` and says whether to merge. It fast-forwards `main` from `aeb69a3`, as Phases 1 and 4 did.
+    2. **The agent**, on the owner's "merge": fast-forward `main`, push it, and delete the local throwaway branches `spike/text` and `spike/df-smoothing` (the code review's test). Their code was never pushed and isn't needed; the answers are in the docs.
+    3. **The next phase is Phase 5,** the save spike (CURRENT STATE). Cut its branch from the updated `main`.
+  - **Waiting on the owner, so not in any doc as a decision yet:**
+    - **DESIGN §2.2:** the agent changed one sentence to point at TD-36 ("baked to bitmaps" became "distance-field atlases"). The faces, sizes and steps are unchanged. The owner was asked whether that edit is all right; if not, revert that line and keep TD-36 in the TRD only.
+    - **Phase 1 and Phase 2 items:** whether the waitlist haggle played in all three voices on the owner's phone (Phase 1, DONE WHEN 1), and the owner's Phase 2 list. Both are in their phases' PROGRESS and in CURRENT STATE.
+- **Code review, 2026-11-25:** DONE WHEN 1 is reopened (above), so the phase is IN PROGRESS again. Nothing is left to build: it waits on the owner's word on DONE WHEN 1, then its review and merge. The review also added TRD TD-37 (how distance-field text sets its smoothing), with its evidence in LLD §10 U3.
 
 ## Phase 4 — Spike: the Android 16 shell
 
@@ -400,9 +421,9 @@ GOAL: Know the save's costs and risks before building it (LLD U5–U8):
 BUILD (on branch `spike/save`, thrown away):
 - A synthetic 50 KB state and a 0.5 MB pack; time encoding and decoding on LowEnd_A9.
 - Time write, fsync and rename, 200 times; report p50 and p95.
-- Change the font scale while a write is pending, and log dispose, drain and GL-context events.
+- Change the font scale while a write is pending, and log dispose, drain and GL-context events. Also switch the navigation mode, which no `configChanges` value absorbs. First settle whether `dispose()` runs on a recreation at all: Phase 4 saw only `pause()` (EDGE-CASES LC-2).
 - Copy a fixture with `run-as` from `/data/local/tmp`.
-- Write the answers into LLD §10 and TRD §0.4 and §4.10. Add the fixture commands to CLAUDE.md if U8 works.
+- Write the answers into LLD §10, TRD §0.4 and §4.10, and EDGE-CASES LC-2 and T-3. If the drain moves out of `dispose()`, a new TRD entry corrects TD-28. Add the fixture commands to CLAUDE.md if U8 works.
 
 OUT OF SCOPE: The real codec and writer (Phase 6); backups and repairs (Phase 13).
 
@@ -447,10 +468,15 @@ BUILD:
 - **`core`:**
   - the shell: `BazaarBossGame`, `ScreenRouter`, `ModalQueue`, `BackDispatcher` (in the haggle, back opens Pause), `TapGuard`, `RenderOnDemand` (as Phase 4 found)
   - the components it needs: Button (with its busy state), Quick-offer chip, Offer slider (bazaar steps, − and + nudges; its target 32 dp clear of each edge, and excluded from the back gesture on Android 10+), Price tag, Speech line, Meter, Panel, Modal card, Banner
-  - fonts as Phase 3 found; a placeholder face (shapes plus the mood word)
+  - fonts as Phase 3 found (TD-36): the distance-field baker in `tools`, with TD-36's base sizes, the glyph-offset fix and one-channel atlases, checked on the phone with the zoom test (CLAUDE.md), including the extremes: `label` at S on 280 dpi and `price` at XL on density 4.5; and a label that draws with the distance-field shader, sets its smoothing from its size on screen, and turns integer positions off (TD-37)
+  - the icon atlas from Material Symbols through the same baker (LLD U20; the download needs the owner's yes first)
+  - a placeholder face (shapes plus the mood word)
   - `SaveWriter` (one per process, coalescing), `FileSaveFiles`
   - the haggle screen, the deal result card and the pause card
-- **`android`:** `singleTask` and the task-root check (LC-1); the wider `configChanges` (LC-2); pause on focus loss; insets passed to `core`.
+- **`android`:** `singleTask` and the task-root check (LC-1); the wider `configChanges` (LC-2); pause on focus loss.
+  - the view's `WindowInsets` passed to `core` (TD-35)
+  - back through the launcher's own callback on Android 13+, through `PlatformServices.catchBack` (TD-35); the manifest comment that still says back is "routed to libGDX" is corrected with it
+  - `excludeFromBackGesture` over the slider on Android 10+ (DESIGN §2.7, IN-4)
 
 OUT OF SCOPE:
 - Other personalities, selling and walking away's call-back (Phase 9)
@@ -483,7 +509,7 @@ DONE WHEN:
 
 ASK FIRST IF: A spike's answer forces a design change, such as distance-field fonts needing a new library; the save needs fields beyond LLD's; anything needs a new permission.
 
-DEPENDS ON: Phases 3, 4 and 5.
+DEPENDS ON: Phases 3, 4 and 5; Phase 2's answer on the Material Symbols download (the icon atlas).
 
 PLAN MODE: Yes. It lays the architecture, and the save is the player's data.
 
@@ -1175,7 +1201,7 @@ DONE WHEN:
 
 ASK FIRST IF: Any CC0 pack needs a credit the Credits screen can't show.
 
-DEPENDS ON: Phases 17 to 22: every screen exists.
+DEPENDS ON: Phases 17 to 22: every screen exists; Phase 2's answer on the sounds (jsfxr or a CC0 pack).
 
 PLAN MODE: No.
 
@@ -1860,7 +1886,7 @@ PROGRESS:
 
 ## CURRENT STATE
 
-**Updated 2026-11-25, when Phase 3 was done.**
+**Updated 2026-11-25, after the first doc check and its code review.**
 
 **Built so far:**
 - **The planning docs:** PRD, TRD, APP-FLOW, DESIGN, EDGE-CASES, MONETISATION, LLD, and this plan.
@@ -1881,16 +1907,22 @@ PROGRESS:
 
 **Phase status:**
 - **Phase 4 is DONE** and merged into `main` on 2026-11-25, together with Phase 1's branch so far, at the owner's word.
-- **Phase 3 is DONE** on branch `phase-3-text-spike`, cut from `main`, waiting for its review and merge.
+- **Phase 3's work is finished** on branch `phase-3-text-spike`, cut from `main`, but it isn't DONE: its DONE WHEN 1 waits on the owner's word (below). Then its review and merge.
+- **The first doc check is done** on branch `doc-check-2026-11-25`, cut from `phase-3-text-spike`. It adds the `/doc-check` skill and the doc fixes, and merges after Phase 3.
 - **Phases 1 and 2 (owner) are IN PROGRESS.** Phase 1 waits for the posts and day 7.
 - Every other phase is NOT STARTED.
 
 **Next:**
 - **The build has started before day 7,** by the owner's decision on 2026-11-25 (PRD Q1). On day 7 the thresholds apply to the build in progress.
-- **The review and merge** of `phase-3-text-spike`.
+- **The review and merge** of `phase-3-text-spike`, then `doc-check-2026-11-25`. Both fast-forward `main`.
 - **Agent:** Phase 5, the save spike. Then Phase 6, the vertical slice: the first real haggle on the phone, with PLAN MODE yes, so its plan comes to the owner first.
 - **Phase 1 (owner):** confirm that the haggle plays in all three voices on the phone; record and post the clip, and send the date of the first post; on day 7, send the counts and each post's views.
-- **Phase 2 (owner):** the checklist in Phase 2's PROGRESS.
+- **Phase 2 (owner):** the checklist in Phase 2's PROGRESS. Phase 6 will need a yes to the Material Symbols download for its icons (LLD U20).
+- **From the doc check, a decision for the owner:** DESIGN §10's visual checklist has no item on text sharpness. **Recommended:** add one, "Is text free of blur, notched edges and bleeding in a 4× zoom (CLAUDE.md)?". That makes the checklist 16 answers, and the DONE WHEN checks that count to 15 follow. The checklist and DONE WHEN change only on the owner's word.
+- **From the code review (2026-11-25), decisions for the owner:**
+  - **Phase 3's DONE WHEN 1:** it says to copy the font method into TRD TD-26, but the decision log never overwrites an entry, so the method is in TD-36, which corrects TD-26. **Recommended:** accept TD-36 as meeting the check, and reword the check to "…recorded in a TRD entry that corrects TD-26, if it changed". Then Phase 3 is DONE.
+  - **DESIGN §2.2's font sentence:** Phase 3 changed it to say distance-field atlases (TD-36). The faces, sizes and steps are unchanged. **Recommended:** keep it, so DESIGN matches TD-36. Reverting it would leave DESIGN describing the method TD-36 replaced.
+  - **The waitlist page's two marigold coins** (KNOWN ISSUES K4): the favicon and the cash coin in the demo's top bar are filled with `accent`, which DESIGN §2.3 rule 1 and §2.5 rule out for icons. With the Join button, the page shows two marigold elements, so §10's question 3 is a no. **Recommended:** follow the rules as written. The top-bar coin goes `text-muted` (§2.5), and the favicon goes `scene-brass`, as a coin drawn as illustration. Both take effect when the page is next published. If the coin should stay marigold, it becomes DESIGN §2.3's one stated exception instead.
 - **Decided after Phase 4 (the owner, 2026-11-25):**
   - the offer slider's target stays 32 dp from the screen edges, and is excluded from the back gesture (DESIGN §2.7)
   - Phase 3's downloads are a yes
@@ -1901,7 +1933,7 @@ PROGRESS:
 | Group | Estimate | Used | Status |
 |---|---|---|---|
 | Before M1 | 0 build sessions; 7 days | 1: the agent made the form and published the page, at the owner's request | Phase 1 in progress; the 7 days start with the first post |
-| M1 (Phases 3–12) | 9 | 2: Phases 4 and 3 | Phases 3 and 4 done; Phase 5 next |
+| M1 (Phases 3–12) | 9 | 2: Phases 4 and 3 | Phase 4 done; Phase 3's work finished, waiting on DONE WHEN 1; Phase 5 next |
 | M2 (Phases 13–29) | 17 | 0 | — |
 | M3 (Phases 30–32) | 5 | 0 | — |
 | After M3 (33–42) | 4 purchases + 4 ads | 0 | Behind G3 and Q19 |
@@ -1922,10 +1954,15 @@ PROGRESS:
 
 ## KNOWN ISSUES
 
-None yet. Bugs we choose to live with, and security findings left unfixed, go here, so nothing lives only in a chat:
+Bugs we choose to live with, and security findings left unfixed, go here, so nothing lives only in a chat:
 
 | # | Issue | Severity | Found in | Why we live with it | Revisit when |
 |---|---|---|---|---|---|
+| K1 | Android Lint warns `MissingApplicationIcon` | Low | The empty project (2026-11-24); listed in CLAUDE.md | The app icon comes with the art, drawn as shapes in code | Phase 30 adds the icon and clears it |
+| K2 | `android/build.gradle`'s natives task copies only the **first** natives jar for each ABI. A second native library would be dropped silently and crash at runtime | Low, latent | Phase 3 (2026-11-25) | libGDX is the only native library, since FreeType stays at build time (TD-36) | A second native library is added: collect every natives jar for the ABI with `findAll`, then copy them in **one** `fs.sync` (`jars.each { from archives.zipTree(it) }`). One `fs.sync` per jar deletes the earlier jars' `.so` files (shown in the code review, 2026-11-25) |
+| K3 | libGDX 1.14.2's own back callback (Android 13+) asks for no frame, so back stalls when drawing on demand | Medium, worked around | Phase 4 (2026-11-25) | The launcher's own callback routes back instead (TD-35) | A libGDX release asks for a frame in its callback; then the workaround can go |
+| K4 | The waitlist page fills two coins with marigold (`accent`): its favicon and the cash coin in its demo's top bar. DESIGN §2.3 rule 1 and §2.5 rule that out for icons, and §10's question 3 fails (two marigold elements on the page) | Low | The code review (2026-11-25); in the page since 2026-11-24 | The page is live mid-test, the colour is the owner's design call, and a change only shows once the page is published again | The owner decides (CURRENT STATE); the fix ships with the page's next publish |
+| K5 | TRD TD-28 still says the writer is "drained on dispose", though Phase 4 saw a recreation with no `dispose()` | Low | The code review (2026-11-25) | The decision log is never overwritten. TRD §4.10 and EDGE-CASES T-3 now mark it pending, and nothing is built on it before Phase 5 | Phase 5 settles LLD U7: if the drain moves, a new TRD entry corrects TD-28 |
 
 ---
 

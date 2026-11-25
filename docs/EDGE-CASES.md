@@ -102,7 +102,7 @@ Most v1 cases are one test, one clamp or one guard. The heavy ones are SV-1, DV-
 | 52 | 8 | EF-1 | The first haggle can't end in a deal, so the stall never appears | First haggle | v1 · 12, 14 |
 | 53 | 8 | BR-4 | `ids-ever-shipped.txt` isn't updated at a release | `tools:validateContent` | v1 · 16 |
 | 54 | 8 | ST-4 | A native library isn't aligned for 16 KB pages | App bundle | v1 · 16 |
-| 55 | 8 | OP-2 | The launch email goes out from the support address | Game Gmail | Owner |
+| 55 | 8 | OP-2 | The launch email goes out from the support address | The owner's Gmail (CR12) | Owner |
 | 56 | 8 | OP-3 | The waitlist form shows every respondent the others' emails | Google Form | Owner, now (README fixed) |
 | 57 | 8 | GT-1 | The ad gate is read when the offer is drawn, not when it's tapped | Ad offers | M4 |
 | 58 | 8 | AB-3 | Bots reuse the game's public ad-unit IDs | AdMob | M4 |
@@ -279,6 +279,10 @@ Each case: the trigger · what happens if it isn't handled · what should happen
 - **Unhandled:** a new game object loads the save while the old one may still be writing it (LC-1's race). The Pause overlay, Settings and the slider position are gone. With both bugs present, the last action is lost.
 - **Should:** the old game's `dispose()` drains the writer's queue (a bounded wait of about 2 s) before the new one loads. Resume lands exactly where the save says.
 - **Fix in:** `core` (drain on dispose). `android`: add `density|fontScale|uiMode|locale|layoutDirection|smallestScreenSize` to `configChanges`, so most of these become a `resize()`. Process death takes the same path, so recreation must stay safe anyway.
+- **Seen in Phase 4 (2026-11-25), and it puts "drain on dispose" in doubt:**
+  - switching the navigation mode or the cutout also recreates the activity, and no `configChanges` value prevents that
+  - libGDX then called **no `dispose()`** on the old game (it disposes only when the activity is finishing), but it did call `pause()`
+  - Phase 5 (LLD U7) settles where the writer drains. **Recommended, if Phase 5 confirms it:** drain in `pause()`.
 - **Reproduce:** mid-haggle, `"$ADB" shell settings put system font_scale 1.3` (reset with `1.0`). Also `cmd uimode night yes`, `wm density 546`, `cmd locale set-app-locales $PKG --locales mr-IN`.
 
 #### LC-3 · A restart loses a result the player is owed — 16 · v1 · 3, then 6, 8, 10, 11
@@ -464,7 +468,7 @@ The other first-run cases are SV-9 (settings without a save) and EF-2 (§4).
   - in Turkish, `"TRADING".toLowerCase()` gives `tradıng`
 
   **Verified on Android 16 too (Phase 3, LLD §10 U9):**
-  - the same digits, and with the app's language set to Marathi, a plain `String.format` gives `१२५,०००`, so the price drew as two bare commas (`shots/p03-text-mr-IN.png`)
+  - the same digits, and with the app's language set to Marathi, a plain `String.format` gives `१२५,०००`, so each formatted number drew as a single bare comma, since the Latin font has no Devanagari digits (`shots/p03-text-mr-IN.png` shows two such numbers)
   - Android's `NumberFormat` also groups the Indian way (`1,25,000`) where the JDK gives `125,000`, so JDK tests can't stand in for the phone
 - **Unhandled:** the baked Latin-only font (TRD §1.2) has no glyphs for those digits, so prices draw as blanks or boxes. In a haggling game, the price itself vanishes. The Turkish case writes enum names such as `tradıng` into `game.json`; the next load can't read them, so the save and then its backups count as damaged.
 - **Should:** every number on screen goes through our own `IndianNumberFormat` (TRD §2.3), which writes ASCII digits. `String.format`, `toLowerCase` and `toUpperCase` always take `Locale.ROOT`.
@@ -488,7 +492,7 @@ The other first-run cases are SV-9 (settings without a save) and EF-2 (§4).
 #### DV-4 · Little room left on start-up time — 9 · v1 · 1, 14
 - **Trigger:** **verified:** the empty project's first cold start took 3,986 ms on the emulator, and 2,673 ms after a force-stop. TRD §0.4's target is 4 s at p95 on a cheap phone, and the content, fonts and save aren't loaded yet. Separately, older phone GPUs can't load font atlases larger than 2,048 px (from memory).
 - **Unhandled:** the first offer misses F1 AC3's 30 seconds, and text goes blank on some older phones.
-- **Should:** measure start-up at every slice, load only the chosen voice and text-size step, and keep atlases at 2,048 px or less.
+- **Should:** measure start-up at every slice, load only the chosen voice (the three font atlases serve every text-size step, TRD TD-36), and keep atlases at 2,048 px or less.
 - **Fix in:** `core`, `tools` (the font baker).
 - **Reproduce:** `"$ADB" shell am force-stop $PKG`, then `"$ADB" shell am start -W -n $PKG/.android.AndroidLauncher` and read TotalTime (verified). On LowEnd_A9 at slice 14.
 
@@ -508,8 +512,8 @@ The other first-run cases are SV-9 (settings without a save) and EF-2 (§4).
 
 #### DV-7 · Text size changed mid-haggle — 6 · v1 · 12
 - **Trigger:** Settings → Text size, while a haggle waits paused behind Settings.
-- **Unhandled:** screens built with the old font keep the old measurements, and lines overlap until each screen is rebuilt.
-- **Should:** changing the step rebuilds every open screen with the new font, and unloads the old one.
+- **Unhandled:** screens laid out at the old step keep the old measurements, and lines overlap until each screen is rebuilt.
+- **Should:** changing the step lays out every open screen again at the new sizes. The font atlases stay loaded: every step draws from the same three (TRD TD-36).
 - **Fix in:** `core`.
 - **Reproduce:** by hand, at each step.
 
@@ -800,8 +804,8 @@ ST-5 (the pre-launch report) is in §4.
 - **Reproduce:** SV-7's downgrade test.
 
 #### OP-2 · The launch email goes out from the support address — 8 · Owner
-- **Trigger:** one email to up to 1,600 addresses (TRD §12, 1st), sent from the game's Gmail: the address that every build's Report a problem uses (TRD §6.1).
-- **Unhandled:** Gmail's sending limits or spam flags restrict that account, and reports from every installed build go nowhere.
+- **Trigger:** one email to up to 1,600 addresses (TRD §12, 1st), sent from the contact Gmail: the address that every build's Report a problem uses (TRD §6.1). Since 2026-11-25 that's the owner's own Gmail (PRD CR12).
+- **Unhandled:** Gmail's sending limits or spam flags restrict that account, and reports from every installed build go nowhere. It's now also the owner's personal mail that gets restricted.
 - **Should:** send from a different account or a Google Group, at most 450 a day. The support address only answers mail.
 - **Fix in:** `owner`.
 - **Reproduce:** nothing to run.
@@ -897,7 +901,7 @@ Gaps and conflicts this file found, each with its recommendation. **All applied 
 |---|---|---|---|
 | T-1 | The save and the content pack would be read by reflection, which R8 breaks | SV-1 | Explicit keys with `JsonReader` and `JsonWriter`; fixture tests compare values (§4.5, §6.3) |
 | T-2 | `--release 8` doesn't stop API 26 calls | SV-2 | A `check` test that rejects `java.nio.file`, `java.time`, `java.util.Base64`, `String.join` and `File.toPath` in `logic` and `core` (§1.2, §4.11) |
-| T-3 | Two activity instances, and recreation | LC-1, LC-2, LC-4 | `singleTask` plus the task-root check; one `SaveWriter` per process, drained on dispose; a generation number for Start over; more `configChanges` (§3, §4.10) |
+| T-3 | Two activity instances, and recreation | LC-1, LC-2, LC-4 | `singleTask` plus the task-root check; one `SaveWriter` per process, drained on dispose (pending Phase 5, LLD U7: see LC-2); a generation number for Start over; more `configChanges` (§3, §4.10) |
 | T-4 | Formatting that follows the phone's language | DV-1, CL-3 | `Locale.ROOT` everywhere; a test under `mr-IN`, `bn-IN`, `ur-IN`, `ar-EG` and `tr-TR` (§4.2) |
 | T-5 | A crash during load repeats at every launch | SV-6 | A loading marker; the next launch goes to `bak1` (§4.10) |
 | T-6 | The newer-save rule looks only at `formatVersion` | SV-7, OP-1 | Also `writtenBy` and unknown content IDs. The build refuses a lower format or content version than the last release (§4.10, §6) |

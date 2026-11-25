@@ -32,7 +32,7 @@ An offline, single-player Android haggling game, built with libGDX in Java.
 
 ## Commands
 
-Every command below was run successfully on the owner's Windows 11 PC on 2026-11-24, in Git Bash. In PowerShell or cmd, use `.\gradlew.bat` instead of `./gradlew`.
+Every command below was run successfully on the owner's Windows 11 PC: on 2026-11-24 unless a later date is given, and in Git Bash unless it says PowerShell. In PowerShell or cmd, use `.\gradlew.bat` instead of `./gradlew`.
 
 **Setup, once per machine:**
 - JDK 17 or newer as `java` on PATH (here: Oracle JDK 17.0.11).
@@ -55,10 +55,24 @@ ADB="$SDK/platform-tools/adb.exe"
 | Wait until it has booted | The script below — run it in the background | `BOOTED after ~57s` |
 | Install the debug build | `./gradlew :android:installDebug` | `Installed on 1 device.` |
 | Launch the app | `"$ADB" shell am start -W -n io.github.rameshkumark24.bazaarboss/.android.AndroidLauncher` | `Status: ok` |
-| **Screenshot — how every phase proves a screen** | `mkdir -p shots && "$ADB" exec-out screencap -p > shots/<name>.png` | A 1080 × 2400 PNG in `shots/` (not in git). Look at it before claiming a screen works. The status bar and navigation bar show — the game draws behind them, so keep the UI inside the safe insets (TRD TD-25) |
+| **Screenshot — how every phase proves a screen** | `mkdir -p shots && "$ADB" exec-out screencap -p > shots/<name>.png` | A 1080 × 2400 PNG in `shots/` (not in git). Look at it before claiming a screen works. Right after a launch, wait about 5 s: `am start -W` returns before libGDX's first frame, so an earlier capture can be a plain grey window (verified 2026-11-25). The status bar and navigation bar show — the game draws behind them, so keep the UI inside the safe insets (TRD TD-25) |
 | Simulate a first-ever open: remove the app, then install it again | `"$ADB" uninstall io.github.rameshkumark24.bazaarboss` | `Success` |
 | List the permissions in the built app | `"$SDK/build-tools/35.0.0/aapt2.exe" dump permissions android/build/outputs/apk/debug/android-debug.apk` | Only AndroidX's app-private `…DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION` (TRD TD-24) — no internet |
 | Stop the emulator | `"$ADB" emu kill` | `OK: killing emulator, bye bye` |
+
+**The zoom test** (Phase 3; TD-36 and LLD U20 rely on it). It enlarges one region of a screenshot 4× with no smoothing, so blur, notched edges and bleeding show. It runs in **PowerShell**, using .NET's built-in System.Drawing; nothing to install. Verified 2026-11-25: a PNG 4× the region's size. Keep the region inside the image: past an edge it fills with transparent pixels, with no error.
+
+```powershell
+Add-Type -AssemblyName System.Drawing
+$img = [System.Drawing.Image]::FromFile("C:\Bazaar Boss Haggle Tycoon\shots\<name>.png")
+$z = 4; $r = New-Object System.Drawing.Rectangle 40, 440, 240, 46   # x, y, width, height of the region
+$out = New-Object System.Drawing.Bitmap ($r.Width * $z), ($r.Height * $z)
+$g = [System.Drawing.Graphics]::FromImage($out)
+$g.InterpolationMode = [System.Drawing.Drawing2D.InterpolationMode]::NearestNeighbor
+$g.PixelOffsetMode = [System.Drawing.Drawing2D.PixelOffsetMode]::Half
+$g.DrawImage($img, (New-Object System.Drawing.Rectangle 0, 0, $out.Width, $out.Height), $r, [System.Drawing.GraphicsUnit]::Pixel)
+$out.Save("C:\Bazaar Boss Haggle Tycoon\shots\<name>-zoom.png"); $g.Dispose(); $out.Dispose(); $img.Dispose()
+```
 
 The boot wait, exactly as it ran:
 
