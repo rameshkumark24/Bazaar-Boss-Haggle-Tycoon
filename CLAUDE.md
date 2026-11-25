@@ -9,6 +9,8 @@ An offline, single-player Android haggling game, built with libGDX in Java.
 - **[docs/APP-FLOW.md](docs/APP-FLOW.md)** — how the screens connect: navigation, back, launch routing, and one row per screen.
 - **[docs/DESIGN.md](docs/DESIGN.md)** — how it looks, moves and speaks: the scales, the colour roles, the components, the copy rules, and the §10 visual checklist.
 - **[docs/EDGE-CASES.md](docs/EDGE-CASES.md)** — what can go wrong, ranked, with the slice each case belongs to (§1.1) and verified ways to reproduce it (§7). Before building a slice, handle its cases.
+- **[docs/LLD.md](docs/LLD.md)** — the low-level design: the feature packages and the dependency rule (§1–§2), where every PRD §7 rule lives (§2.4), the interfaces, errors, hot paths, and what tests each slice owes (§7.5). New code follows it; a change to it is a decision.
+- **[docs/MONETISATION.md](docs/MONETISATION.md)** — how the game makes money: cosmetic purchases right after G3, ads only past ~3,000 installs a month. Read it before the purchase or ad slices.
 - `docs/IDEA.md`, `docs/RESEARCH.md` and `docs/COMPETITORS.md` are the background they were built from.
 
 ## Rules that are easy to break

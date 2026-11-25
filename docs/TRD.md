@@ -157,7 +157,7 @@ Every row costs **₹0 at 1,000 players**: nothing here charges per player.
 | Simulator | A plain Java program in the `sim` module, running the real `logic` | DR11, F11 AC4, Check 3 | — |
 | Desktop dev window | libGDX's LWJGL3 desktop backend — for development only, never shipped | Fast iteration on Windows; the haggle lab | — |
 | Source control | The existing private GitHub repo | — | Free |
-| CI | **None in v1.** `gradlew check` runs locally before every upload | The guards run inside the Gradle build itself, so they hold on any machine. GitHub Actions is optional later; its free allowance for private repos is now counted in money, not minutes — check it before relying on it [T21] | — |
+| CI | **None hosted in v1.** A versioned pre-push hook, `.githooks/pre-push`, runs `./gradlew check :android:assembleDebug` on every push; it's switched on once per clone with `git config core.hooksPath .githooks` (LLD §8) | The guards run inside the Gradle build itself, so they hold on any machine. GitHub Actions is optional later; its free allowance for private repos is now counted in money, not minutes — check it before relying on it [T21] | — |
 | Web hosting | **GitHub Pages** (rameshkumark24.github.io): the privacy policy, notice pages, app-ads.txt and the waitlist page | CR15, CR21, CR25; already owned | Site ≤ 1 GB; **100 GB a month bandwidth (soft)**; 10 builds an hour (soft); deploys time out after 10 minutes [T19]. Past a soft limit, GitHub may ask us to reduce use. **Not for e-commerce or commercial transactions** [T19] — policy and notice pages are fine |
 | Distribution | **Google Play** (personal account, already paid) | IDEA §9 | $25, already paid |
 | Crash data | **Android vitals** in Play Console | H5-3 | Free |
@@ -178,7 +178,7 @@ Every row costs **₹0 at 1,000 players**: nothing here charges per player.
 | **Run while building** | `gradlew lwjgl3:run` — the whole game in a desktop window; the fastest loop. *Not run yet* |
 | **Run on a phone** | USB debugging on, then `gradlew android:installDebug` or Run in Android Studio. *Not verified yet* — it needs the owner's phone (Q13) |
 | **Run on emulators** | **Verified:** Medium_Phone_API_36.1, started from the command line (CLAUDE.md). Present but not yet used: LowEnd_A9 (API 28).<br>**Not verified: API 24**, the oldest Android we support — this PC has no API 24 system image. Downloading one needs the owner's yes; do it before the closed test (TD-23) |
-| **Test** | • `gradlew check`: compiler lint, Android Lint, unit tests — and, as they arrive, migration fixtures, the content validator and the manifest and backup-rule guards<br>• `gradlew sim:run`: the simulator report (the module arrives with its first code)<br>• A screenshot to prove any screen: `adb exec-out screencap -p > shots/<name>.png` (CLAUDE.md)<br>• Maestro, to tap through screens: later, with the owner's yes, once there are screens (decided 2026-11-24)<br>• The PRD's acceptance criteria, by hand, on the phone at each milestone |
+| **Test** | • `gradlew check`: compiler lint, Android Lint, unit tests — and, as they arrive, migration fixtures, the content validator and the manifest and backup-rule guards<br>• Screen states for screenshots: save files from `logic/src/test/resources/fixtures/screens/`, installed on a debug build through `run-as` (LLD §7.3; the commands join CLAUDE.md once spike U8 passes)<br>• `gradlew sim:run`: the simulator report (the module arrives with its first code)<br>• A screenshot to prove any screen: `adb exec-out screencap -p > shots/<name>.png` (CLAUDE.md)<br>• Maestro, to tap through screens: later, with the owner's yes, once there are screens (decided 2026-11-24)<br>• The PRD's acceptance criteria, by hand, on the phone at each milestone |
 | **Ship** | `gradlew android:bundleRelease` → an Android App Bundle (AAB) signed with the upload key → Play Console: internal testing → closed testing (14 days) → production, as a staged rollout.<br>**Not run yet.** Still missing:<br>• the upload key — the owner creates it with the JDK's `keytool`, and it stays outside git (CR11)<br>• a signing config that reads the key from a file outside git<br>• code-shrinking (R8) rules<br>• the Play Console app entry and its forms: privacy policy URL (CR15), Data safety, target audience, content rating<br>• the store listing's images<br><br>No Mac and no paid plan are needed |
 | **iOS** | **Not possible from this machine.** libGDX's iOS route needs a Mac with Xcode (from memory). Apple's $99 a year is pre-approved only if iOS ships, and it isn't planned |
 
@@ -220,11 +220,14 @@ Hardening's rule of thumb (H4) applies. If getting around a rule only changes th
 | `logic` | **Pure Java.** The model, the commands (§5.2), the haggle, auction, day and economy rules, `Rng`, `Money`, `IndianNumberFormat`, the `Clock` interface, the save codec and its migrations, and the content model | **Only** libGDX's pure-Java JSON utilities (`com.badlogic.gdx.utils.Json*`). A unit test fails the build if `logic` imports anything else from libGDX | Yes |
 | `core` | The libGDX game: screens, scene2d UI, shape kits, sound, `BackDispatcher`, `SaveWriter`, and the `PlatformServices` interface | `logic`, libGDX | Yes |
 | `android` | `AndroidLauncher`, the `PlatformServices` implementation (share, email, browser, cache folder, versions), FileProvider, the manifest, the backup rules, the crash handler. *Later:* the ads and billing adapters | `core`, AndroidX Core | Yes |
-| `lwjgl3` | The desktop launcher, with a stub `PlatformServices` that logs instead of sharing | `core` | No — development only |
+| `lwjgl3` | The desktop launcher, with a stub `PlatformServices` that logs instead of sharing | `core`, `devtools` | No — development only |
+| `devtools` | The dev menu, the haggle lab, the text test and the screen-fixture loader | `core` | No — plugged in only by `android/src/debug` and `lwjgl3`, so release builds can't contain it (PRD §6; LLD L-1) |
 | `sim` | The simulator and haggle-lab batch runs; writes CSV reports | `logic` | No |
 | `tools` | The content validator and builder, and the font baker (FreeType runs here, at build time only) | libGDX, gdx-freetype (desktop) | No |
 
 **Package:** `io.github.rameshkumark24.bazaarboss.*` — the same as the permanent app ID (§11).
+
+**Planned (LLD L-2, the vertical-slice phase):** `core`'s code moves under `io.github.rameshkumark24.bazaarboss.core.*` (today `BazaarBossGame` sits in the root package), and an `assets/` folder is added and wired into `android` and `lwjgl3` the way liftoff's template does it. Packages inside `logic` and `core` are split by feature (LLD §1).
 
 **As built (2026-11-24):**
 - The empty project has `logic`, `core`, `android` and `lwjgl3`.
@@ -489,7 +492,7 @@ The simulator must predict the phone (Check 3, DR11), so the logic gives the sam
 
 | Entity | Fields — type — empty? | Notes |
 |---|---|---|
-| **GameState** (root) | `formatVersion` int, from 1 · `writtenBy` int — the app versionCode · `contentVersion` int · `createdAtUtcMs` long · `nextId` long, from 1 · `rng` long[2] · `player` PlayerState · `godown` list of OwnedItem (may be empty) · `day` DayState · `records` Records · `stats` Stats · `hintsSeen` sorted list of String (may be empty) | The only root. **No owner field — see §4.7** |
+| **GameState** (root) | `formatVersion` int, from 1 · `writtenBy` int — the app versionCode · `contentVersion` int · `createdAtUtcMs` long · `nextId` long, from 1 · `rng` long[2] · `player` PlayerState · `godown` list of OwnedItem (may be empty) · `day` DayState · `records` Records · `stats` Stats · `hintsSeen` sorted list of String (may be empty) · `owed` list of OwedResult, at most one of each kind: deal, auction, Lesson, tier-up (LLD L-5; EDGE-CASES LC-3) | The only root. **No owner field — see §4.7** |
 | **PlayerState** | `cash` long ≥ 0 (DR2) · `reputation` int 0–100 [A] · `tierId` String · `dayNumber` int ≥ 1 · `goalProgress` long ₹ — profit earned since the last tier. It only rises, and starts at 20% of the target (Periyappa's gift). Q6, decided 2026-11-24 (PRD F7) · `loan` Loan or **null** · `periyappaGiftGiven` bool | |
 | **Loan** | `principal` long > 0 · `repaid` long, from 0 to principal · `repayShareBp` int 1–10,000 · `takenOnDay` int | One at a time (DR3). It's set to null when fully repaid |
 | **OwnedItem** | `id` long · `itemDefId` · `condition` int · `fake` bool · `cluesSeen` sorted list of clue IDs (may be empty) · `paid` long ≥ 0 (0 for a gift) · `acquiredDay` int · `displaySlot` int or **null** (null = in the godown) · `reservedByVisit` long or **null** | Reserved while a buyer is haggling for it, so it can't be sold twice (§7.10 of the PRD) |
@@ -574,6 +577,8 @@ The simulator must predict the phone (Check 3, DR11), so the logic gives the sam
 2. The SaveWriter thread writes `save/game.json.tmp`, calls `FileOutputStream.getFD().sync()`, closes it, then `renameTo("save/game.json")`. A rename is atomic within one directory on Android's file systems (from memory). `renameTo`'s result is checked: `false` is a failed commit.
 3. On success, post "committed" back to the render thread.
 
+**Bytes, not objects** (LLD §3.3): `game` encodes the state and hands `SaveSink.commit(seq, bytes)` to the writer, so the writer thread never sees `GameState`. The writer keeps at most one pending document; a newer one replaces an older one that hasn't started, and it reports "committed up to n".
+
 **One writer per process** (TD-28): the `SaveWriter` outlives any one game object. A new game object waits for its queue before loading, and `dispose()` drains it, waiting up to about 2 s. Start over raises a generation number, and the writer drops writes from older generations.
 
 **Checkpoints:**
@@ -599,7 +604,10 @@ The simulator must predict the phone (Check 3, DR11), so the logic gives the sam
 | `tools:validateContent` | Part of `check`, and before every release bundle | IDs are malformed or duplicated; a reference doesn't resolve; an item lacks 2–3 clues; a number is out of range; a voice is missing a line; placeholders differ between voices; a line is too long; a banned word appears; a character isn't in the baked font; **an ID listed in `content/ids-ever-shipped.txt` has been removed** | F13 AC1, DR24, CR2, §6 |
 | `android:checkMergedManifest` (each variant) | After the manifest merge | It asks for any permission off the allowlist. v1's allowlist: `VIBRATE`, plus `<applicationId>.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION` — a signature-level permission AndroidX Core declares for the app's own receivers, which grants no access to anything (TD-24)<br>• `allowBackup`, `dataExtractionRules`, `fullBackupContent`, `enableOnBackInvokedCallback="true"` or `appCategory="game"` is missing<br>• anything is exported besides the launcher and AndroidX's `ProfileInstallReceiver` (while it keeps the `DUMP` permission)<br>• the launcher isn't `launchMode="singleTask"`<br>• the FileProvider is exported<br>• a release build is debuggable | CR13, H2-8, H4-1, F15 AC6 |
 | The backup-rules unit test | `check` | Either XML includes anything beyond `save/game.json`, the two backups and `bb-settings`, or fails to exclude the compliance record, or `dataExtractionRules` lacks a `<device-transfer>` section matching `<cloud-backup>` | H4-13, H1-10, TD-30 |
-| The logic-imports test | `check` | `logic` imports libGDX beyond its JSON utilities | §2.3, DR11 |
+| The logic-imports test | `check` | `logic` imports libGDX beyond its JSON utilities, or uses them outside `persist` | §2.3, DR11, LLD L-3 |
+| The dependency-matrix test (in `tools`) | `check` | A feature package imports one it may not (LLD §2.3): a domain feature anything to its right, `shop` or `ads` anything but `kernel` and `content`, `core` an entity or a `*Rules` class | LLD §2.3, DR5, DR36 |
+| The catch and size guards (in `tools`) | `check` | An empty catch block; a broad catch outside the four allowed places; a class over 500 lines | LLD §4.4, §9 |
+| The palette test (L-8) | `check` | `core.ui.style.Palette` differs from `docs/design/palette.json`, which `python -I docs/design/palette.py --json` writes | CLAUDE.md, DESIGN §2.3 |
 | The Android 7 API test | `check` | `logic` or `core` uses `java.nio.file`, `java.time`, `java.util.Base64`, `String.join` or `File.toPath`: all API 26, which `--release 8` allows (verified 2026-11-25) | F20 AC6, TD-30 |
 | The FileProvider-paths test | `check` | Any path other than `cache/share/` is exposed | §4.7, flag 1 |
 | *M4:* `checkAdIds` | Every non-release variant | It contains anything but Google's published test ad-unit IDs | CR24, H4-4 |
@@ -623,7 +631,7 @@ v1 can't open a connection: it has no internet permission (CR13). The app's real
 
 Screens never touch `GameState` directly. They send a command and get back a **view**: a small object holding only what that screen may show. **Never the whole state.**
 
-A rule is enforced by the types here: `HaggleView` has no walk-away field, so a screen can't leak one. The walk-away price exists only in `DealResult.verdictPrice` (DR7). Every command except `ShareStats` is one atomic commit (§3.2). Every command also names the round it answers; a stale one returns `Rejected` and changes nothing (TD-31).
+A rule is enforced by the types here: `HaggleView` has no walk-away field, so a screen can't leak one. The walk-away price exists only in `DealResult.verdictPrice` (DR7). Every command except `ShareStats` is one atomic commit (§3.2). Every command also carries the `TurnRef` it answers (the number of the last command applied); a stale one returns `Rejected` and changes nothing (TD-31, LLD §3.1).
 
 | Command | Request | Result (the view) |
 |---|---|---|
@@ -913,6 +921,7 @@ Append new entries; never overwrite. Each entry's "rules out" is what the decisi
 | TD-31 | 2026-11-25 | **Commands name the round they answer; `AuctionTick` advances at most 100 ms; `PlaceBid` is rejected while the player leads or the godown is full** | — | EDGE-CASES IN-1, HE-4, HE-5; PRD DR17, §7.6 | — |
 | TD-32 | 2026-11-25 | **At M4, testers' phones are registered as AdMob test devices.** To confirm at M4 | A separate tester build with test IDs | Play's tester tracks get release builds, which carry the real ad IDs (§2.2), but CR18 forbids a real ad in a tester build (EDGE-CASES MN-1) | — |
 | TD-33 | 2026-11-25 | **Purchases before ads:** Play Billing (TD-17) ships right after G3; the ads SDK (TD-16) only if installs pass about 3,000 a month | Ads first, with purchases after AdMob's first payout | PRD Q19 and MONETISATION.md: purchases earn about 4× ads per install, and Play pays out monthly from ₹100 while AdMob holds money until about ₹9,293 | Ad income below about 3,000 installs a month |
+| TD-34 | 2026-11-25 | **The low-level design ([LLD.md](LLD.md)) is adopted.** Features as packages inside the layer modules; the dependency matrix, catch, size and palette guards (§4.11); a `devtools` module; `core` under `….core.*` and an `assets/` folder; `SaveSink` takes bytes and coalesces; `owed` results in the save; screen fixtures through `run-as`; a pre-push hook in place of hosted CI | Hosted CI; ArchUnit; a DI framework; presenters per screen (LLD §0) | LLD §11, L-1 to L-8: each keeps a later change cheap, and none costs money or a download | — |
 
 ---
 
