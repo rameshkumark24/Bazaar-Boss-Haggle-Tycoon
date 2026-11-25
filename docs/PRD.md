@@ -1427,7 +1427,7 @@ These were decided in IDEA.md → Hardening H5. They stay decisions: reopen one 
 
 ### 12.1 Before anything is built: the waitlist test
 
-**Status (2026-11-24): not run yet.** Record the sign-up count and the date here when it's done:
+**Status (2026-11-25): live, not counted yet.** The page is at https://rameshkumark24.github.io/bazaar-boss/ and its form is open. The seven days start with the first post. Record the sign-up count and the date here when it's done:
 - **Day 7 count:** count the Google Form's responses on day 7.
 - **Each post's views:** note them from each platform's own numbers.
 - **Count unique emails:** lower-case and trim them, record both the raw and the unique count, and decide on the unique one. A post whose sign-ups pass about 10% of its views is flagged as likely bots [A] (EDGE-CASES.md MS-1).

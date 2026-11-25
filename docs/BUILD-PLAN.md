@@ -106,25 +106,31 @@ PLAN MODE: No: no code. The form collects emails, so it follows `site/README.md`
 PROGRESS:
 - **Plan** (2026-11-25; plan mode not needed):
   1. Agent: bring `site/README.md`'s day-7 count into line with PRD §12.1, counting unique emails. **Done.**
-  2. The game's email and the Google Form. **Done, except publishing the form:**
+  2. The game's email and the Google Form. **Done:**
      - the owner's own Gmail is the contact address; the decision is in PRD CR12 and §8.5
-     - no connector can make Google Forms, so at the owner's request the agent built the form in the owner's Chrome with Claude in Chrome, exactly as `site/README.md` says. It's a **draft, not yet published**
-  3. Agent: publish the form (with the owner's OK), copy its shortened responder link, fill `formUrl`, render the page at 360 px, commit. **Waits for the owner's OK to publish.**
-  4. Owner: publish the `bazaar-boss` folder; check the live page on your phone (DONE WHEN 1). **Waiting.**
-  5. Owner: record and post the clip. On day 7, send the counts and each post's views. Agent: record them, with the decision, in PRD §12.1 (DONE WHEN 3). **Waiting.**
+     - no connector can make Google Forms, so at the owner's request the agent built the form in the owner's Chrome with Claude in Chrome, exactly as `site/README.md` says
+  3. Agent: publish the form (with the owner's OK), copy its shortened responder link, fill `formUrl`, render the page at 360 px, commit. **Done.**
+  4. Publish the `bazaar-boss` folder: **done by the agent, at the owner's request.** Owner: check the live page on your phone (DONE WHEN 1). **Waiting.**
+  5. Owner: record and post the clip, and send the date of the first post; the seven days start then. On day 7, send the counts and each post's views. Agent: record them, with the decision, in PRD §12.1 (DONE WHEN 3). **Waiting.**
 - **Done:**
   - branch `phase-1-waitlist-test`, cut from `main` at `e406a8d`
   - the README's day-7 step now uses unique emails and the bot flag
   - the page's share tags checked: `og:url` and `og:image` are absolute, so WhatsApp can show the picture
   - `contactEmail` filled in the page's `CONFIG`
   - the Google Form "Bazaar Boss: launch waitlist", in the owner's Drive: its title, description, two questions and settings, each checked in the editor and in the responder preview
+  - **the form, published** 2026-11-25 with the owner's OK (`shots/p01-form-live.jpg`). Its shortened link, `https://forms.gle/KGxi4apVkGwpkabMA`, is the page's `formUrl`
+  - **the page, published** 2026-11-25: commit `ad8bf3b` in `rameshkumark24.github.io` adds only `bazaar-boss/index.html` and `bazaar-boss/og.png`; the repo's other files are untouched. Live at https://rameshkumark24.github.io/bazaar-boss/ within a minute of the push
 - **Checks so far:**
+  - DONE WHEN 1: **NOT VERIFIED.** It needs the owner's phone. What the agent could check from the PC passes:
+    - the live page returns HTTP 200 and is byte-identical to `site/bazaar-boss/index.html` (SHA-256 `b721bd1f…`, line endings normalised); `og.png` returns 200 `image/png` and is byte-identical (`48ed8fd5…`)
+    - `forms.gle/KGxi4apVkGwpkabMA` lands on the form's `viewform` page, which shows its title and both questions and isn't closed to responses
+    - the live page at 360 px in headless Edge: `shots/p01-page-360-live.png`. "Join the waitlist" is enabled, which happens only when `formUrl` is a Google Forms link
   - DONE WHEN 2: **PASS**, the settings match `site/README.md`:
     - `shots/p01-form-responses-settings.jpg`: email by responder input; no copy to responders; no editing; "Limit to 1 response" off
     - `shots/p01-form-presentation-settings.jpg`: the confirmation message; no "submit another response" link; no results summary
     - the responder's view: `shots/p01-form-preview-top.jpg` and `shots/p01-form-preview-bottom.jpg`
-  - DONE WHEN 1 and 3: not run yet
-- **Left:** steps 3–5. **Blocked on the owner:** an OK to publish the form.
+  - DONE WHEN 3: waits for day 7
+- **Left:** the phone check (step 4); the clip, the posts and day 7 (step 5). **Blocked on the owner.**
 
 ## Phase 2 — Long-lead setup
 
@@ -1718,7 +1724,7 @@ PROGRESS:
 
 ## CURRENT STATE
 
-**Updated 2026-11-25, when this plan was written.**
+**Updated 2026-11-25, during Phase 1.**
 
 **Built so far:**
 - **The planning docs:** PRD, TRD, APP-FLOW, DESIGN, EDGE-CASES, MONETISATION, LLD, and this plan.
@@ -1726,12 +1732,12 @@ PROGRESS:
   - `logic`, `core`, `android` and `lwjgl3`
   - `./gradlew check` passes; it runs on the Android 16 emulator, and screenshots work (CLAUDE.md)
   - the javac lint is JDK-aware (BR-3), verified on JDK 17 and JDK 21
-- **The waitlist page,** built in `site/` but **not published**.
+- **The waitlist test is live:** the page at https://rameshkumark24.github.io/bazaar-boss/, and the Google Form behind its button. Nothing is posted yet, so the seven days haven't started.
 
-**Every phase is NOT STARTED.**
+**Phase 1 is IN PROGRESS** on branch `phase-1-waitlist-test`. Every other phase is NOT STARTED.
 
 **Next:**
-- **Phase 1 (owner):** make the form, send the agent its link and the game's email, publish the page, and post the clip.
+- **Phase 1 (owner):** check the live page on your phone (DONE WHEN 1); record and post the clip, and send the date of the first post; on day 7, send the counts and each post's views.
 - **No build phase starts before Phase 1's day-7 decision** (PRD Q1).
 - After a "go" or "G1 only": Phase 2 (owner) runs alongside Phases 3–5 (the spikes).
 
@@ -1739,7 +1745,7 @@ PROGRESS:
 
 | Group | Estimate | Used | Status |
 |---|---|---|---|
-| Before M1 | 0 build sessions; 7 days | 0 | Not started |
+| Before M1 | 0 build sessions; 7 days | 1: the agent made the form and published the page, at the owner's request | Phase 1 in progress; the 7 days start with the first post |
 | M1 (Phases 3–12) | 9 | 0 | — |
 | M2 (Phases 13–29) | 17 | 0 | — |
 | M3 (Phases 30–32) | 5 | 0 | — |
@@ -1756,6 +1762,9 @@ PROGRESS:
 - Q3 (Phase 31)
 - Q18 (Phase 36)
 - Q17 (Phase 41)
+
+**A check only the owner can change:**
+- Phase 2's DONE WHEN 2 asks for "the game's Gmail". The contact address is now the owner's own Gmail (PRD CR12, decided 2026-11-25), so there's no separate one to make. **Recommended:** reword it as "The requests log exists, and the contact address is the one in PRD CR12 → the owner confirms." It stays as written until the owner decides.
 
 ---
 
