@@ -204,7 +204,8 @@ PROGRESS:
      - later: Material Symbols (Apache 2.0), gdx-tools, an Android 7 (API 24) emulator image (Phase 28), CC0 sounds or jsfxr (Phase 23)
 - **Done:**
   - **People:** 20 people are ready to play (the owner, 2026-11-25). That's enough for 16–18 closed testers plus the 5 G1 playtesters, who can be among them. Their Android versions aren't checked yet.
-- **Left:** items 1–7, apart from the head count. **Phase 3 waits for item 7's fonts and gdx-freetype.**
+  - **Item 7, in part:** yes to Roboto, Rozha One and gdx-freetype (the owner, 2026-11-25), so Phase 3 can start. Material Symbols, gdx-tools, the API 24 image and the sounds aren't answered yet.
+- **Left:** items 1–6, apart from the head count; the rest of item 7.
 
 ---
 
@@ -395,7 +396,7 @@ BUILD:
   - `persist`: `SaveFormat` v1, `SaveCodec` (header, CRC, literal keys), `SaveLoader` (game file and first launch only)
 - **`core`:**
   - the shell: `BazaarBossGame`, `ScreenRouter`, `ModalQueue`, `BackDispatcher` (in the haggle, back opens Pause), `TapGuard`, `RenderOnDemand` (as Phase 4 found)
-  - the components it needs: Button (with its busy state), Quick-offer chip, Offer slider (bazaar steps, − and + nudges, 24 dp clear of each edge), Price tag, Speech line, Meter, Panel, Modal card, Banner
+  - the components it needs: Button (with its busy state), Quick-offer chip, Offer slider (bazaar steps, − and + nudges; its target 32 dp clear of each edge, and excluded from the back gesture on Android 10+), Price tag, Speech line, Meter, Panel, Modal card, Banner
   - fonts as Phase 3 found; a placeholder face (shapes plus the mood word)
   - `SaveWriter` (one per process, coalescing), `FileSaveFiles`
   - the haggle screen, the deal result card and the pause card
@@ -1825,17 +1826,19 @@ PROGRESS:
   - the desktop window works
 
 **Phase status:**
-- **Phase 4 is DONE** on branch `phase-4-android-shell`, waiting for its review and merge. That branch is cut from `phase-1-waitlist-test`, so Phase 1's branch merges first.
+- **Phase 4 is DONE** and merged into `main` on 2026-11-25, together with Phase 1's branch so far, at the owner's word.
 - **Phases 1 and 2 (owner) are IN PROGRESS.** Phase 1 waits for the posts and day 7.
 - Every other phase is NOT STARTED.
 
 **Next:**
 - **The build has started before day 7,** by the owner's decision on 2026-11-25 (PRD Q1). On day 7 the thresholds apply to the build in progress.
-- **The review and merge** of `phase-1-waitlist-test`, then `phase-4-android-shell`.
-- **Agent:** Phase 3, the text spike, once the owner says yes to its downloads (Phase 2, item 7). Without that yes, Phase 5, the save spike.
+- **Agent:** Phase 3, the text spike; its downloads are a yes. Then Phase 5, the save spike.
 - **Phase 1 (owner):** confirm that the haggle plays in all three voices on the phone; record and post the clip, and send the date of the first post; on day 7, send the counts and each post's views.
 - **Phase 2 (owner):** the checklist in Phase 2's PROGRESS.
-- **A decision for the owner, from Phase 4:** DESIGN §2.7 keeps the offer slider "at least 24 dp" from the screen edges, but the back gesture takes drags that start within 30 dp. **Recommended:** at least 32 dp, plus a gesture-exclusion area over the slider on Android 10+. DESIGN changes only when the owner says so.
+- **Decided after Phase 4 (the owner, 2026-11-25):**
+  - the offer slider's target stays 32 dp from the screen edges, and is excluded from the back gesture (DESIGN §2.7)
+  - Phase 3's downloads are a yes
+  - Phases 1 and 4 merge into `main`
 
 **Sessions, used against the estimate:**
 

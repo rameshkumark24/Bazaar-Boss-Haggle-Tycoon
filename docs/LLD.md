@@ -310,6 +310,7 @@ public interface PlatformServices {                 // android and lwjgl3 implem
     AppVersions versions();
     Insets  safeInsets();                           // the system bars and the cutout, from the view's WindowInsets; never libGDX's (DV-3, U2)
     void    catchBack(boolean on, Runnable onBack); // Android 13+: android's own OnBackInvokedCallback, posted with postRunnable; below 13, setCatchKey (U1, TD-35)
+    void    excludeFromBackGesture(Rectangle... areas); // Android 10+: setSystemGestureExclusionRects, in screen pixels; the offer slider (IN-4)
     void    onFocusChange(FocusListener listener);  // pause the auction on focus loss (LC-6)
     boolean talkBackOn();
     float   animatorScale();                        // "Remove animations" (DV-8)

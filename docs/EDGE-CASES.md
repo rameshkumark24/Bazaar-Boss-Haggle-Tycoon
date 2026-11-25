@@ -444,7 +444,8 @@ The other first-run cases are SV-9 (settings without a save) and EF-2 (§4).
 - **Trigger:** with gesture navigation, a drag that starts near the screen's left or right edge is Android's back gesture.
 - **Unhandled:** the player drags the slider from the edge and gets Pause instead of a price.
 - **Should:** the slider's track keeps clear of both edges. On Android 10 and later, the slider can also be excluded from the back gesture (`setSystemGestureExclusionRects`; from memory).
-- **Measured 2026-11-25 (Phase 4), Android 16 emulator, default sensitivity:** a drag starting within 28 dp of either edge is a back, and one starting at 30 dp reaches the game. The zone is `config_backGestureInset`, 30 dp, and it widens if the player raises the back sensitivity. So DESIGN §2.7's "at least 24 dp" isn't enough; the fix is the owner's decision (Phase 4's report).
+- **Measured 2026-11-25 (Phase 4), Android 16 emulator, default sensitivity:** a drag starting within 28 dp of either edge is a back, and one starting at 30 dp reaches the game. The zone is `config_backGestureInset`, 30 dp, and it widens if the player raises the back sensitivity.
+- **Decided 2026-11-25 by the owner:** the slider's whole 48 dp target stays at least 32 dp from both edges (DESIGN §2.7, which said 24 dp), and on Android 10+ its area is excluded from the back gesture through `PlatformServices`.
 - **Fix in:** `core`, `android`.
 - **Reproduce:** switch to gesture navigation (§7, verified) and drag the thumb from the edge.
 
