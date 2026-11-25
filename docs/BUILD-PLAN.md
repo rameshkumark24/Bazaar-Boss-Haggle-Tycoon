@@ -213,7 +213,7 @@ PROGRESS:
 
 ## Phase 3 — Spike: text on screen
 
-STATUS: NOT STARTED
+STATUS: IN PROGRESS
 
 GOAL: Know how text will be drawn: baked bitmap fonts or distance-field fonts, crisp at XL on a 420-dpi screen, with ₹ in both faces. Also know whether Android writes non-Latin digits under Marathi (LLD U3, U9).
 
@@ -242,6 +242,25 @@ DEPENDS ON: Phase 1 (go or G1 only); Phase 2's answer on the font downloads.
 PLAN MODE: No: throwaway code.
 
 PROGRESS:
+- **Started 2026-11-25.**
+  - The answers go on branch `phase-3-text-spike`, cut from `main` at `aeb69a3`.
+  - The throwaway code goes on `spike/text`, which stays local.
+  - The owner said yes to the downloads on 2026-11-25: Roboto, Rozha One and gdx-freetype.
+- **A gap in the docs that this spike has to fill:** DESIGN §2.2 and TRD §1.2 say the fonts are "baked at build time, per text-size step", but not at which screen density. A build can't know the phone's density, and "Display size" changes it too.
+- **Plan:**
+  1. Download the fonts from Google's own sources into a new folder, check that they're TrueType, and note their SHA-256. gdx-freetype comes through Gradle.
+  2. On `spike/text`, one test screen per text-size step (from Android's font scale, as DESIGN §2.2 says), drawn three ways:
+     - **A:** baked at this phone's exact pixel size: what a build could only do per density, or FreeType at runtime (which L-11 rules out)
+     - **B:** baked once at density 4.0 and scaled down with mipmaps: one realistic build-time bake
+     - **C:** a distance-field font, one atlas per face, generated in the spike (no new library)
+     - each way shows Rozha One `display` in curly quotes with ₹, a Roboto 500 `price` "₹1,25,000" with "−10%", `body` "Annoyed. You barely moved." and `caption`
+  3. Log:
+     - which glyphs each face has: ₹, curly quotes, the minus sign, the en dash, the ellipsis
+     - whether Roboto's digits are tabular
+     - each way's time to make its fonts, and its atlas sizes against the 2,048 px limit (DV-4)
+     - U9: `String.format` and `NumberFormat` under `mr-IN` and other locales, explicit and as the app's language; and JDK 17 for comparison
+  4. Screenshots at S, M, L and XL at 420 dpi, and again at `wm density 546` (316 dp), plus zoomed crops to compare the three ways.
+  5. Write the answers into LLD §10 (U3, U9), and into the TRD if the font method changes.
 
 ## Phase 4 — Spike: the Android 16 shell
 
