@@ -163,7 +163,7 @@ Every row costs **₹0 at 1,000 players**: nothing here charges per player.
 | Crash data | **Android vitals** in Play Console | H5-3 | Free |
 | Waitlist, support, requests log | Google Forms, Gmail, Sheets — on the game's own Google account | H2-10, H2-11 | **Gmail: more than 500 recipients in one email, or more than 500 emails in a day, hits the sending limit** [T20] — see §12 |
 | *Later:* ads | Google Mobile Ads SDK: Legacy **25.5.0** (2026-09-17, minimum Android API 24) [T17], or the Next-Gen SDK [T18] — chosen at Milestone 4 (TD-16) | Milestone 4; CR19–CR27 | Free; it earns. AdMob pays out at $100 (Business verdict B15) |
-| *Later:* purchases | **Play Billing Library 9.x** — 9.1.0 is the latest (2026-06-18) [T14]. Version 8 is deprecated for new apps and updates from 31 Aug 2027 [T15] | CR29; purchases ship ≈ Aug 2027 at the earliest | 15% service fee on purchases (RESEARCH L-7) |
+| *Later:* purchases | **Play Billing Library 9.x** — 9.1.0 is the latest (2026-06-18) [T14]. Version 8 is deprecated for new apps and updates from 31 Aug 2027 [T15] | CR29; purchases ship right after G3, ≈ May 2027 at the earliest (PRD Q19) | 15% service fee on purchases (RESEARCH L-7) |
 | *Later:* notifications | Android's AlarmManager, scheduled on the phone — no push service | DR39, H1-9 | Free |
 
 ### 1.3 Platforms, and the machine you have
@@ -237,7 +237,7 @@ Hardening's rule of thumb (H4) applies. If getting around a rule only changes th
 
 ### 3.1 Every part, and what calls what
 
-Dashed parts arrive later: ads at Milestone 4, purchases after AdMob's first payout. Here is what the template's boxes become in this app:
+Dashed parts arrive later: purchases right after G3, and ads at Milestone 4 only if installs pass about 3,000 a month (PRD Q19). Here is what the template's boxes become in this app:
 - **The API and the database:** there are none. The "API" is the in-process logic API (§5.2), and the "database" is files on the phone.
 - **Cache:** `cache/share/`.
 - **Background jobs:** the SaveWriter thread, plus Android's own Backup Manager.
@@ -331,7 +331,7 @@ sequenceDiagram
   end
 ```
 
-### 3.3 Payment (purchases, ≈ Aug 2027 at the earliest)
+### 3.3 Payment (purchases, right after G3: ≈ May 2027 at the earliest)
 
 ```mermaid
 sequenceDiagram
@@ -365,7 +365,7 @@ sequenceDiagram
   Note over S,G: At every launch: queryPurchasesAsync for one-time products. Owned means what Play returns.<br/>A pending purchase that completed is granted and acknowledged. A refunded one is re-locked.
 ```
 
-### 3.4 Rewarded ad (Milestone 4)
+### 3.4 Rewarded ad (Milestone 4, only if installs pass about 3,000 a month)
 
 ```mermaid
 sequenceDiagram
@@ -912,6 +912,7 @@ Append new entries; never overwrite. Each entry's "rules out" is what the decisi
 | TD-30 | 2026-11-25 | **More build guards and settings:** the Android 7 API test; the exported-components allowlist names `ProfileInstallReceiver`; the backup rules need `<device-transfer>`; javac adds `-this-escape` only on JDK 21 and newer; debug builds use `applicationIdSuffix '.dev'`, with the FileProvider authority from `${applicationId}`. *Corrects §4.7's "no component is exported except the launcher"* | — | Verified 2026-11-25 (EDGE-CASES SV-2, BR-1, BR-2, BR-3, BR-5). JDK 17 rejects `-Xlint:-this-escape`, so the flag depends on the JDK. When the debug suffix lands (slice 1), CLAUDE.md's launch and uninstall commands change with it | — |
 | TD-31 | 2026-11-25 | **Commands name the round they answer; `AuctionTick` advances at most 100 ms; `PlaceBid` is rejected while the player leads or the godown is full** | — | EDGE-CASES IN-1, HE-4, HE-5; PRD DR17, §7.6 | — |
 | TD-32 | 2026-11-25 | **At M4, testers' phones are registered as AdMob test devices.** To confirm at M4 | A separate tester build with test IDs | Play's tester tracks get release builds, which carry the real ad IDs (§2.2), but CR18 forbids a real ad in a tester build (EDGE-CASES MN-1) | — |
+| TD-33 | 2026-11-25 | **Purchases before ads:** Play Billing (TD-17) ships right after G3; the ads SDK (TD-16) only if installs pass about 3,000 a month | Ads first, with purchases after AdMob's first payout | PRD Q19 and MONETISATION.md: purchases earn about 4× ads per install, and Play pays out monthly from ₹100 while AdMob holds money until about ₹9,293 | Ad income below about 3,000 installs a month |
 
 ---
 

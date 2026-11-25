@@ -630,15 +630,50 @@ The next launch is a first launch.
 
 **Does not:** need the internet for anything in v1; ask for any runtime permission.
 
+### F21 · The shop: cosmetic purchases (the purchases release, not v1)
+*Arrives right after G3 (Q19, decided 2026-11-25). The model is in [MONETISATION.md](MONETISATION.md).*
+
+**Does:**
+- Sells looks only, one-time, through Google Play Billing:
+  - the **Dealer Pack**, ₹149 — a theme set and a stall nameboard style
+  - **single themes**, ₹49 each
+
+  Prices are Play's own (DR37); the amounts are set in Play Console [A — IDEA §2].
+- A bought theme shows on the stall and on the deal card.
+- The shop is reached from the stall and from Settings. The game suggests it **once, ever**: a "See the shop" link on the first Tier-up card.
+- Restore purchases, in the shop and at every launch. "Payment pending" for slow payments. Refunded items re-lock (DR38).
+- A Help entry with the refund terms (Q20) and the grievance contact (CR32).
+
+**Acceptance**
+1. Given I've never had a tier-up, then the only signs of the shop are its button on the stall and its entry in Settings.
+2. Given my first tier-up, then its card has one "See the shop" link. Closing the card costs nothing, and the link never appears again.
+3. Given the shop, then every price is Play's formatted price, and every item says it changes looks only. Nothing sold changes cash, stock, reputation or progress (DR36).
+4. Given I buy, then the item unlocks once and the purchase is acknowledged. A purchase that arrives twice is granted once.
+5. Given I cancel in Play's sheet, then nothing changes. Given a payment that's pending, then "Payment pending", and nothing is granted until it's paid.
+6. Given the game died after I paid, when I reopen it, then the item is there.
+7. Given a refund, when I next open the game, then the item is locked again, and an equipped theme falls back to the default.
+8. Given a new phone with the same Google account, then Restore brings my items back.
+9. Given Play can't be reached, then the shop says "Can't reach Google Play", and the themes I own keep working.
+10. Given I tap Buy twice, then one purchase sheet opens.
+
+**When it fails:** "Can't reach Google Play" or "Payment pending". Nothing is granted until it's paid, and nothing owned is lost.
+
+**Does not:**
+- sell in-game cash, items, upgrades, time or chances
+- show a timer, a discount, a "best value" badge or a pop-up
+- appear during a haggle, an auction or the kanakku
+- mention the shop more than once
+- take payment any way but Google Play (CR29)
+
 ---
 
 ## 5. Not in v1
 
-**Waits for G2 — Milestone 4: ads, after the public release in India**
+**Waits for reach — Milestone 4: ads, only if installs pass about 3,000 a month (Q19)**
 
 | What | Why it waits | What brings it in |
 |---|---|---|
-| Rewarded ads, opt-in only:<br>• an extra 10-second peek<br>• reopening a haggle after a walk-away, once per customer<br><br>At most 12 a day. A reward only for a completed ad. The game saves before every ad | v1 must first prove that players come back. Ad money only follows retained players | G2 passed and the game is public in India |
+| Rewarded ads, opt-in only:<br>• an extra 10-second peek<br>• reopening a haggle after a walk-away, once per customer<br><br>At most 12 a day. A reward only for a completed ad. The game saves before every ad | v1 must first prove that players come back, and below about 3,000 installs a month ads earn too little to pay out (MONETISATION.md) | Installs past about 3,000 a month, after G3 (Q19) |
 | Ad compliance, all in the same release as the ads SDK:<br>• the age screen and ads consent<br>• Settings → Ads & privacy, and Settings → Your data<br>• Periyappa's tip for players under 18 or of unknown age<br>• privacy policy v2, the Tamil and Hindi notice pages, app-ads.txt<br>• the Data safety update | Needed only once there are ads | Milestone 4 |
 | The ad offers screen, with a "no ad right now" state | Same | Milestone 4 |
 
@@ -655,11 +690,11 @@ The next launch is a first launch.
 | Upgrades: magnifier, more display slots, storage, workshop slots | They need the depth above | G3 |
 | Rival bluffing; godown-clearance auctions; 2–4 rivals | v1's auction is lite | G3 |
 
-**Purchases — wait for money, not a gate**
+**Purchases — right after G3 (Q19)**
 
 | What | Why it waits | What brings it in |
 |---|---|---|
-| Cosmetic purchases only:<br>• Dealer Pack ₹149 — a theme set and a stall nameboard style<br>• cosmetic themes ₹49<br>• restore purchases and "payment pending"<br>• the shop screen<br>• terms, refund policy and grievance page | The owner's rule: let the game make money first. A single sale brings GST, e-commerce seller duties, and the owner's address on Play | In order:<br>1. AdMob's first payout (about ₹9,293)<br>2. a CA's GST answer, paid from that payout<br>3. the terms, refund and grievance pages<br><br>Best case about August 2027 [A] |
+| Cosmetic purchases only:<br>• Dealer Pack ₹149 — a theme set and a stall nameboard style<br>• cosmetic themes ₹49<br>• restore purchases and "payment pending"<br>• the shop screen<br>• terms, refund policy and grievance page | G3 must first show that free channels bring players. A single sale brings GST, e-commerce seller duties, and the owner's address on Play | In order:<br>1. G3 passed<br>2. a CA's GST answer (ADV-2) and a lawyer's answer on seller status (ADV-3), paid once before the first sale: about ₹1,000–₹7,000 together [A]<br>3. the terms, refund (Q20) and grievance pages<br><br>Best case about May 2027 [A]. Specified in F21; the model is in [MONETISATION.md](MONETISATION.md) |
 
 **Later, with no gate set**
 
@@ -781,7 +816,7 @@ Development builds also carry two dev screens (a text-and-content test and the h
 | Age screen + ads consent | "Ads need an age check first", then year of birth, then (for 18+) the notice: *Allow & watch* / *Not now* | Milestone 4 |
 | Ads & privacy · Your data | Withdraw consent · everything kept on this phone, with Share and Start over | Milestone 4 |
 | Notification explainer | Shown before Android's one-shot permission prompt | Notifications |
-| Shop | Dealer Pack, themes, restore, payment pending | Purchases |
+| Shop | Dealer Pack, themes, restore, payment pending, the refund terms. Suggested once, by a link on the first Tier-up card (F21) | Purchases |
 | Rate prompt | Google's in-app review, after a big win, once ever | Later |
 
 ---
@@ -1125,7 +1160,7 @@ These are product requirements. The legal reasoning and sources are in RESEARCH.
 
   *(H5)*
 
-### 8.3 At Milestone 4 — ads, all in the same release as the ads SDK
+### 8.3 At Milestone 4 — ads, all in the same release as the ads SDK (only if installs pass about 3,000 a month, Q19)
 - **CR19 · The age screen.**
   - A neutral year-of-birth screen: nothing pre-filled, and no hint of the age needed.
   - One neutral line says why: **"Ads need an age check first."** It never mentions the age that counts [A — ADV-1 checks the wording].
@@ -1169,8 +1204,8 @@ These are product requirements. The legal reasoning and sources are in RESEARCH.
 
 ### 8.4 At purchases
 - **CR28 · Preconditions:**
-  - AdMob's first payout
-  - **ADVICE (ADV-2):** a CA's answer on GST
+  - G3 passed (Q19)
+  - **ADVICE (ADV-2):** a CA's answer on GST, paid once before the first sale (Q19)
   - **ADVICE (ADV-3):** a lawyer confirms our e-commerce seller status and the grievance details
   - live terms, refund policy, grievance page and in-game Help entry
 
@@ -1334,6 +1369,8 @@ None of these is settled anywhere. Each carries a **recommendation** — my sugg
 | Q8 | **Throw-ins and bohni in v1?** IDEA counts them among the Indian-bargaining differentiators, but its v1 list doesn't name them | M1, in the haggle lab | Bohni in v1: one engine rule (a seller's first sale of the day comes a little cheaper, "for luck") and a few lines. Throw-ins after G1, because they need two-item deals on the haggle screen |
 | Q9 | **The economy numbers** are set in tuning against the 30–45-minute pacing target, using the simulator. None is decided yet, so don't treat a placeholder as a decision:<br>• starting cash<br>• item, scrap and tier prices<br>• patience per personality<br>• what counts as broke<br>• loan size and repayment share<br>• display slots and any godown limit<br>• the welcome-back gap | M1–M3 tuning | Keep the numbers out of this file. Tune them with the simulator in M1–M3 and record each in the TRD's tuning table. Fix two early, because they shape the code: a godown limit (start at 60 items) and the welcome-back gap (start at 3 calendar days) |
 | Q10 | **Native-script Tamil and Hindi menus later** — still wanted, now that the voices are Tanglish and Hinglish? | Before any work on them | No — unless players ask for it in reviews after G3. Latin-script voices are the product, and native script needs a text renderer this engine doesn't have |
+| Q19 | ~~Purchases before ads?~~ | **Decided 2026-11-25** | **Yes**, as recommended. Ship cosmetic purchases (F21) right after G3 passes. Build the ads (M4) only if installs pass about 3,000 a month. Pay once, before the first sale, for a CA's answer on GST (ADV-2) and a lawyer's on seller status (ADV-3): about ₹1,000–₹7,000 together [A], back within 1–9 months at G3's reach. This replaces the rule "a CA only once the game has made money". Purchases earn about 4× ads per install, and Play pays out monthly from ₹100 |
+| Q20 | ~~The refund terms~~ | **Decided 2026-11-25** | As recommended. Google refunds within 48 hours. After that, ours: any reason within 30 days, by email with the order number; refunded through Play Console within 7 days, and re-locked. At any time, if an item doesn't work. Money goes back only through Google Play (MONETISATION.md §8) |
 
 **Answers only the owner has**
 
@@ -1380,7 +1417,7 @@ These were decided in IDEA.md → Hardening H5. They stay decisions: reopen one 
 | H5-10 | Invalid traffic (bots, modified apps) gets the AdMob account suspended | The daily cap, rewards only for completed ads, and test ads for testers lower the risk; Google's filters do the rest |
 | H5-11 | Cracked apps unlock cosmetics without paying | Checking purchases on a server means our own server, 2–3 build slices and a Google service-account key to guard. That would protect only buyers who'd crack the game rather than pay — a slice of a likely ~₹300 a month |
 | H5-12 | The owner's home address on the Play listing, once purchases ship | The owner's decision, 2026-11-24. A business address costs money |
-| H5-13 | Purchases may wait a long time | The owner's rule: no CA until ads pay out (about ₹9,293), and in the likely case that takes years. If the June 2027 checkpoint passes but AdMob hasn't paid by July, paying a CA out of pocket is the only way purchases make November (§12.4) |
+| H5-13 | ~~Purchases may wait a long time~~ | **Superseded 2026-11-25 (Q19):** purchases no longer wait for ad money. They follow G3, with the CA and the lawyer paid once from the owner's pocket |
 
 **Not accepted — these block a release instead:** see CR18.
 
@@ -1437,6 +1474,8 @@ How each part is measured:
 - **June installs:** Play Console's install count for June 2027.
 - **AdMob's balance:** read from AdMob's payments page at the end of July 2027.
 
+*Since Q19 (2026-11-25), purchases don't wait for AdMob, so the AdMob-balance step applies only if ads ship.*
+
 ---
 
 ## Change log
@@ -1451,3 +1490,5 @@ How each part is measured:
 | 2026-11-24 | [DESIGN.md](DESIGN.md) written: direction A ("Dusk stall"), one fixed palette. On-screen text swept to its copy rules: no em dashes, e.g. "Annoyed. You barely moved.", and the one-sentence pitch, which store copy will reuse. The deal card's exact line is now **"Game money. No real money."** (F12, §9). CR6 adds Apache-2.0 for the icons |
 | 2026-11-24 | APP-FLOW.md's three open recommendations, applied:<br>• new stock fills empty display slots automatically (F6 AC8, §6)<br>• the first hint says "All ₹ here is game money." (F1)<br>• the age screen opens with "Ads need an age check first.", wording to be checked by ADV-1 (CR19, §6) |
 | 2026-11-25 | From [EDGE-CASES.md](EDGE-CASES.md) §5.1, as recommended:<br>• quick buttons always favour the player: −10%/−25% when buying, +10%/+25% when selling (§3, F2)<br>• only haggled sales fill the goal bar, and no seller's walk-away price is below scrap value (F7, DR9)<br>• no bidding while leading (DR17); leaving the special's auction says so (DR18)<br>• a soft godown limit of 60 (F9, §7.6)<br>• the stall opens after two sellers leave without a deal (F1)<br>• every sale repays at least ₹1 of a loan (DR3)<br>• results owed to the player survive a restart (F15 AC8, §7.10)<br>• play time counts only near a tap (F18)<br>• the waitlist is decided on unique emails (§12.1); G2 when stats are missing (§12.2) |
+| 2026-11-25 | From [MONETISATION.md](MONETISATION.md): **F21, the shop**, specified so the build plan builds it (cosmetics only, one link on the first Tier-up card, restore, pending, refunds). The shop's rows in §5 and §6 point to it. New open questions **Q19** (purchases before ads; recommended yes) and **Q20** (refund terms). The order of ads and purchases is unchanged until Q19 is decided |
+| 2026-11-25 | **Q19 and Q20 decided, as recommended** ([MONETISATION.md](MONETISATION.md)): purchases (F21) ship right after G3, before any ads; ads (M4) only if installs pass about 3,000 a month; ADV-2 and ADV-3 are paid once before the first sale (§5, §8.3, §8.4, §10, §11 H5-13, §12.4). The refund terms are set (Q20) |

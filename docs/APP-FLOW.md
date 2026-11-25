@@ -69,7 +69,7 @@ Anywhere: long-press a line of dialogue ─► Report this line (modal) ─► e
 **Later screens attach here:**
 - **Stall:** Workshop, Market map, Upgrades, Shop, Dealer's Guide, Reputation detail.
 - **Settings:** Help, Ads & privacy, Your data.
-- **Contextual:** Ad offers (beside the thing they speed up), the Age screen + consent (the first ad tap), the Notification explainer (the first restoration), Welcome back (opening the game after time away), Event card (the first day of a season), Rate prompt (once, after a big win).
+- **Contextual:** the Shop, through one "See the shop" link on the first Tier-up card, once ever (PRD F21); Ad offers (beside the thing they speed up), the Age screen + consent (the first ad tap), the Notification explainer (the first restoration), Welcome back (opening the game after time away), Event card (the first day of a season), Rate prompt (once, after a big win).
 
 ### 1.3 Launch routing — what the first frame is
 
@@ -134,6 +134,7 @@ The rule: **back never does anything irreversible, and never quits by accident.*
 | Godown | Stall | — |
 | Day end (kanakku) | The stall's evening state. The day stays finished | You can't un-end a day |
 | Settings, and its sub-pages | One level up, then back to the screen Settings was opened from, still paused | — |
+| *Purchases:* Shop | Back to the stall or Settings. Nothing is bought without Play's own sheet and its confirmation | PRD F21 |
 | Any modal | Its safe choice: Continue (results), Cancel (confirmations), Keep (Sort), Close (previews and reports — nothing sent) | — |
 | Newer-save block | Leaves the app | Nothing else is possible until an update |
 | Pause | Resume | — |
@@ -144,7 +145,7 @@ The rule: **back never does anything irreversible, and never quits by accident.*
 - **Auth:** "none" everywhere — there are no accounts (§1.4).
 - **States:** **L** = loading · **E** = empty · **Er** = error · **O** = offline.
 - **v1 is offline by design.** "O: n/a" means nothing changes without a network.
-- **Phase:** the build slice from the Business verdict §3 (17 slices to v1). After v1: M4, after G3, or purchases.
+- **Phase:** the build slice from the Business verdict §3 (17 slices to v1). After v1: purchases (right after G3), M4 (ads, only if installs pass about 3,000 a month) or after G3 (PRD Q19).
 
 | # | Screen | Auth / gate | Reached by | States | If its item is gone | Phase |
 |---|---|---|---|---|---|---|
@@ -183,7 +184,7 @@ The rule: **back never does anything irreversible, and never quits by accident.*
 | 26 | Age screen + ads consent | **the ad gate itself** | Modal: the first tap on an ad offer | Er: — | — | M4 |
 | 35 | Ads & privacy · Your data | none | Push: Settings | E: Your data lists only what exists | — | M4 |
 | 27 | Notification explainer | none | Modal: the first restoration started (Android 13+) | — | — | after G3 |
-| 24 | Shop | none — **billing-reachable gate** | Push: stall or Settings | L: product details from Play (a spinner) · Er/O: "Can't reach Google Play"; owned cosmetics keep working · E: — | A product removed from Play is hidden. Owned ones stay restorable (product IDs are permanent, TRD §6) | purchases |
+| 24 | Shop | none — **billing-reachable gate** | Push: stall or Settings; once, from the first Tier-up card (PRD F21) | L: product details from Play (a spinner) · Er/O: "Can't reach Google Play"; owned cosmetics keep working · E: — · Pending: "Payment pending", nothing granted until it's paid | A product removed from Play is hidden. Owned ones stay restorable (product IDs are permanent, TRD §6) | purchases |
 | 31 | Rate prompt | none | Google's own sheet, once, after a big win | — | — | after release |
 | ~~20~~ | ~~Item detail~~ | — | **Merged into Inspect** (§4, 2) | — | — | — |
 | ~~18~~ | ~~Collections~~ | — | **Merged into the Dealer's Guide** (§4, 2) | — | — | — |
@@ -196,6 +197,8 @@ The three journeys that matter most, in order:
 1. **First-ever open** — players who don't get a deal in the first minute never come back.
 2. **A market day** — the loop the whole game rests on.
 3. **Coming back the next day** — the moment PRD Check 1 measures.
+
+A fourth, **the first purchase** (§2.4), arrives with the purchases release.
 
 ### 2.1 Journey 1 — first-ever open → the first deal
 
@@ -283,6 +286,19 @@ The old flow took **5**:
 | They come back mid-haggle after days away | The same customer, the same round. One line acknowledges it: "Still deciding?" [A] | Designed |
 | **v1 content runs out:** the shop reached, all 40 items found | **No next goal.** Days still play, but the bar has nowhere to go — PRD Check 1's day 7 is exactly when this can hit | **Recommended** (§4, 4c) |
 | Notifications would pull them back | v1 has none on purpose: Check 1 measures coming back by choice | Designed |
+
+### 2.4 Journey 4 — the first purchase (the purchases release, PRD F21)
+
+**Target:** a player who wants a theme buys it in 3 taps, and a player who doesn't is never pushed.
+
+| Step | They see | They must decide | What could confuse them | Where they could fail → what happens |
+|---|---|---|---|---|
+| 1 | **The first Tier-up card:** the stall becomes a shop. Under the celebration, one link: "See the shop" | Look, or close | Whether buying is needed. The card says nothing more about it, and closing costs nothing | **Closes it:** the link never appears again; the shop stays on the stall and in Settings |
+| 2 | **Tap 1 → the Shop:** the Dealer Pack and the themes, each with Play's price and a preview on their own stall | Which one | Whether a theme changes play. Every item says it changes looks only | **Play can't be reached:** "Can't reach Google Play", and owned themes still work |
+| 3 | **Tap 2: Buy** → Play's own sheet, with the price and the payment method | **Tap 3:** confirm in Play's sheet (Play may also ask for a fingerprint or password) | — | **Cancels:** back in the shop, nothing changed. **UPI still pending:** "Payment pending", nothing granted until it's paid |
+| 4 | Back in the shop. The theme is on the stall, and on the next deal card | — | — | **The game dies after paying:** the theme arrives at the next launch |
+
+**Taps to the core action (a purchase): 3** — See the shop, Buy, confirm in Play's sheet.
 
 ---
 
