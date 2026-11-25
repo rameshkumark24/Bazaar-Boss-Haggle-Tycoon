@@ -410,7 +410,7 @@ PROGRESS:
 
 ## Phase 5 — Spike: the save on a cheap phone
 
-STATUS: NOT STARTED
+STATUS: IN PROGRESS
 
 GOAL: Know the save's costs and risks before building it (LLD U5–U8):
 - U5: how fast libGDX's JSON reader and writer are with literal keys, and whether longs stay exact
@@ -443,6 +443,25 @@ DEPENDS ON: Phase 1.
 PLAN MODE: No.
 
 PROGRESS:
+- **Started 2026-11-25.**
+  - The answers go on branch `phase-5-save-spike`. It's cut from `doc-check-2026-11-25` at `385a955` (the doc check and its code review), because this phase's build list and LC-2's note live there and not yet in `main`. So it merges after that branch.
+  - The throwaway code goes on `spike/save`, which stays local.
+  - No downloads: libGDX's JSON classes are in `gdx` core, already in Gradle's cache.
+- **Plan:**
+  1. **U5:** a synthetic `GameState`, shaped like TRD §4.5, at about 15 KB (typical) and 50 KB (worst), plus a synthetic 0.5 MB pack.
+     - Encode with `JsonWriter`, every key a literal, plus CRC32 and the `BBSAVE` header; decode with `JsonReader`, walking every field.
+     - Time encode and decode on `LowEnd_A9` (Android 9, 2 GB), with warm-up, as p50 and p95.
+     - Round-trip extreme longs: ±2⁶³, 2⁵³ + 1, and an RNG state.
+  2. **U6:** on a writer thread, 200 commits each of 15 KB and 50 KB: write the `.tmp` file, `getFD().sync()`, close, `renameTo`, with the result checked. p50, p95 and maximum on `LowEnd_A9`, and on the Android 16 emulator for comparison. A real cheap phone waits for Phase 2's borrowed phone.
+  3. **U7:** log the order of events through a rebuild:
+     - the activity's lifecycle, with `isFinishing` and `isChangingConfigurations`
+     - the game's `create`, `pause`, `resume` and `dispose`, with an instance number
+     - the EGL context's handle
+     - a process-wide writer holding a deliberately slow pending write (1.5 s)
+     - triggered by a font-scale change, a navigation-mode switch, going home followed by `am kill`, and back on the root screen
+     - the question: is `dispose()` called, and does the new game load the pending write?
+  4. **U8:** push a valid fixture (`BBSAVE` header, CRC and length) to `/data/local/tmp`, copy it into `files/save/` with `run-as`, relaunch, and log what loads. On Android 16 and Android 9.
+  5. **Write the answers** into LLD §10 (U5–U8), TRD §0.4 and §4.10, and EDGE-CASES LC-2 and T-3; add a new TRD entry correcting TD-28 if the drain moves; and add the fixture commands to CLAUDE.md if U8 works.
 
 ## Phase 6 — The vertical slice: one haggle, saved and resumed
 
