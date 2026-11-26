@@ -601,7 +601,7 @@ Here an "endpoint" is a command, and the "real test database" is real files. Eac
 
    Writing through `run-as` is verified (EDGE-CASES §7). The copy from `/data/local/tmp` is from memory: spike U8. This works on debug builds only.
 4. Launch: `"$ADB" shell am start -W -n $PKG/.android.AndroidLauncher`.
-5. Screenshot: `"$ADB" exec-out screencap -p > shots/<screen>-<state>.png`. Open the PNG and answer DESIGN §10's 15 questions. A "no" is a bug.
+5. Screenshot: `"$ADB" exec-out screencap -p > shots/<screen>-<state>.png`. Open the PNG and answer DESIGN §10's 16 questions. A "no" is a bug.
 6. **Repeat in the hard settings:**
    - XL text on a 316 dp screen: `settings put system font_scale 1.3`, XL in Settings, then `wm density 546`
    - both navigation modes: `cmd overlay enable-exclusive …`
@@ -666,7 +666,7 @@ Maestro would script these taps; it waits for your yes (TRD §1.3).
 |---|---|---|
 | CODE | `./gradlew :logic:test`; `./gradlew check` runs everything | `BUILD SUCCESSFUL`; every rule's test named in the output |
 | INTEGRATION | `./gradlew check`; `aapt2 dump permissions` on the built APK; on the device, `adb shell cat` on the save, which must be refused | The same, plus the permission list |
-| USER | Start the emulator · wait for boot · `installDebug` · fixture through `run-as` · `am start -W` · `exec-out screencap` · EDGE-CASES §7's settings commands | A PNG per screen and state in `shots/`, each with the 15 answers |
+| USER | Start the emulator · wait for boot · `installDebug` · fixture through `run-as` · `am start -W` · `exec-out screencap` · EDGE-CASES §7's settings commands | A PNG per screen and state in `shots/`, each with the 16 answers |
 | PRODUCT | The USER commands, then your phone (installing over USB isn't verified yet) | The milestone report: what to test, the known issues, then wait for "go" |
 
 ---
@@ -752,7 +752,7 @@ Maestro would script these taps; it waits for your yes (TRD §1.3).
 2. A class in `core.<feature>`. It uses only views from `Game`, and only components from `core.ui`.
 3. All five states are designed (DESIGN §5), and back follows APP-FLOW §1.7, registered in `BackDispatcher`.
 4. Its words are in `strings.csv`, in all three voices for anything a character says.
-5. A fixture for each state, and screenshots at M and XL, in both navigation modes. DESIGN §10 answered yes, all 15.
+5. A fixture for each state, and screenshots at M and XL, in both navigation modes. DESIGN §10 answered yes, all 16.
 
 **Adding a command:**
 1. Its rule is in PRD §7, or in a feature's acceptance criteria.
