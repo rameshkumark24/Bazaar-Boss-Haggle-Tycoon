@@ -594,7 +594,7 @@ DEPENDS ON: Phases 3, 4 and 5; Phase 2's answer on the Material Symbols download
 PLAN MODE: Yes. It lays the architecture, and the save is the player's data.
 
 PROGRESS:
-- **Started 2026-11-26** on branch `phase-6-vertical-slice`, cut from `main` at `08ddf56`. **The plan below waits for the owner's approval; no code before it.**
+- **Started 2026-11-26** on branch `phase-6-vertical-slice`, cut from `main` at `08ddf56`. **The owner approved the plan, decisions A–F included, on 2026-11-26.**
 - **Size:** about **4 sessions**, not one. It is LLD slices 1, 3, 4 and 6 in part. Seven checkpoints, each committed and pushed, so a stop anywhere loses nothing.
 - **The plan, in checkpoints:**
   1. **The skeleton.**

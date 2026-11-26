@@ -4,7 +4,7 @@ import android.os.Bundle;
 import android.view.WindowManager;
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
-import io.github.rameshkumark24.bazaarboss.BazaarBossGame;
+import io.github.rameshkumark24.bazaarboss.core.app.BazaarBossGame;
 
 /** The Android entry point: hands the screen to the libGDX game. */
 public class AndroidLauncher extends AndroidApplication {
@@ -20,6 +20,7 @@ public class AndroidLauncher extends AndroidApplication {
         config.useAccelerometer = false;
         config.useCompass = false;
         initialize(new BazaarBossGame(), config);
+        DevToolsHook.install();
         // libGDX's initialize() always sets FLAG_FULLSCREEN, which hides the status bar.
         getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
     }

@@ -20,4 +20,6 @@ rootProject.name = 'bazaar-boss'
 // logic: pure Java rules. core: the libGDX game. android: the shipped app.
 // lwjgl3: the desktop window for development only (never shipped).
 // sim and tools arrive with their first code (TRD §2.3).
-include 'logic', 'core', 'android', 'lwjgl3'
+// devtools: the dev menu and tools, in debug builds and the desktop only (LLD §1).
+// tools: the build-time guards, the font baker and the content tools; never shipped.
+include 'logic', 'core', 'android', 'lwjgl3', 'devtools', 'tools'

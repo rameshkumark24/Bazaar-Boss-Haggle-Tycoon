@@ -5,8 +5,18 @@ plugins {
 
 dependencies {
     implementation project(':core')
+    implementation project(':devtools')
     implementation "com.badlogicgames.gdx:gdx-backend-lwjgl3:$gdxVersion"
     implementation "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
+}
+
+// The baked assets (fonts, the pack) reach the desktop through the classpath (LLD §1.2).
+sourceSets {
+    main {
+        resources {
+            srcDirs += [rootProject.file('assets')]
+        }
+    }
 }
 
 application {

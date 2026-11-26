@@ -24,6 +24,16 @@ android {
     sourceSets {
         main {
             jniLibs.srcDirs = [layout.buildDirectory.dir('gdx-natives').get().asFile]
+            // The baked assets: fonts, icons and the content pack, built by tools (LLD §1.2)
+            assets.srcDirs = [rootProject.file('assets')]
+        }
+    }
+
+    buildTypes {
+        debug {
+            // A debug build installs beside the Play build, with its own name (EDGE-CASES BR-5).
+            // A FileProvider's authority must come from ${applicationId}, never written out.
+            applicationIdSuffix = '.dev'
         }
     }
 
@@ -39,6 +49,8 @@ configurations {
 
 dependencies {
     implementation project(':core')
+    // The dev tools exist in debug builds only (LLD §1); src/release has a no-op hook.
+    debugImplementation project(':devtools')
     implementation "com.badlogicgames.gdx:gdx-backend-android:$gdxVersion"
     natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-armeabi-v7a"
     natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-arm64-v8a"

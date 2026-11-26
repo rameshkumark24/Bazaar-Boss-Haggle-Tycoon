@@ -1,4 +1,4 @@
-package io.github.rameshkumark24.bazaarboss;
+package io.github.rameshkumark24.bazaarboss.core.app;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;

@@ -1,0 +1,22 @@
+// tools: the guards that hold the code to LLD (§2.3, §4.4, §9; TRD §4.11), and later the font
+// baker and the content tools. Never shipped (TRD §2.3).
+plugins {
+    id 'java-library'
+}
+
+dependencies {
+    implementation project(':logic')
+    // JUnit 5, as in logic: the guards are tests that read the repository's files.
+    testImplementation platform('org.junit:junit-bom:5.14.4')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+    // The guards read files relative to the repository's root.
+    systemProperty 'repo.root', rootProject.projectDir.absolutePath
+    testLogging {
+        events 'passed', 'skipped', 'failed'
+    }
+}

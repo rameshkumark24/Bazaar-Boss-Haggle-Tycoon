@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Debug builds carry their own name, so the launcher tells them from the Play build (BR-5). -->
+<resources>
+    <string name="app_name">Bazaar Boss (dev)</string>
+</resources>
