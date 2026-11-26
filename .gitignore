@@ -21,3 +21,7 @@ bin/
 
 # Screenshots taken while checking a build
 /shots/
+
+# Baked by tools at build time from content/ and the fonts; never edited or committed (LLD §1.2)
+/assets/*
+!/assets/.gitkeep

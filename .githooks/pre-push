@@ -1,0 +1,12 @@
+#!/bin/sh
+# Runs every check before anything leaves this PC (LLD §8; TRD §1.2: the hook stands in for hosted CI).
+# A failing compile, lint, test or guard, or a debug APK that won't build, blocks the push.
+# --offline keeps the no-downloads rule (CLAUDE.md).
+# Enabled once per clone: git config core.hooksPath .githooks
+echo "pre-push: ./gradlew --offline check :android:assembleDebug"
+if ./gradlew --offline -q check :android:assembleDebug; then
+    echo "pre-push: every check passed"
+else
+    echo "pre-push: a check failed, so the push is blocked. Fix it, or see the output above."
+    exit 1
+fi

@@ -1,5 +1,7 @@
 # gradlew is a shell script: it must keep LF endings, or it won't run on Linux, macOS or Git Bash.
 /gradlew        text eol=lf
+# Git hooks are shell scripts too: CRLF would break their #!/bin/sh line.
+/.githooks/*    text eol=lf
 *.bat           text eol=crlf
 *.jar           binary
 *.png           binary

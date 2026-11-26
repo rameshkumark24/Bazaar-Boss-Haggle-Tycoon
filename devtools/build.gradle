@@ -1,0 +1,9 @@
+// devtools: the dev menu, the haggle lab, the text test and the fixture loader (LLD §1).
+// Only debug builds and the desktop window plug it in, so a release build can't contain it (PRD §6).
+plugins {
+    id 'java-library'
+}
+
+dependencies {
+    implementation project(':core')
+}

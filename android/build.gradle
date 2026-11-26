@@ -1,4 +1,6 @@
 // android: the app that ships on Google Play (TRD §2.3).
+import com.android.build.api.artifact.SingleArtifact
+
 plugins {
     id 'com.android.application'
 }
@@ -24,6 +26,16 @@ android {
     sourceSets {
         main {
             jniLibs.srcDirs = [layout.buildDirectory.dir('gdx-natives').get().asFile]
+            // The baked assets: fonts, icons and the content pack, built by tools (LLD §1.2)
+            assets.srcDirs = [rootProject.file('assets')]
+        }
+    }
+
+    buildTypes {
+        debug {
+            // A debug build installs beside the Play build, with its own name (EDGE-CASES BR-5).
+            // A FileProvider's authority must come from ${applicationId}, never written out.
+            applicationIdSuffix = '.dev'
         }
     }
 
@@ -35,15 +47,51 @@ android {
 
 configurations {
     natives
+    // The merged-manifest guard's code, from tools (TRD §4.11). It runs at build time and never ships.
+    manifestGuard {
+        canBeConsumed = false
+        canBeResolved = true
+        attributes {
+            attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage, Usage.JAVA_RUNTIME))
+        }
+    }
 }
 
 dependencies {
     implementation project(':core')
+    // The dev tools exist in debug builds only (LLD §1); src/release has a no-op hook.
+    debugImplementation project(':devtools')
     implementation "com.badlogicgames.gdx:gdx-backend-android:$gdxVersion"
     natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-armeabi-v7a"
     natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-arm64-v8a"
     natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-x86"
     natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-x86_64"
+    manifestGuard project(':tools')
+}
+
+// The merged-manifest guard (TRD §4.11, EDGE-CASES BR-1): after each variant's manifest merge, it fails the
+// build if the app asks for a permission off the allowlist, or exports anything but the launcher and AndroidX's
+// ProfileInstallReceiver behind DUMP. It reads the merged manifest, so a library's additions count too (H4-1).
+androidComponents {
+    onVariants(selector().all()) { variant ->
+        def name = variant.name.substring(0, 1).toUpperCase(Locale.ROOT) + variant.name.substring(1)
+        def manifest = variant.artifacts.get(SingleArtifact.MERGED_MANIFEST.INSTANCE)
+        def applicationId = variant.applicationId
+        def guard = tasks.register("check${name}MergedManifest", JavaExec) {
+            group = 'verification'
+            description = "Checks the ${variant.name} merged manifest's permissions and exports (TRD §4.11)."
+            classpath = configurations.manifestGuard
+            defaultCharacterEncoding = 'UTF-8'
+            mainClass = 'io.github.rameshkumark24.bazaarboss.tools.guards.ManifestGuard'
+            inputs.file(manifest).withPropertyName('mergedManifest')
+            argumentProviders.add({
+                [variant.name, applicationId.get(), manifest.get().asFile.absolutePath]
+            } as CommandLineArgumentProvider)
+        }
+        tasks.named('check') {
+            dependsOn guard
+        }
+    }
 }
 
 // libGDX ships its native library inside jars, one per CPU type (ABI).

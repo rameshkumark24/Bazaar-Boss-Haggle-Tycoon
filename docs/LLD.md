@@ -179,13 +179,18 @@ flowchart TB
 
 | What | Allowed | Checked by |
 |---|---|---|
-| `logic` → libGDX | Only `com.badlogic.gdx.utils.Json*`, and only inside `persist` | `tools` guard: `DependencyRulesTest` scans every `import` line. It refines TRD §4.11's logic-imports test |
-| A domain feature → another | Only features to its left (§2.2); never `game`, `persist`, `shop` or `ads` | `DependencyRulesTest`, from a matrix kept in the test |
+| `logic` → libGDX | Only `com.badlogic.gdx.utils.Json*` and the `SerializationException` they throw, each named, and only inside `persist` | `tools` guard: `DependencyRulesTest` reads every import, static import and fully qualified name, with comments and strings blanked. It refines TRD §4.11's logic-imports test |
+| A domain feature → another | Only features to its left (§2.2); never `game`, `persist`, `shop` or `ads`. `game` and `persist` may use anything in `logic` | `DependencyRulesTest`, from the matrix in `tools`' `DependencyRules`. A package missing from the matrix fails until it's added here and there |
 | `shop`, `ads` → anything | `kernel`, `content` | Same (DR5, DR36) |
-| `core` → `logic` | `game.*`; classes named `*View`, `*Result` or `*Step`; `kernel` formats; `content.LineId` and `Voice`; `persist.LoadOutcome` | Same. **Never** an entity (`Visit`, `OwnedItem`, `GameState`) or a `*Rules` class |
-| Who uses the clock | `day`, `records` and `ads` take a `Clock`. `haggle` and `auction` never do: patience counts rounds (DR12), and the auction counts elapsed time it's given | Same |
+| `core` → `logic`, and so `android`, `lwjgl3` and `devtools` | `game.*`; all of `kernel` (§1.1), which carries `Outcome`, `Rejected`, `Clock` and the formats; classes named `*View`, `*Result` or `*Step`; from `content`, `LineId`, `Voice` and `ContentPack`; from `persist`, the ports `LoadOutcome`, `SaveFiles`, `SaveLoader` and `ContentPackReader` (§3.1). Each class named: no wildcard imports | Same. **Never** an entity (`Visit`, `OwnedItem`, `GameState`) or a `*Rules` or `*Factory` class |
+| Who uses the clock | `day`, `records` and `ads` take a `Clock`, and `game` hands it to them. `haggle` and `auction` never do: patience counts rounds (DR12), and the auction counts elapsed time it's given | Same |
+| `logic` → the JDK | Never the wall clock (`System.currentTimeMillis`, `nanoTime`, `Date`, `Calendar`, `TimeZone`), threads or timers, or files (§2.1; DR25's "no timers in `logic`") | Same |
 
-The guard is a plain JUnit test reading source files. ArchUnit would do it with more polish, but it's a new download for something 60 lines of test can hold.
+The guard is a plain JUnit test reading source files, with fixtures that prove each row bites. ArchUnit would do it with more polish, but it's a new download for what a few hundred lines of test hold.
+
+**Phase 6 made two rows precise, to match §3.1** (2026-11-26):
+- Row 1 adds the exception libGDX's JSON reader throws, which the codec turns into a `SaveFormatException`.
+- Row 4 was "`kernel` formats; `content.LineId` and `Voice`; `persist.LoadOutcome`". But §3.1 has `core` implement `SaveFiles` and `Clock`, call `SaveLoader.load` and `Game.newGame(…, ContentPack, …)`, and receive `Outcome` and `Rejected`. The row now allows exactly those.
 
 ### 2.4 Every PRD §7 rule, in exactly one place
 

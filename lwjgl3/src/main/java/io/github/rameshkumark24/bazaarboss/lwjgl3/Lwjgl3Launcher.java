@@ -2,7 +2,7 @@ package io.github.rameshkumark24.bazaarboss.lwjgl3;
 
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
-import io.github.rameshkumark24.bazaarboss.BazaarBossGame;
+import io.github.rameshkumark24.bazaarboss.core.app.BazaarBossGame;
 
 /** Starts the game in a portrait desktop window, for development only. */
 public final class Lwjgl3Launcher {

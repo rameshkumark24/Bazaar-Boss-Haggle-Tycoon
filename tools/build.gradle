@@ -1,0 +1,30 @@
+// tools: the guards that hold the code to LLD (§2.3, §4.4, §9; TRD §4.11), and later the font
+// baker and the content tools. Never shipped (TRD §2.3).
+plugins {
+    id 'java-library'
+}
+
+dependencies {
+    implementation project(':logic')
+    // JUnit 5, as in logic: the guards are tests that read the repository's files.
+    testImplementation platform('org.junit:junit-bom:5.14.4')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+    // The guards read files relative to the repository's root.
+    systemProperty 'repo.root', rootProject.projectDir.absolutePath
+    // ...so the files they read are this task's inputs too: a change in any module's sources, the palette
+    // or the module list reruns the guards, instead of leaving them UP-TO-DATE.
+    inputs.files(rootProject.subprojects.collect { new File(it.projectDir, 'src') })
+            .withPropertyName('guardedSources')
+            .withPathSensitivity(PathSensitivity.RELATIVE)
+    inputs.files(rootProject.file('docs/design/palette.json'), rootProject.file('settings.gradle'))
+            .withPropertyName('guardedFiles')
+            .withPathSensitivity(PathSensitivity.RELATIVE)
+    testLogging {
+        events 'passed', 'skipped', 'failed'
+    }
+}
