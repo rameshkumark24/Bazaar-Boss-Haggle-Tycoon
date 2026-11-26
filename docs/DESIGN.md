@@ -387,3 +387,4 @@ Every screen designs all five states, and every phase screenshots them. Per-scre
 13. Is the visible text free of em dashes, "Oops", "Please", "Successfully", and exclamation marks outside dialogue?
 14. Is the screen free of every pattern in §1?
 15. **With the name covered, is it still this game?** On game screens, is the awning, the counter or a price tag visible?
+16. **Is the text free of blur, notched edges and bleeding** in a 4× zoom (CLAUDE.md's zoom test) of the smallest and the largest text on the screen? *Added 2026-11-26 on the owner's word, after Phase 3 and its code review (TD-36, TD-37).*

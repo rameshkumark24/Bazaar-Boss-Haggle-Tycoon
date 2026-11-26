@@ -23,7 +23,7 @@ The phase-by-phase plan for building the game. Written 2026-11-25 from all seven
 **Rules for every phase:**
 - **DONE WHEN belongs to the owner.** A check changes only when the owner says so. If a check turns out wrong or impossible, stop and ask.
 - **Evidence:**
-  - screenshots go in `shots/p<NN>-<screen>-<state>[-xl].png` (not in git), each with DESIGN §10's 15 answers in PROGRESS
+  - screenshots go in `shots/p<NN>-<screen>-<state>[-xl].png` (not in git), each with DESIGN §10's 16 answers in PROGRESS
   - command output goes in PROGRESS, trimmed to the lines that prove the check
   - the commands are CLAUDE.md's, and EDGE-CASES §7's
 - **Spikes** run on a throwaway branch, `spike/<name>`. Only the written answer is kept, in the doc it affects. Code kept by accident is a bug. The spike branch stays local, never pushed, and is deleted once its phase merges.
@@ -31,7 +31,7 @@ The phase-by-phase plan for building the game. Written 2026-11-25 from all seven
   - each phase gets a branch, `phase-N-<name>`, cut from `main`
   - if `main` lacks an unmerged decision the phase needs, the branch is cut from the branch that holds it, and they merge in order (Phase 4 did this)
   - the phase branch is pushed after each commit, so a new session can resume from GitHub
-  - a phase merges only on the owner's word, by fast-forwarding `main` to the branch tip and pushing `main`
+  - a phase merges only on the owner's word, by fast-forwarding `main` to the branch tip, or with a merge commit when `main` has moved, as GitHub's pull requests do (PR #1 merged Phase 3)
 - **The doc check:** `/doc-check` runs after every third DONE phase, or when the owner asks. The first ran on 2026-11-25 at the owner's request, after Phases 3 and 4; the next is due after Phase 7, and step 8's report says so.
 - **Owner phases:** the agent prepares checklists and templates; the owner acts; the owner's confirmation is the evidence. Keys, accounts and logins stay the owner's (CLAUDE.md).
 - **Free tools only.** A download (a font, a library, a system image) needs the owner's yes first. Anything paid stops the build.
@@ -212,6 +212,7 @@ PROGRESS:
 - **Done:**
   - **People:** 20 people are ready to play (the owner, 2026-11-25). That's enough for 16–18 closed testers plus the 5 G1 playtesters, who can be among them. Their Android versions aren't checked yet.
   - **Item 7, in part:** yes to Roboto, Rozha One and gdx-freetype (the owner, 2026-11-25), so Phase 3 can start. Material Symbols, gdx-tools, the API 24 image and the sounds aren't answered yet.
+  - **Item 7, more:** yes to Material Symbols (the owner, 2026-11-26), for Phase 6's icon atlas (LLD U20). gdx-tools, the API 24 image and the sounds aren't answered yet.
 - **Left:** items 1–6, apart from the head count; the rest of item 7.
 
 ---
@@ -220,7 +221,7 @@ PROGRESS:
 
 ## Phase 3 — Spike: text on screen
 
-STATUS: IN PROGRESS
+STATUS: DONE
 
 GOAL: Know how text will be drawn: baked bitmap fonts or distance-field fonts, crisp at XL on a 420-dpi screen, with ₹ in both faces. Also know whether Android writes non-Latin digits under Marathi (LLD U3, U9).
 
@@ -240,7 +241,7 @@ TESTS: None kept: it's a spike.
 READS: DESIGN §2.2, §2.5; TRD §1.2 (fonts and icons), TD-26; LLD §10 U3, U9.
 
 DONE WHEN:
-1. LLD §10's U3 and U9 rows carry a dated answer with its evidence: `shots/p03-text-{s,m,l,xl}.png` at 420 dpi and at 316 dp; the digits the phone printed under `mr-IN`; the chosen font method, copied into TRD TD-26 if it changed.
+1. LLD §10's U3 and U9 rows carry a dated answer with its evidence: `shots/p03-text-{s,m,l,xl}.png` at 420 dpi and at 316 dp; the digits the phone printed under `mr-IN`; the chosen font method, recorded in a TRD entry that corrects TD-26, if it changed. *(Reworded by the owner on 2026-11-26, as the code review recommended: the decision log is never overwritten.)*
 
 ASK FIRST IF: The fonts or gdx-freetype aren't approved yet (Phase 2); distance-field fonts need a new dependency.
 
@@ -313,6 +314,7 @@ PROGRESS:
     - **DESIGN §2.2:** the agent changed one sentence to point at TD-36 ("baked to bitmaps" became "distance-field atlases"). The faces, sizes and steps are unchanged. The owner was asked whether that edit is all right; if not, revert that line and keep TD-36 in the TRD only.
     - **Phase 1 and Phase 2 items:** whether the waitlist haggle played in all three voices on the owner's phone (Phase 1, DONE WHEN 1), and the owner's Phase 2 list. Both are in their phases' PROGRESS and in CURRENT STATE.
 - **Code review, 2026-11-25:** DONE WHEN 1 is reopened (above), so the phase is IN PROGRESS again. Nothing is left to build: it waits on the owner's word on DONE WHEN 1, then its review and merge. The review also added TRD TD-37 (how distance-field text sets its smoothing), with its evidence in LLD §10 U3.
+- **DONE, 2026-11-26.** The owner accepted the code review's recommendation and reworded DONE WHEN 1. TD-36 is that TRD entry, so **DONE WHEN 1: PASS**, with the evidence above. Its review is done and PR #1 merged it; the handoff note merges with the doc check's branch.
 
 ## Phase 4 — Spike: the Android 16 shell
 
@@ -410,7 +412,7 @@ PROGRESS:
 
 ## Phase 5 — Spike: the save on a cheap phone
 
-STATUS: IN PROGRESS
+STATUS: DONE
 
 GOAL: Know the save's costs and risks before building it (LLD U5–U8):
 - U5: how fast libGDX's JSON reader and writer are with literal keys, and whether longs stay exact
@@ -462,6 +464,64 @@ PROGRESS:
      - the question: is `dispose()` called, and does the new game load the pending write?
   4. **U8:** push a valid fixture (`BBSAVE` header, CRC and length) to `/data/local/tmp`, copy it into `files/save/` with `run-as`, relaunch, and log what loads. On Android 16 and Android 9.
   5. **Write the answers** into LLD §10 (U5–U8), TRD §0.4 and §4.10, and EDGE-CASES LC-2 and T-3; add a new TRD entry correcting TD-28 if the drain moves; and add the fixture commands to CLAUDE.md if U8 works.
+- **Done:** steps 1–5.
+  - Tests ran on `LowEnd_A9` (Android 9, 2 GB) and `Medium_Phone_API_36.1` (Android 16), both on debug builds.
+  - Every emulator setting was put back: font scale 1.0, 3-button navigation.
+- **U5, on `LowEnd_A9`, warm, launched with `--ez bench true`:**
+  ```
+  U5 longs: 8/8 exact; text: {"v":[9223372036854775807,-9223372036854775808,9007199254740993,-9007199254740993,0,-1,1764000000123,-7046029254386353131]}
+  U5 typical save, 14074 bytes: encode+CRC: p50 2.92 ms  p95 22.25 ms | check+decode: p50 2.27 ms  p95 12.00 ms
+  U5 worst save, 49639 bytes: encode+CRC: p50 5.79 ms  p95 20.33 ms | check+decode: p50 5.58 ms  p95 15.75 ms
+  U5 pack, 524343 bytes, 1945 entries: parse+walk: p50 30.81 ms  p95 41.36 ms
+  ```
+  The first run measured the typical save at encode p50 2.87 / p95 11.80 and decode p50 2.29 / p95 7.57, and the pack at p50 10.93 / p95 25.99 ms.
+- **U6, on `LowEnd_A9`, 200 commits each:**
+  ```
+  U6 typical commit, 14064 bytes: write+fsync+rename: p50 7.54 ms  p95 11.55 ms  max 20.80 ms
+  U6 worst commit, 49647 bytes: write+fsync+rename: p50 7.96 ms  p95 11.21 ms  max 18.71 ms
+  ```
+  Android 16 measured p95 7.9–19.8 ms, max 65 ms. **Under 100 ms, so ASK FIRST didn't trigger.**
+- **Cold code, on Android 16:**
+  - Just after install and boot, the 50 KB encode's p95 was 177 ms and its decode's 359 ms. A minute later they were 19 and 17 ms.
+  - The first taps after a cold launch encoded in 29.6, 11.7, 9.5, 8.6 and 7.1 ms.
+  - `cmd package compile -m speed` left the debug build at `status=verify`, because debuggable apps aren't compiled ahead of time.
+- **U7, the order of events.** On Android 9, the font scale went to 1.3 with a 1.5 s write pending:
+  ```
+  game #1 tap: queued seq 1 (14056 bytes, slow: 1.5 s)
+  activity #1 onPause begins (finishing=false, changingConfigurations=true)
+  game #1 pause (EGL context 0x7d97d2af3b00)
+  writer: seq 1 committed in 1524 ms
+  game #1 pause: drained in 1273 ms (idle=true, committed up to 1)
+  activity #1 onPause returned, onStop, onDestroy (changingConfigurations=true)
+  activity #2 onCreate (restoring=true)
+  game #2 create (EGL context 0x7d97c92eb800)
+  game #2 load: nextId 1 from 14056 bytes, header and CRC ok
+  ```
+  - **There's no `game #1 DISPOSE` line.** Android 16 with the navigation-mode switch did the same: drained in 1006 ms, and game #2 loaded nextId 6.
+  - **With no drain,** the rebuild went straight on. Game #2 "waited 974 ms for the writer before loading" and loaded nextId 2.
+  - **Process death:**
+    - with no drain, a 4 s write pending, then home and `am kill`: the relaunch loaded nextId 3, so seq 4 was lost
+    - with the drain and a 1.5 s write: "pause: drained in 1122 ms", and the relaunch loaded nextId 4
+  - **Back on the root screen:** `onPause begins (finishing=true)`, then `pause` (drained in 1139 ms), then `game #1 DISPOSE`, `onStop` and `onDestroy`.
+  - **libGDX's limit:** `AndroidGraphics.pause` waits `4000l` ms, then logs "waiting for pause synchronization took too long; assuming deadlock and killing" and calls `Process.killProcess`.
+- **U8, on Android 9 and 16:** `1 file pushed`, then `-rw------- 1 u0_a231 u0_a231 432 … game.json`, then `game #1 load: nextId 777 from 432 bytes, header and CRC ok`. A damaged file gave `load: REJECTED, CRC mismatch`.
+- **Where the answers went:**
+  - LLD §10 U5–U8, and §6 rows 1–2
+  - TRD §0.4, §4.10, and TD-38, which corrects TD-28
+  - EDGE-CASES LC-2 and T-3
+  - CLAUDE.md's fixture row
+  - Phase 6's build list: TD-38, and warming the codec
+  - KNOWN ISSUES: K5 resolved
+- **For Phase 6 and later:**
+  - **One writer per process, and no threads or timers inside a game object.** The old game object is never disposed on a rebuild, so anything it owns outlives it.
+  - **The drain in `pause()` holds Android's `onPause` while it waits:** normally milliseconds (U6), at most 2 s.
+  - **Warm the codec while loading** by encoding the loaded state once.
+  - **Phase 29 measures a release build on the borrowed phone.** A baseline profile may matter for the first taps.
+- **DONE WHEN 1: PASS.** LLD §10's U5–U8 rows carry dated answers, with this evidence, all above:
+  - the encode and decode times for 50 KB and the pack, on `LowEnd_A9`
+  - the commit's p50 and p95
+  - the recreation sequence, as logcat lines
+  - the fixture commands and their output, now in CLAUDE.md
 
 ## Phase 6 — The vertical slice: one haggle, saved and resumed
 
@@ -490,7 +550,8 @@ BUILD:
   - fonts as Phase 3 found (TD-36): the distance-field baker in `tools`, with TD-36's base sizes, the glyph-offset fix and one-channel atlases, checked on the phone with the zoom test (CLAUDE.md), including the extremes: `label` at S on 280 dpi and `price` at XL on density 4.5; and a label that draws with the distance-field shader, sets its smoothing from its size on screen, and turns integer positions off (TD-37)
   - the icon atlas from Material Symbols through the same baker (LLD U20; the download needs the owner's yes first)
   - a placeholder face (shapes plus the mood word)
-  - `SaveWriter` (one per process, coalescing), `FileSaveFiles`
+  - `SaveWriter` (one per process, coalescing), `FileSaveFiles`. The new game waits for the writer before loading, and `pause()` drains it, for at most 2 s (TD-38)
+  - the codec warmed while loading, so the first tap isn't paying for cold code (U5)
   - the haggle screen, the deal result card and the pause card
 - **`android`:** `singleTask` and the task-root check (LC-1); the wider `configChanges` (LC-2); pause on focus loss.
   - the view's `WindowInsets` passed to `core` (TD-35)
@@ -521,7 +582,7 @@ DONE WHEN:
 2. CODE — the pre-push hook blocks a push when a test fails → the hook's output, from a deliberately failing test that is then reverted.
 3. INTEGRATION — the kill-point test reloads after a kill at each of the 4 commit steps, and each reload equals "before" or "after", never between → the test report.
 4. INTEGRATION — on the emulator: two offers, then `am kill`, then relaunch. The same seller, offers, mood and patience come back → screenshots before and after; the save's first line, `BBSAVE <crc> <len>`, read through `run-as`.
-5. USER — the haggle screen in 5 states (first offer, counter, deal result, walked away, paused), at M, and at XL on 316 dp, in both navigation modes → `shots/p06-*.png`; all 15 checklist answers yes.
+5. USER — the haggle screen in 5 states (first offer, counter, deal result, walked away, paused), at M, and at XL on 316 dp, in both navigation modes → `shots/p06-*.png`; all 16 checklist answers yes.
 6. USER — a double tap on Accept makes one deal → the save's deal count, read through `run-as`, is 1.
 7. PRODUCT — F2 AC1, AC2 (no walk-away price shown), AC3, AC4, AC5, and AC10 (buying); F15 AC1 → each checked on the emulator, noted in PROGRESS.
 8. PRODUCT — the empty project's commands still work with the `.dev` package (`installDebug`, `am start`, `screencap`) → CLAUDE.md updated, with each command's output.
@@ -616,7 +677,7 @@ READS: TRD §4.4, §4.11, §12; PRD F13, DR24, CR2, CR4; DESIGN §7; LLD §5 (va
 DONE WHEN:
 1. CODE — `./gradlew check` passes; each validator rule has a fixture that fails and one that passes → the output, listing them.
 2. INTEGRATION — editing a line in `strings.csv` and rebuilding changes it on the emulator. A release build with a missing Hinglish line fails to build → the build output and a screenshot.
-3. USER — the text test screen shows the haggle's lines in English, Tanglish and Hinglish, at M and at XL on 316 dp → screenshots; all 15 checklist answers yes.
+3. USER — the text test screen shows the haggle's lines in English, Tanglish and Hinglish, at M and at XL on 316 dp → screenshots; all 16 checklist answers yes.
 4. PRODUCT — F13 AC1: the validator stops a build with a missing line, a broken placeholder, an over-length line or a banned word → the test output.
 
 ASK FIRST IF: The CSV needs columns beyond TRD §4.4's (for example, the gender variants: a new column or paired IDs; the owner chooses).
@@ -668,7 +729,7 @@ READS: PRD F2, F3, F8, DR6–DR14, DR22, DR23; TRD §4.3, §5.2; LLD §2.4, §7.
 DONE WHEN:
 1. CODE — `./gradlew check` passes → the output, listing the DR6–DR14 tests and the property tests.
 2. CODE — `./gradlew sim:run`: each of the 7 bots loses against at least one personality → the report, committed.
-3. USER — a call-back; "Last price?" used, with its chip greyed out; a lesson after a walk-away; selling with +10% and +25% → screenshots; all 15 answers yes.
+3. USER — a call-back; "Last price?" used, with its chip greyed out; a lesson after a walk-away; selling with +10% and +25% → screenshots; all 16 answers yes.
 4. PRODUCT — F2 AC6–AC10 (both directions); F3 AC1 (the simulator); F8 AC1, AC2, AC5 → each checked on the emulator or in the simulator, noted in PROGRESS.
 
 ASK FIRST IF: Q8 (bohni) is still open: decide it before code (recommended: one engine rule plus a few lines). Also if the tournament shows a habit that wins and tuning can't fix within the phase: that's a design change to a DR.
@@ -739,7 +800,7 @@ READS: DESIGN §2.7 (Face, Speech line, Meter), §4 (motion), §6, §10; PRD F2 
 DONE WHEN:
 1. CODE — `./gradlew check` passes → the output.
 2. INTEGRATION — the golden replay's hash, printed on the phone from the dev menu, equals the JVM test's → both outputs.
-3. USER — each personality's face in 3 moods, at M and at XL on 316 dp, in both navigation modes. The offer history never pushes Offer off screen → screenshots; all 15 answers yes.
+3. USER — each personality's face in 3 moods, at M and at XL on 316 dp, in both navigation modes. The offer history never pushes Offer off screen → screenshots; all 16 answers yes.
 4. USER — 10 minutes of mixed haggles on the emulator with no dead end → a screenshot about every 2 minutes.
 5. PRODUCT — F2 AC2 (face, mood word and patience shown; mood never by colour alone); F3 AC3 (women and men over a week of customers, checked in the lab); F20 AC3 (frame time p95 on LowEnd_A9, from the dev overlay) → each noted.
 6. PRODUCT — the G1 build is on the internal track and installed on the owner's phone → a screenshot from the phone.
@@ -821,7 +882,7 @@ DONE WHEN:
 1. CODE — `./gradlew check` passes → the output, listing the repair fixtures.
 2. INTEGRATION — damaged `game.json` → the backup loads, with its card. All three damaged → the files move to `broken/`, and a new game starts, with its card. Newer `writtenBy` → the block card, the files untouched, the same hash before and after. The marker → loads from `bak1` → the test report.
 3. INTEGRATION — on the emulator, fill storage with `fallocate` (EDGE-CASES §7) and play: the banner shows and the last good save stays intact. Free the space: the next commit clears the banner → screenshots, and `df` before and after.
-4. USER — the four launch cards and the banner, at M and at XL on 316 dp → screenshots; all 15 answers yes.
+4. USER — the four launch cards and the banner, at M and at XL on 316 dp → screenshots; all 16 answers yes.
 5. PRODUCT — F15 AC2, AC3, AC4 and AC7 → each checked, noted in PROGRESS.
 
 ASK FIRST IF: The save needs fields beyond TRD §4.5 and LLD L-5.
@@ -861,7 +922,7 @@ READS: PRD F6, §3, §6 (stall); APP-FLOW §1.2, §1.8 row 2, §2.2; DESIGN §0,
 DONE WHEN:
 1. CODE — `./gradlew check` passes → the output.
 2. INTEGRATION — a replayed day leaves exactly its deals in the save, read through `run-as` → the test report.
-3. USER — the stall in morning, trading and evening, with empty slots and the "Leave the game?" card → screenshots; all 15 answers yes.
+3. USER — the stall in morning, trading and evening, with empty slots and the "Leave the game?" card → screenshots; all 16 answers yes.
 4. USER — journey 2 without the auction: start the day, serve the customers, the day ends, start the next. Each sale takes 3 taps → a screenshot per step, and the tap counts.
 5. PRODUCT — F6 AC1, AC2, AC3, AC5, AC7, AC8; F15 AC6 (at the stall) → each checked.
 
@@ -898,7 +959,7 @@ READS: PRD F4, DR20–DR21, Q4, Q5; TRD §4.4 (ItemDef, ClueDef); DESIGN §2.7; 
 
 DONE WHEN:
 1. CODE — `./gradlew check` passes, with the validator passing over all 40 items → the output.
-2. USER — Inspect with clues found; "Look closer"; a fake given away; the customer leaving during Inspect → screenshots; all 15 answers yes.
+2. USER — Inspect with clues found; "Look closer"; a fake given away; the customer leaving during Inspect → screenshots; all 16 answers yes.
 3. PRODUCT — F4 AC1–AC4 → each checked.
 
 ASK FIRST IF: Q4 (the cost of inspecting) or Q5 (selling a fake unknowingly) is still open. Their recommended answers are in PRD §10; the owner decides before code.
@@ -968,7 +1029,7 @@ READS: PRD F5, DR15–DR19, §7.7; APP-FLOW §1.7, §1.8 row 5, §2.2; TRD §5.2
 DONE WHEN:
 1. CODE — `./gradlew check` passes → the output, listing the DR15–DR19 tests.
 2. INTEGRATION — `am kill` in the countdown's last second, then relaunch: the auction comes back paused, with its bids and a full countdown → screenshots before and after.
-3. USER — peek; bidding while leading ("You lead"), behind, and with too little cash ("Not enough cash"); the result with estimates; "Leave the auction?" → screenshots; all 15 answers yes.
+3. USER — peek; bidding while leading ("You lead"), behind, and with too little cash ("Not enough cash"); the result with estimates; "Leave the auction?" → screenshots; all 16 answers yes.
 4. USER — pull the notification shade down for 5 s during bidding: the countdown doesn't move → two screenshots, 5 s apart.
 5. PRODUCT — F5 AC1, AC2, AC3, AC4, AC5, AC7, AC8 → each checked.
 
@@ -1013,7 +1074,7 @@ READS: PRD F5 AC6, AC9, AC10, F9, §7.6, §7.9; DESIGN §4 (the reveal); APP-FLO
 DONE WHEN:
 1. CODE — `./gradlew check` passes, and the simulator's buy-to-scrap bot loses money → the output and the report.
 2. INTEGRATION — `am kill` mid-reveal, then relaunch: the items already out are in stock, and the rest come out → screenshots.
-3. USER — the Reveal (normal, and with `animator_duration_scale 0`); Sort with the scrap card; the godown with items, filtered to nothing, never had any, and empty with a filter on → screenshots; all 15 answers yes.
+3. USER — the Reveal (normal, and with `animator_duration_scale 0`); Sort with the scrap card; the godown with items, filtered to nothing, never had any, and empty with a filter on → screenshots; all 16 answers yes.
 4. PRODUCT — F5 AC6, AC9, AC10; F9 AC1–AC4 → each checked.
 
 ASK FIRST IF: The soft limit needs a rule PRD §7.6 doesn't give.
@@ -1052,7 +1113,7 @@ READS: PRD F7, F10, DR27, DR29, Q6, Q7; APP-FLOW §1.8 row 8, §2.2; DESIGN §4 
 DONE WHEN:
 1. CODE — `./gradlew check` passes → the output.
 2. INTEGRATION — `am kill` while the tier-up card shows, then relaunch: it shows again, and not a third time → screenshots.
-3. USER — the kanakku with deals, with none, with a loss and its Lesson, and with the first deal ever; the goal bar at 20%; the tier-up card; the shop's next goal → screenshots; all 15 answers yes.
+3. USER — the kanakku with deals, with none, with a loss and its Lesson, and with the first deal ever; the goal bar at 20%; the tier-up card; the shop's next goal → screenshots; all 16 answers yes.
 4. PRODUCT — F7 AC1–AC4; F10 AC1–AC5 → each checked.
 
 ASK FIRST IF: Q7 (what comes after the shop) is still open. Its recommendation is in PRD §10.
@@ -1096,7 +1157,7 @@ READS: PRD F6 AC4, AC6, F8, F11, F3, DR3, DR4, DR25–DR28, Q9; APP-FLOW §2.3; 
 DONE WHEN:
 1. CODE — `./gradlew check` passes; the simulator reports no dead end in its thousands of days → the output and the report.
 2. INTEGRATION — on the emulator, set the clock 3 days ahead while the game is in the background, then bring it back: the welcome-back lot is offered. Set the date back a day: the special reads "back tomorrow" → screenshots, and the commands' output.
-3. USER — the low-cash card; "Periyappa can help"; the loan's terms; a cheap-seller day; Today's special as a visitor and as a lot, with its leave wording; the teased customer; the welcome-back lot → screenshots; all 15 answers yes.
+3. USER — the low-cash card; "Periyappa can help"; the loan's terms; a cheap-seller day; Today's special as a visitor and as a lot, with its leave wording; the teased customer; the welcome-back lot → screenshots; all 16 answers yes.
 4. PRODUCT — F6 AC4, AC6; F11 AC1–AC5; F3 AC2; F8 AC3, AC4 → each checked.
 
 ASK FIRST IF: Q9's "broke" threshold or the welcome-back gap needs a decision beyond its recommendation.
@@ -1135,7 +1196,7 @@ READS: PRD F12, F18, CR1, §8.5; TRD §5.3, §4.7 (flag 1); DESIGN §8 (assets),
 DONE WHEN:
 1. CODE — `./gradlew check` passes → the output, listing the `StatsText` and no-ID tests.
 2. INTEGRATION — two shares make two files in `cache/share/`, and the next launch deletes those older than an hour → `run-as ls -l cache/share` before and after.
-3. USER — Share opens the chooser, and cancelling sends nothing; the card's PNG; the stats preview, with zeros on a fresh install → screenshots and the PNG; all 15 answers yes.
+3. USER — Share opens the chooser, and cancelling sends nothing; the card's PNG; the stats preview, with zeros on a fresh install → screenshots and the PNG; all 16 answers yes.
 4. PRODUCT — F12 AC1–AC3; F18 AC1–AC3; IDEA H4-16 → each checked.
 
 ASK FIRST IF: The card needs anything beyond F12's list: no IDs, no links.
@@ -1176,7 +1237,7 @@ READS: PRD F1, F13, F16, §6 (voice picker, settings); APP-FLOW §1.3, §2.1; DE
 DONE WHEN:
 1. CODE — `./gradlew check` passes → the output.
 2. USER — `"$ADB" uninstall $PKG`, reinstall, launch: the voice picker, then the first offer within 30 s and the first deal within 60 s → screenshots at 0 s, at the first offer and at the first deal, with times from `am start -W` and a stopwatch.
-3. USER — Settings with each row, and each text size (M, then XL on 316 dp) → screenshots; all 15 answers yes.
+3. USER — Settings with each row, and each text size (M, then XL on 316 dp) → screenshots; all 16 answers yes.
 4. PRODUCT — F1 AC1–AC5; F13 AC3; F16 AC1–AC4 → each checked.
 
 ASK FIRST IF: The first offer can't be reached within 30 s on LowEnd_A9.
@@ -1297,7 +1358,7 @@ DONE WHEN:
 1. CODE — `./gradlew check` passes, listing the report, crash-note, backup-rule and manifest guards → the output.
 2. INTEGRATION — Start over with the slow-commit switch on: the next launch is a first launch, and `"$ADB" shell "run-as $PKG ls -R files"` shows only `profileInstalled` → the output (IDEA H4-12).
 3. INTEGRATION — a forced crash from the dev menu leaves a note, and the next Report a problem offers it → screenshots.
-4. USER — Report a problem from reason to email app, plus its no-email-app fallback; Report this line; Start over's two confirmations → screenshots; all 15 answers yes.
+4. USER — Report a problem from reason to email app, plus its no-email-app fallback; Report this line; Start over's two confirmations → screenshots; all 16 answers yes.
 5. PRODUCT — back up, then restore on a second emulator: the save and settings return, and the "Your progress from … is here" card shows → screenshots (F15 AC5, H4-13).
 6. PRODUCT — F17 AC1–AC2; F19 AC1–AC5 → each checked.
 
@@ -1330,7 +1391,7 @@ READS: PRD F13, DR24, CR4, Q2; DESIGN §7; IDEA §5.2 (writing short); TRD §4.4
 
 DONE WHEN:
 1. CODE — the validator passes over every haggle line, in all three voices → the output.
-2. USER — the haggle in each voice, at XL on 316 dp, with nothing clipped → screenshots; all 15 answers yes.
+2. USER — the haggle in each voice, at XL on 316 dp, with nothing clipped → screenshots; all 16 answers yes.
 3. PRODUCT — F3 AC4: no personality is tied to a region, religion, caste or community, by the owner's read; the Tanglish read is done; the Hinglish has been sent → the owner confirms.
 
 ASK FIRST IF: A line needs a word the banned list blocks; the Hinglish reader asks for changes to the game's words (Q2).
@@ -1359,7 +1420,7 @@ READS: PRD F13, CR18; DESIGN §7; EDGE-CASES CL-1, CL-2.
 
 DONE WHEN:
 1. CODE — the validator passes over all content, and the fallback test finds no English line standing in for a missing one → the output.
-2. USER — every screen with a character line, in each voice, at XL → screenshots; all 15 answers yes.
+2. USER — every screen with a character line, in each voice, at XL → screenshots; all 16 answers yes.
 3. PRODUCT — the Hinglish native read is done (CR18; F13 AC4) → the owner confirms, with no name in git.
 
 ASK FIRST IF: The native read changes the game's words (Q2: kanakku, Periyappa).
@@ -1471,7 +1532,7 @@ DONE WHEN:
 1. CODE — `./gradlew check :android:bundleRelease` passes, and lowering `formatVersion` makes the build fail → both outputs.
 2. INTEGRATION — release N saves a day; release N+1 loads it on the same emulator → screenshots before and after.
 3. INTEGRATION — `aapt2 dump permissions` on the release APK lists `VIBRATE` and AndroidX's own permission, nothing else → the output.
-4. USER — every v1 screen and state, on the release build, at M and XL, in both navigation modes → `shots/p30-*`; all 15 answers yes.
+4. USER — every v1 screen and state, on the release build, at M and XL, in both navigation modes → `shots/p30-*`; all 16 answers yes.
 5. PRODUCT — every v1 criterion, F1–F20, re-checked on the release build → a table in PROGRESS.
 6. PRODUCT — the listing's draft and the release checklist → screenshots of both.
 7. PRODUCT — the closed-track release is submitted → a screenshot of Play Console's status.
@@ -1712,7 +1773,7 @@ READS: PRD F21; MONETISATION §4, §7; APP-FLOW §1.8 row 24, §2.4; DESIGN §2.
 
 DONE WHEN:
 1. CODE — `./gradlew check` passes, with the price-literal guard → the output.
-2. USER — the shop loading, with products, with an item owned, with a payment pending, and unable to reach Play; the tier-up link; a theme on the stall and on the deal card → screenshots; all 15 answers yes.
+2. USER — the shop loading, with products, with an item owned, with a payment pending, and unable to reach Play; the tier-up link; a theme on the stall and on the deal card → screenshots; all 16 answers yes.
 3. USER — journey 4 takes 3 taps → screenshots.
 4. PRODUCT — F21 AC1–AC3, AC9, AC10; MONETISATION §7 checks 8–11 → each checked.
 
@@ -1750,7 +1811,7 @@ READS: MONETISATION §8; PRD CR28, CR32, Q18, Q20, §8.5; RESEARCH L-7, L-9, L-1
 
 DONE WHEN:
 1. PRODUCT — the terms, refund policy, grievance page and privacy policy v2 are live → the URLs and 360-px screenshots.
-2. USER — Settings → Help opens them → screenshots; all 15 answers yes.
+2. USER — Settings → Help opens them → screenshots; all 16 answers yes.
 3. PRODUCT — Play Console's products equal `Catalogue`, and Data safety matches the build → screenshots (H4-8, H4-17).
 4. PRODUCT — MONETISATION §7 check 12; the staged release reaches 100% with vitals under Play's thresholds → screenshots.
 
@@ -1818,7 +1879,7 @@ READS: PRD §6 (later screens: the age screen and consent), DR30, DR34, DR35, CR
 DONE WHEN:
 1. CODE — `./gradlew check` passes, covering every combination of the gate → the output.
 2. INTEGRATION — a 2010 birth year: `FakeAds` records no start, and the offer becomes Periyappa's tip. Allow, then withdraw: no loads → the test report.
-3. USER — the age screen, the consent notice, Ads & privacy, and the tip → screenshots; all 15 answers yes.
+3. USER — the age screen, the consent notice, Ads & privacy, and the tip → screenshots; all 16 answers yes.
 
 ASK FIRST IF: ADV-1 (a privacy lawyer, a paid adviser) hasn't checked the wording by 13 May 2027 (CR26).
 
@@ -1854,7 +1915,7 @@ READS: PRD DR31–DR33, CR22–CR24; IDEA H1-6, H1-7, H4-4 to H4-7; MONETISATION
 DONE WHEN:
 1. CODE — `./gradlew check` passes, with the cap and reward tests and `checkAdIds` → the output.
 2. INTEGRATION — killed mid-ad, nothing is granted and nothing is lost; closed early, no reward → the test report, and screenshots from the device.
-3. USER — each offer: available, "No ad right now", and capped for the day → screenshots; all 15 answers yes.
+3. USER — each offer: available, "No ad right now", and capped for the day → screenshots; all 16 answers yes.
 4. PRODUCT — the AdMob console's blocked categories and "T" rating (H4-7); testers' phones registered as test devices → screenshots.
 
 ASK FIRST IF: AdMob's console can't block the categories the law requires (X4).
@@ -1890,7 +1951,7 @@ READS: PRD CR21, CR25–CR27, §8.5; IDEA H2-1, H2-5, H4-17; RESEARCH L-14.
 
 DONE WHEN:
 1. PRODUCT — privacy policy v2, the Tamil and Hindi notices and `app-ads.txt` are live → the URLs and screenshots.
-2. USER — Your data → screenshots; all 15 answers yes.
+2. USER — Your data → screenshots; all 16 answers yes.
 3. PRODUCT — the merged manifest, Data safety and PRD §8.5 agree (H4-17), and the staged release reaches 100% with vitals under Play's thresholds → screenshots.
 
 ASK FIRST IF: Anything in the data table must change beyond the ads rows.
@@ -1905,7 +1966,7 @@ PROGRESS:
 
 ## CURRENT STATE
 
-**Updated 2026-11-25, after the first doc check and its code review.**
+**Updated 2026-11-26, with the owner's decisions before Phase 6.**
 
 **Built so far:**
 - **The planning docs:** PRD, TRD, APP-FLOW, DESIGN, EDGE-CASES, MONETISATION, LLD, and this plan.
@@ -1923,25 +1984,32 @@ PROGRESS:
   - text is drawn from distance-field atlases baked at build time, one per face (TD-36), because bitmaps baked at build time are either soft or tied to one density
   - all three faces have ₹ and the punctuation the game needs, and Roboto's digits are already tabular
   - Android writes non-Latin digits under Marathi and other locales, as the JDK does, so the locale guard stands (U9)
+- **Phase 5's answers:**
+  - the save's JSON is fast enough when warm (50 KB encodes at p95 20 ms on `LowEnd_A9`), and longs are exact
+  - a commit takes p95 8–20 ms on the emulators
+  - **libGDX calls no `dispose()` on a rebuild,** so the writer drains in `pause()`, at most 2 s (TD-38)
+  - fixtures install through `run-as` (CLAUDE.md)
 
 **Phase status:**
-- **Phase 4 is DONE** and merged into `main` on 2026-11-25, together with Phase 1's branch so far, at the owner's word.
-- **Phase 3's work is finished** on branch `phase-3-text-spike`, cut from `main`, but it isn't DONE: its DONE WHEN 1 waits on the owner's word (below). Then its review and merge.
-- **The first doc check is done** on branch `doc-check-2026-11-25`, cut from `phase-3-text-spike`. It adds the `/doc-check` skill and the doc fixes, and merges after Phase 3.
+- **Phases 3, 4 and 5 are DONE.**
+  - Phase 4, and Phase 3 apart from its handoff note, are in `main`.
+  - The rest merges on 2026-11-26, at the owner's word: Phase 3's handoff note, the first doc check with its code review, and Phase 5.
 - **Phases 1 and 2 (owner) are IN PROGRESS.** Phase 1 waits for the posts and day 7.
 - Every other phase is NOT STARTED.
 
 **Next:**
 - **The build has started before day 7,** by the owner's decision on 2026-11-25 (PRD Q1). On day 7 the thresholds apply to the build in progress.
-- **The review and merge** of `phase-3-text-spike`, then `doc-check-2026-11-25`. Both fast-forward `main`.
-- **Agent:** Phase 5, the save spike. Then Phase 6, the vertical slice: the first real haggle on the phone, with PLAN MODE yes, so its plan comes to the owner first.
+- **Agent:** Phase 6, the vertical slice: the first real haggle on the phone. It has PLAN MODE yes, so its plan comes to the owner before any code. Every later phase depends on it.
 - **Phase 1 (owner):** confirm that the haggle plays in all three voices on the phone; record and post the clip, and send the date of the first post; on day 7, send the counts and each post's views.
-- **Phase 2 (owner):** the checklist in Phase 2's PROGRESS. Phase 6 will need a yes to the Material Symbols download for its icons (LLD U20).
-- **From the doc check, a decision for the owner:** DESIGN §10's visual checklist has no item on text sharpness. **Recommended:** add one, "Is text free of blur, notched edges and bleeding in a 4× zoom (CLAUDE.md)?". That makes the checklist 16 answers, and the DONE WHEN checks that count to 15 follow. The checklist and DONE WHEN change only on the owner's word.
-- **From the code review (2026-11-25), decisions for the owner:**
-  - **Phase 3's DONE WHEN 1:** it says to copy the font method into TRD TD-26, but the decision log never overwrites an entry, so the method is in TD-36, which corrects TD-26. **Recommended:** accept TD-36 as meeting the check, and reword the check to "…recorded in a TRD entry that corrects TD-26, if it changed". Then Phase 3 is DONE.
-  - **DESIGN §2.2's font sentence:** Phase 3 changed it to say distance-field atlases (TD-36). The faces, sizes and steps are unchanged. **Recommended:** keep it, so DESIGN matches TD-36. Reverting it would leave DESIGN describing the method TD-36 replaced.
-  - **The waitlist page's two marigold coins** (KNOWN ISSUES K4): the favicon and the cash coin in the demo's top bar are filled with `accent`, which DESIGN §2.3 rule 1 and §2.5 rule out for icons. With the Join button, the page shows two marigold elements, so §10's question 3 is a no. **Recommended:** follow the rules as written. The top-bar coin goes `text-muted` (§2.5), and the favicon goes `scene-brass`, as a coin drawn as illustration. Both take effect when the page is next published. If the coin should stay marigold, it becomes DESIGN §2.3's one stated exception instead.
+- **Phase 2 (owner):** the rest of the checklist in Phase 2's PROGRESS.
+- **The waitlist page** has K4's colour fix in its source. It goes live at the next publish, on the owner's word.
+- **Decided before Phase 6 (the owner, 2026-11-26), all as recommended:**
+  - Phase 3's DONE WHEN 1 is reworded. The method is in TD-36, which corrects TD-26, so Phase 3 is DONE.
+  - Material Symbols: download it
+  - DESIGN §2.2's font sentence stays, matching TD-36
+  - the waitlist page's coins: the favicon is `scene-brass`, and the demo's top-bar coin is `text-muted` (K4)
+  - DESIGN §10 gains question 16, on text sharpness. Every check that counted 15 answers now counts 16.
+  - the merge order: Phase 3's handoff note, the doc check, then Phase 5
 - **Decided after Phase 4 (the owner, 2026-11-25):**
   - the offer slider's target stays 32 dp from the screen edges, and is excluded from the back gesture (DESIGN §2.7)
   - Phase 3's downloads are a yes
@@ -1952,7 +2020,7 @@ PROGRESS:
 | Group | Estimate | Used | Status |
 |---|---|---|---|
 | Before M1 | 0 build sessions; 7 days | 1: the agent made the form and published the page, at the owner's request | Phase 1 in progress; the 7 days start with the first post |
-| M1 (Phases 3–12) | 9 | 2: Phases 4 and 3 | Phase 4 done; Phase 3's work finished, waiting on DONE WHEN 1; Phase 5 next |
+| M1 (Phases 3–12) | 9 | 3: Phases 4, 3 and 5 | Phases 3, 4 and 5 done; Phase 6 next, its plan first |
 | M2 (Phases 13–29) | 17 | 0 | — |
 | M3 (Phases 30–32) | 5 | 0 | — |
 | After M3 (33–42) | 4 purchases + 4 ads | 0 | Behind G3 and Q19 |
@@ -1980,8 +2048,8 @@ Bugs we choose to live with, and security findings left unfixed, go here, so not
 | K1 | Android Lint warns `MissingApplicationIcon` | Low | The empty project (2026-11-24); listed in CLAUDE.md | The app icon comes with the art, drawn as shapes in code | Phase 30 adds the icon and clears it |
 | K2 | `android/build.gradle`'s natives task copies only the **first** natives jar for each ABI. A second native library would be dropped silently and crash at runtime | Low, latent | Phase 3 (2026-11-25) | libGDX is the only native library, since FreeType stays at build time (TD-36) | A second native library is added: collect every natives jar for the ABI with `findAll`, then copy them in **one** `fs.sync` (`jars.each { from archives.zipTree(it) }`). One `fs.sync` per jar deletes the earlier jars' `.so` files (shown in the code review, 2026-11-25) |
 | K3 | libGDX 1.14.2's own back callback (Android 13+) asks for no frame, so back stalls when drawing on demand | Medium, worked around | Phase 4 (2026-11-25) | The launcher's own callback routes back instead (TD-35) | A libGDX release asks for a frame in its callback; then the workaround can go |
-| K4 | The waitlist page fills two coins with marigold (`accent`): its favicon and the cash coin in its demo's top bar. DESIGN §2.3 rule 1 and §2.5 rule that out for icons, and §10's question 3 fails (two marigold elements on the page) | Low | The code review (2026-11-25); in the page since 2026-11-24 | The page is live mid-test, the colour is the owner's design call, and a change only shows once the page is published again | The owner decides (CURRENT STATE); the fix ships with the page's next publish |
-| K5 | TRD TD-28 still says the writer is "drained on dispose", though Phase 4 saw a recreation with no `dispose()` | Low | The code review (2026-11-25) | The decision log is never overwritten. TRD §4.10 and EDGE-CASES T-3 now mark it pending, and nothing is built on it before Phase 5 | Phase 5 settles LLD U7: if the drain moves, a new TRD entry corrects TD-28 |
+| K4 | ~~The waitlist page fills two coins with marigold (`accent`)~~ **Fixed in the source 2026-11-26, on the owner's word:** the favicon is `scene-brass` (#cda448, a coin drawn as illustration) and the demo's top-bar coin is `text-muted` (#b6becb, an icon, DESIGN §2.5). Only the Join button is marigold now | Low | The code review (2026-11-25) | The live page keeps the old colours until it's published again | The page's next publish, which needs the owner's word |
+| K5 | ~~TRD TD-28 still says the writer is "drained on dispose"~~ **Resolved 2026-11-25:** TRD TD-38 corrects it. Phase 5 found no `dispose()` on a rebuild, and the drain is in `pause()` | — | The code review (2026-11-25) | — | — |
 
 ---
 
