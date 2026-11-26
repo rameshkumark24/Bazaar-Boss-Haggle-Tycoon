@@ -654,6 +654,25 @@ PROGRESS:
     - after a deal, Continue brings the next walk-in seller, so play can go on
   - **F. Starting cash** is a placeholder of ₹2,500, as in the waitlist demo.
 - **Edge cases handled in this phase:** SV-1, SV-2, SV-4, LC-1, LC-2, LC-3, IN-1, IN-3, IN-4, HE-1, DV-1, DV-3, DV-5, DC-1, HO-2, HO-3, BR-1 and BR-5. Each is placed in the plan's checkpoints above.
+- **Checkpoint 1, the skeleton: done 2026-11-26** (commit `a04c520`; this evidence in the next commit).
+  - **Built:**
+    - `core` under `….core.app` and `….core.ui.style`; `assets/` wired into `android` and `lwjgl3`, its generated files kept out of git
+    - `devtools`: a dev-menu stub, in debug builds only, through `DevToolsHook` (`android/src/debug`) and a no-op twin (`android/src/release`)
+    - `tools`: the guards' home (checkpoint 2)
+    - `.githooks/pre-push`, with LF endings pinned in `.gitattributes`
+    - `palette.py --json --java`, writing `palette.json` and `Palette.java`
+    - debug builds: `applicationIdSuffix = '.dev'`, named "Bazaar Boss (dev)"
+  - **DONE WHEN 2 — PASS.** A deliberately failing `HookProofTest` in `logic`, then `git push`. The hook printed `pre-push: ./gradlew --offline check`, then `2 tests completed, 1 failed` and `pre-push: a check failed, so the push is blocked.` Git answered `error: failed to push some refs`, and nothing reached GitHub. The test was deleted, and `a04c520` then went through the same hook: `pre-push: every check passed`.
+  - **DONE WHEN 8 — PASS.** CLAUDE.md now sets `PKG=io.github.rameshkumark24.bazaarboss.dev`, and each command ran again with it, on Medium_Phone_API_36.1 (2026-11-26):
+    - `adb uninstall $PKG` → `Success`
+    - `./gradlew :android:installDebug --offline` → `Installed on 1 device.`, `BUILD SUCCESSFUL in 5s`
+    - `am start -W -n $PKG/io.github.rameshkumark24.bazaarboss.android.AndroidLauncher` → `Status: ok`, `LaunchState: COLD`, `TotalTime: 1434`. The short `/.android…` form no longer works: the class keeps its package, and the short form looks inside `.dev`.
+    - `screencap` → `shots/p06-dev-package.png`: the empty-project label on the dusk surface
+    - the fixture route through `run-as $PKG` → `1 file pushed`, then `game.json` owned by `u0_a234`; removed afterwards
+    - `pm list packages` shows only `….dev`. `aapt2 dump permissions` lists only `io.github.rameshkumark24.bazaarboss.dev.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION`. Logcat shows `dev menu: a stub (Phase 6)`.
+  - **The release build carries no dev tools.** In `android-release-unsigned.apk`, `classes.dex` has no `DevMenu`, only the release `DevToolsHook` (a no-op). The package is `io.github.rameshkumark24.bazaarboss`, labelled "Bazaar Boss".
+  - **BR-5's FileProvider half waits for Phase 21.** There is no FileProvider yet. When sharing adds one, its authority is `${applicationId}.fileprovider`, never written out.
+- **Next: checkpoint 2,** the guards in `tools`.
 
 ## Phase 7 — The legal pages and the first Play upload
 

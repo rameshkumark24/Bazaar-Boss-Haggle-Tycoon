@@ -41,6 +41,7 @@ Every command below was run successfully on the owner's Windows 11 PC: on 2026-1
 ```bash
 SDK="$LOCALAPPDATA/Android/Sdk"          # the Android SDK on this PC
 ADB="$SDK/platform-tools/adb.exe"
+PKG=io.github.rameshkumark24.bazaarboss.dev   # debug builds since Phase 6 (BR-5); the Play build has no .dev
 ```
 
 | What | Command | Proof it works |
@@ -53,11 +54,11 @@ ADB="$SDK/platform-tools/adb.exe"
 | List the virtual devices | `"$SDK/emulator/emulator.exe" -list-avds` | `LowEnd_A9`, `Medium_Phone_API_36.1` |
 | Start the emulator — run it in the background | `"$SDK/emulator/emulator.exe" -avd Medium_Phone_API_36.1 -no-snapshot-save -no-boot-anim` | A window opens; `"$ADB" devices` shows `emulator-5554 device` |
 | Wait until it has booted | The script below — run it in the background | `BOOTED after ~57s` |
-| Install the debug build | `./gradlew :android:installDebug` | `Installed on 1 device.` |
-| Launch the app | `"$ADB" shell am start -W -n io.github.rameshkumark24.bazaarboss/.android.AndroidLauncher` | `Status: ok` |
+| Install the debug build | `./gradlew :android:installDebug` | `Installed on 1 device.`, as `$PKG`, named "Bazaar Boss (dev)": it sits beside a Play install (BR-5). Verified 2026-11-26 |
+| Launch the app | `"$ADB" shell am start -W -n $PKG/io.github.rameshkumark24.bazaarboss.android.AndroidLauncher` | `Status: ok`. The class keeps the original package, so it's written in full (the short `/.android…` form would look inside `.dev`). Verified 2026-11-26 (Phase 6) |
 | **Screenshot — how every phase proves a screen** | `mkdir -p shots && "$ADB" exec-out screencap -p > shots/<name>.png` | A 1080 × 2400 PNG in `shots/` (not in git). Look at it before claiming a screen works. Right after a launch, wait about 5 s: `am start -W` returns before libGDX's first frame, so an earlier capture can be a plain grey window (verified 2026-11-25). The status bar and navigation bar show — the game draws behind them, so keep the UI inside the safe insets (TRD TD-25) |
-| Simulate a first-ever open: remove the app, then install it again | `"$ADB" uninstall io.github.rameshkumark24.bazaarboss` | `Success` |
-| Install a save fixture (debug builds only; the USER-level tests, LLD §7.3) | `"$ADB" shell am force-stop io.github.rameshkumark24.bazaarboss`, then `MSYS_NO_PATHCONV=1 "$ADB" push game.json /data/local/tmp/game.json`, then `"$ADB" shell "run-as io.github.rameshkumark24.bazaarboss sh -c 'mkdir -p files/save && cp /data/local/tmp/game.json files/save/game.json && ls -l files/save'"` | `1 file pushed`, then `-rw------- … game.json`, owned by the app. The next launch loads it. Verified 2026-11-25 (Phase 5) on Android 16 and Android 9 |
+| Simulate a first-ever open: remove the app, then install it again | `"$ADB" uninstall $PKG` | `Success` |
+| Install a save fixture (debug builds only; the USER-level tests, LLD §7.3) | `"$ADB" shell am force-stop $PKG`, then `MSYS_NO_PATHCONV=1 "$ADB" push game.json /data/local/tmp/game.json`, then `"$ADB" shell "run-as $PKG sh -c 'mkdir -p files/save && cp /data/local/tmp/game.json files/save/game.json && ls -l files/save'"` | `1 file pushed`, then `game.json` listed, owned by the app (`u0_a…`); its mode follows the pushed file's. The next launch loads it. Verified 2026-11-25 (Phase 5) on Android 16 and Android 9, and with `$PKG` on 2026-11-26 |
 | List the permissions in the built app | `"$SDK/build-tools/35.0.0/aapt2.exe" dump permissions android/build/outputs/apk/debug/android-debug.apk` | Only AndroidX's app-private `…DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION` (TRD TD-24) — no internet |
 | Stop the emulator | `"$ADB" emu kill` | `OK: killing emulator, bye bye` |
 
