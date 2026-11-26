@@ -525,7 +525,7 @@ PROGRESS:
 
 ## Phase 6 — The vertical slice: one haggle, saved and resumed
 
-STATUS: NOT STARTED
+STATUS: IN PROGRESS
 
 GOAL: On the phone, a walk-in seller offers a brass lamp. You haggle with −10%, −25%, the slider and Offer, then Accept or Walk away. The deal result shows the verdict. Every round is saved, and after Android kills the game it resumes at the same round.
 
@@ -594,6 +594,66 @@ DEPENDS ON: Phases 3, 4 and 5; Phase 2's answer on the Material Symbols download
 PLAN MODE: Yes. It lays the architecture, and the save is the player's data.
 
 PROGRESS:
+- **Started 2026-11-26** on branch `phase-6-vertical-slice`, cut from `main` at `08ddf56`. **The plan below waits for the owner's approval; no code before it.**
+- **Size:** about **4 sessions**, not one. It is LLD slices 1, 3, 4 and 6 in part. Seven checkpoints, each committed and pushed, so a stop anywhere loses nothing.
+- **The plan, in checkpoints:**
+  1. **The skeleton.**
+     - `core` moves under `….core.*`; `assets/` is wired into `android` and `lwjgl3`.
+     - New `devtools` and `tools` modules; `.githooks/pre-push` runs `./gradlew check` (enabled once, with `git config core.hooksPath .githooks`).
+     - `palette.py --json` writes `palette.json`, and `core.ui.style.Palette` is generated from it.
+     - Debug builds get the `.dev` suffix, with CLAUDE.md's commands re-run.
+     - Proof: `check` passes, and the hook blocks a deliberately failing test (DONE WHEN 2, 8).
+  2. **The guards in `tools`, each with a failing fixture first:**
+     - the dependency matrix (LLD §2.3)
+     - empty and broad catches
+     - classes over 500 lines
+     - Android 7 APIs
+     - the palette
+     - `android`'s merged-manifest check: the permission allowlist, and the exports allowlist with `ProfileInstallReceiver`
+  3. **`logic`, with tests written alongside:**
+     - `kernel`: `Money`, `Bp`, `BazaarSteps`, `IndianNumberFormat`, `Dates`, `Clock`, `Rng`, `Outcome`, `Rejected`, `Check`
+     - `content`: the hand-written slice pack
+     - `haggle`: `VisitFactory`, `HaggleRules.respond`, `QuickButtons`, `DealResult`, `WalkedAway`
+     - `player.Wallet`
+     - `game`: `Game`, `TurnRef`, the owed deal result, `SaveSink`
+     - `persist`: `SaveFormat` v1, `SaveCodec`, `SaveLoader`
+     - Tests: DR6, DR7, DR8, DR10, DR12, DR1 and DR2; the money table; the five locales; the codec round trip and the renamed-field check
+  4. **Saving in `core.persist`:**
+     - `SaveWriter`, one per process and coalescing; the new game waits for it before loading, and `pause()` drains it, at most 2 s (TD-38). `FileSaveFiles`.
+     - The integration tests: a kill at each of the 4 commit steps, coalescing, a stale turn (DONE WHEN 3)
+     - The codec is warmed while loading (U5).
+  5. **Fonts and icons:**
+     - **Fonts:** the distance-field baker in `tools` (TD-36): gdx-freetype at build time, the glyph-offset fix, one-channel atlases at most 2,048 px, with the base sizes TD-36 sets
+     - **Icons:** the Material Symbols icon atlas through the same baker (U20)
+     - **The label:** one that sets its smoothing from its size on screen, with integer positions off (TD-37)
+     - **Proof:** the zoom test on the phone, at the extremes: `label` at S on 280 dpi, and `price` at XL on density 4.5
+  6. **The shell and the screens:**
+     - the shell: `BazaarBossGame`, `ScreenRouter`, `ModalQueue`, `BackDispatcher`, `TapGuard`, `RenderOnDemand`
+     - the nine components the slice needs; the placeholder face
+     - the haggle screen, the deal result card and the pause card
+     - **`android`:** `singleTask` and the task-root check; the wider `configChanges`; pause on focus loss; the view's `WindowInsets`; back through the launcher's own callback (TD-35, fixing the stale manifest comment); the slider's gesture exclusion
+  7. **Proof on the emulator:**
+     - process death, then resume (DONE WHEN 4)
+     - the 5 states at M and at XL on 316 dp, in both navigation modes, with all 16 answers (DONE WHEN 5)
+     - a double tap on Accept (DONE WHEN 6)
+     - F2's acceptance criteria and F15 AC1 (DONE WHEN 7)
+- **Decisions the docs leave open, for the owner to approve with the plan:**
+  - **A. A placeholder haggle model.** PRD Q9 leaves the numbers to tuning, so these live in the slice pack, marked as placeholders. Phases 9, 11 and 12 (G1) tune them.
+    - **The seller:** one personality, the emotional walk-in seller selling a brass lamp, as on the waitlist page.
+    - **The walk-away price** comes from the item's value, its condition and the personality, and is never below scrap plus a margin (DR6, DR9).
+    - **The opening price** is a markup on the walk-away price, and patience is a number of rounds.
+    - **Each offer below the table price** changes the mood, more for a lowball, with a reason line (DR10). The seller then concedes part of the gap toward the higher of the offer and the line, never past the line, rounded to a bazaar step (DR8).
+    - **When patience runs out,** they accept if the offer meets the line, and walk if not.
+  - **B. The words** live in one English `Strings` table keyed by line ID, never in a screen, until Phase 8 moves them into `strings.csv`.
+  - **C. Font and icon files** are committed under `content/fonts/` with their licences, and the baker checks their SHA-256 pins. The baked atlases are **generated at build time** into `assets/` (kept out of git), so they can't drift from their sources.
+  - **D. Icons:** Material Symbols Outlined at DESIGN §2.5's settings, as a subset with only the slice's icons (pause, add, remove, the coin), from Google Fonts. No other icons are downloaded.
+  - **E. Out of the slice:**
+    - "Last price?" and the call-back (Phase 9)
+    - reputation changes (later phases), so the deal result shows the cost and the verdict
+    - the godown (Phase 18), so a bought lamp isn't kept yet
+    - after a deal, Continue brings the next walk-in seller, so play can go on
+  - **F. Starting cash** is a placeholder of ₹2,500, as in the waitlist demo.
+- **Edge cases handled in this phase:** SV-1, SV-2, SV-4, LC-1, LC-2, LC-3, IN-1, IN-3, IN-4, HE-1, DV-1, DV-3, DV-5, DC-1, HO-2, HO-3, BR-1 and BR-5. Each is placed in the plan's checkpoints above.
 
 ## Phase 7 — The legal pages and the first Play upload
 
@@ -1995,11 +2055,13 @@ PROGRESS:
   - Phase 4, and Phase 3 apart from its handoff note, are in `main`.
   - The rest merges on 2026-11-26, at the owner's word: Phase 3's handoff note, the first doc check with its code review, and Phase 5.
 - **Phases 1 and 2 (owner) are IN PROGRESS.** Phase 1 waits for the posts and day 7.
+- **Phase 6 is IN PROGRESS** on branch `phase-6-vertical-slice`. Its plan, in its PROGRESS, waits for the owner's approval (PLAN MODE yes).
 - Every other phase is NOT STARTED.
 
 **Next:**
 - **The build has started before day 7,** by the owner's decision on 2026-11-25 (PRD Q1). On day 7 the thresholds apply to the build in progress.
-- **Agent:** Phase 6, the vertical slice: the first real haggle on the phone. It has PLAN MODE yes, so its plan comes to the owner before any code. Every later phase depends on it.
+- **The owner:** approve or change Phase 6's plan, including its decisions A–F.
+- **Agent:** build Phase 6 once its plan is approved: seven checkpoints, about 4 sessions. Every later phase depends on it.
 - **Phase 1 (owner):** confirm that the haggle plays in all three voices on the phone; record and post the clip, and send the date of the first post; on day 7, send the counts and each post's views.
 - **Phase 2 (owner):** the rest of the checklist in Phase 2's PROGRESS.
 - **The waitlist page** has K4's colour fix in its source. It goes live at the next publish, on the owner's word.
