@@ -599,7 +599,7 @@ PROGRESS:
 - **The plan, in checkpoints:**
   1. **The skeleton.**
      - `core` moves under `….core.*`; `assets/` is wired into `android` and `lwjgl3`.
-     - New `devtools` and `tools` modules; `.githooks/pre-push` runs `./gradlew check` (enabled once, with `git config core.hooksPath .githooks`).
+     - New `devtools` and `tools` modules; `.githooks/pre-push` runs `./gradlew check :android:assembleDebug`, as LLD §8 says (enabled once, with `git config core.hooksPath .githooks`).
      - `palette.py --json` writes `palette.json`, and `core.ui.style.Palette` is generated from it.
      - Debug builds get the `.dev` suffix, with CLAUDE.md's commands re-run.
      - Proof: `check` passes, and the hook blocks a deliberately failing test (DONE WHEN 2, 8).
@@ -672,7 +672,33 @@ PROGRESS:
     - `pm list packages` shows only `….dev`. `aapt2 dump permissions` lists only `io.github.rameshkumark24.bazaarboss.dev.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION`. Logcat shows `dev menu: a stub (Phase 6)`.
   - **The release build carries no dev tools.** In `android-release-unsigned.apk`, `classes.dex` has no `DevMenu`, only the release `DevToolsHook` (a no-op). The package is `io.github.rameshkumark24.bazaarboss`, labelled "Bazaar Boss".
   - **BR-5's FileProvider half waits for Phase 21.** There is no FileProvider yet. When sharing adds one, its authority is `${applicationId}.fileprovider`, never written out.
-- **Next: checkpoint 2,** the guards in `tools`.
+- **Checkpoint 2, the guards: done 2026-11-26.**
+  - **Built,** in `tools`: the rules and their tests in `src/test`, and `ManifestGuard` in `src/main`, so `android` can run it.
+    - `DependencyRulesTest`: LLD §2.3's rows, with the matrix in `DependencyRules`
+    - `CatchGuardTest` (LLD §4.4)
+    - `FileSizeGuardTest` (LLD §9, tests included)
+    - `Android7ApiGuardTest` (SV-2), over `logic`, `core` and `devtools`
+    - `PaletteGuardTest`: `Palette` against `palette.json`, and no colour written anywhere else
+    - `ManifestGuardTest`; and in `android`, `checkDebugMergedManifest` and `checkReleaseMergedManifest`, part of `check`: the permission allowlist and the exports allowlist (BR-1)
+    - `tools`' test task now lists every module's sources, the palette and `settings.gradle` as inputs, so a change anywhere reruns the guards instead of leaving them UP-TO-DATE.
+  - **Fixtures first.** The 46 tests first ran against rules that found nothing: `46 tests completed, 29 failed`, one failure for each "is caught" case. With the real rules, all 46 passed.
+  - **The way around each guard, tried and refused.** Real files that compile were planted, then removed:
+    - `haggle` imports an `auction` class, and `core` uses it → `DependencyRulesTest`: "haggle may not use auction: a domain feature uses only those to its left…" and "uses logic.auction.ProofLot: outside logic, only game, kernel, views…"
+    - `System.currentTimeMillis()` in `logic` → "reads the wall clock: take a Clock (DR25; LLD §2.1)"
+    - `catch (RuntimeException e) { }` → `CatchGuardTest`: "an empty catch block…" and "catches RuntimeException, which swallows bugs too…"
+    - `String.join` → `Android7ApiGuardTest`: "String.join is API 26: it compiles under --release 8, then crashes on Android 7"
+    - a 502-line class → `FileSizeGuardTest`: "502 lines. A class over 500 fails the build…"
+    - `new Color(1f, 0f, 0f, 1f)` in `core` → `PaletteGuardTest`: "a colour written outside the palette…"
+    - `Palette.SURFACE` edited by hand → "Palette's surface is #000000, but palette.json says #101b2b"
+    - `INTERNET`, plus an exported receiver, in the manifest → `checkDebugMergedManifest`: "asks for android.permission.INTERNET, which is off the permission allowlist…" and "exports the receiver ….ProofReceiver. Only the launcher, and AndroidX's ProfileInstallReceiver behind DUMP, may be exported…"
+    - The result: `46 tests completed, 6 failed`, and the manifest task failed. With the plants removed, `./gradlew check` → `BUILD SUCCESSFUL`, and both manifests pass.
+  - **A real find:** the empty project cleared the screen with a hand-written colour. It now uses `Palette.SURFACE`. `/verify` on the emulator read `#101b2b` at three points, with the label still drawn.
+  - **The hook now runs `check :android:assembleDebug`,** as LLD §8 and TRD §1.2 say. The plan had shortened it to `check`.
+  - **Doc changes:**
+    - LLD §2.3: rows 1 and 4 made precise to match §3.1, and a row for §2.1's JDK rule
+    - TRD §4.11: the guard rows describe what was built
+    - Phase 25: its list gains TRD's `singleTask` and the backup-rule attributes
+- **Next: checkpoint 3,** `logic` with its tests.
 
 ## Phase 7 — The legal pages and the first Play upload
 
@@ -1417,7 +1443,7 @@ BUILD:
   - locks input, drains the writer, deletes everything, and raises a generation number (LC-4)
   - leaves AndroidX's `profileInstalled` behind
 - **The backup rules** in both files and both sections (BR-2), with their test.
-- **The merged-manifest guard** in full: permissions, exports, `allowBackup`, the back callback, `appCategory`, release builds not debuggable.
+- **The merged-manifest guard** in full (TRD §4.11): Phase 6 built permissions and exports; this adds `allowBackup`, `dataExtractionRules` and `fullBackupContent`, the back callback, `appCategory`, the launcher's `singleTask`, and release builds not debuggable.
 - **The restore card** for a save that came through Android's backup, checked on two emulators.
 
 OUT OF SCOPE: "A bad ad" and "a purchase" as report reasons (they arrive with ads and purchases).

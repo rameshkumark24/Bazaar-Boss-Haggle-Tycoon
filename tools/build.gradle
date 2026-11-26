@@ -16,6 +16,14 @@ tasks.named('test') {
     useJUnitPlatform()
     // The guards read files relative to the repository's root.
     systemProperty 'repo.root', rootProject.projectDir.absolutePath
+    // ...so the files they read are this task's inputs too: a change in any module's sources, the palette
+    // or the module list reruns the guards, instead of leaving them UP-TO-DATE.
+    inputs.files(rootProject.subprojects.collect { new File(it.projectDir, 'src') })
+            .withPropertyName('guardedSources')
+            .withPathSensitivity(PathSensitivity.RELATIVE)
+    inputs.files(rootProject.file('docs/design/palette.json'), rootProject.file('settings.gradle'))
+            .withPropertyName('guardedFiles')
+            .withPathSensitivity(PathSensitivity.RELATIVE)
     testLogging {
         events 'passed', 'skipped', 'failed'
     }

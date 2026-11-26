@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- No permissions: v1 asks for none yet (PRD CR13). The allowlist guard arrives in M0. -->
+<!-- No permissions of our own (PRD CR13). The merged-manifest guard holds the allowlists (TRD §4.11). -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
